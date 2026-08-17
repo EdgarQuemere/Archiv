@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { InfiniteCanvas } from './components/InfiniteCanvas';
+import { CompactGridCanvas } from './components/CompactGridCanvas';
+import { NetworkGraphCanvas } from './components/NetworkGraphCanvas';
 import { ListView } from './components/ListView';
 import { Navbar } from './components/Navbar';
 import { FilterDrawer } from './components/FilterDrawer';
@@ -137,6 +139,20 @@ export function App() {
           <InfiniteCanvas
             items={filteredCovers}
             gap={gap}
+            camera={camera}
+            setCamera={setCamera}
+            onCardClick={(item) => setSelectedCard(item)}
+          />
+        ) : activeView === 'compact' ? (
+          <CompactGridCanvas
+            items={filteredCovers}
+            camera={camera}
+            setCamera={setCamera}
+            onCardClick={(item) => setSelectedCard(item)}
+          />
+        ) : activeView === 'network' ? (
+          <NetworkGraphCanvas
+            items={filteredCovers}
             camera={camera}
             setCamera={setCamera}
             onCardClick={(item) => setSelectedCard(item)}

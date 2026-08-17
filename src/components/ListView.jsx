@@ -352,41 +352,38 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
                 style={{ WebkitUserDrag: 'none', userSelect: 'none' }}
-                className="w-full h-full object-contain block select-none pointer-events-none"
+                className="w-full h-full object-contain block select-none pointer-events-none hover:scale-[1.02] transition-transform"
               />
             </div>
           </div>
         ))}
       </div>
 
-      {/* Fixed Bottom-Right Information Card */}
+      {/* Fixed Bottom-Right Information Card (Right-aligned text style) */}
       {currentInfoItem && (
-        <div className="fixed bottom-8 right-8 z-30 bg-[#EEEEEE] border-2 border-[#111111] p-5 w-80 shadow-2xl font-sans text-[#111111] rounded-none animate-in fade-in slide-in-from-bottom-2 duration-200">
-          <div className="flex items-center justify-between text-[11px] font-mono font-bold mb-1 text-[#111111]">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-[#111111]" />
-              {currentInfoItem.school}
-            </span>
-            <span>{currentInfoItem.year}</span>
-          </div>
+        <div className="fixed bottom-12 right-12 z-30 w-[400px] text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
+          <div className="flex flex-col items-end gap-1 pointer-events-auto">
+            <h3 className="text-xl font-bold leading-tight mb-1">
+              {currentInfoItem.title}
+            </h3>
+            
+            <p className="text-sm font-medium mb-2">
+              par {currentInfoItem.author}
+            </p>
 
-          <h3 className="text-base font-bold text-[#111111] leading-snug mb-1 line-clamp-2">
-            {currentInfoItem.title}
-          </h3>
+            <p className="text-xs font-mono mb-4 text-slate-600">
+              {currentInfoItem.school} — {currentInfoItem.year} • {currentInfoItem.field}
+            </p>
 
-          <p className="text-xs text-slate-700 font-medium mb-3 flex items-center gap-1">
-            <User className="w-3 h-3 text-slate-500" />
-            <span>par {currentInfoItem.author}</span>
-          </p>
-
-          <div className="flex items-center justify-between pt-3 border-t-2 border-[#111111]">
-            <span className="text-[10px] bg-white border border-[#111111] text-[#111111] px-2 py-0.5 font-mono">
-              {currentInfoItem.field}
-            </span>
+            {currentInfoItem.abstract && (
+              <p className="text-sm text-slate-700 leading-relaxed mb-4 text-right">
+                {currentInfoItem.abstract}
+              </p>
+            )}
 
             <button
               onClick={() => onCardClick(currentInfoItem)}
-              className="h-8 px-3.5 bg-[#111111] hover:bg-black text-white text-xs font-semibold rounded-none flex items-center gap-1.5 transition-colors"
+              className="inline-flex items-center gap-2 h-8 px-4 bg-[#111111] hover:bg-black text-white text-xs font-semibold transition-colors mt-2"
             >
               <span>Consulter</span>
               <ExternalLink className="w-3 h-3" />
