@@ -160,17 +160,25 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     const target = findSnapTarget();
     if (!target) return;
 
-    // Don't snap if already within 2px
-    if (Math.abs(el.scrollTop - target.scrollTop) < 2) return;
+    const dist = Math.abs(el.scrollTop - target.scrollTop);
+    // Precise lock: snap down to 0.5px offset to eliminate deadzones near center
+    if (dist < 0.5) return;
 
     isSnappingRef.current = true;
 
     if (snapTweenRef.current) snapTweenRef.current.kill();
 
+    // Magnetism force dynamics:
+    // Near center (< 120px): Strong, tactile, crisp snap (duration ~ 0.28s to 0.35s)
+    // Near extremities / edges: Smooth progressive magnetic pull (duration ~ 0.4s to 0.52s)
+    const normalizedDist = Math.min(dist / 250, 1.0);
+    const duration = 0.28 + 0.24 * normalizedDist;
+    const ease = normalizedDist < 0.4 ? 'back.out(1.2)' : 'power2.out';
+
     snapTweenRef.current = gsap.to(el, {
       scrollTop: target.scrollTop,
-      duration: 0.65,
-      ease: 'power2.out',
+      duration: duration,
+      ease: ease,
       onUpdate: () => {
         updateScrollPhysics();
       },
@@ -181,14 +189,14 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     });
   }, [findSnapTarget, updateScrollPhysics]);
 
-  // Schedule a snap after scroll goes idle
-  const scheduleSnap = useCallback(() => {
+  // Schedule a snap after scroll goes idle (120ms idle timeout for high responsiveness)
+  const scheduleSnap = useCallback((delay = 120) => {
     if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
     scrollIdleTimerRef.current = setTimeout(() => {
       if (!isUserDraggingRef.current) {
         snapToNearest();
       }
-    }, 80);
+    }, delay);
   }, [snapToNearest]);
 
   // Scroll handler: update visuals + schedule snap
@@ -202,10 +210,21 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     }
   }, [updateScrollPhysics, scheduleSnap]);
 
-  // Position initial center cover instantly without visual scrolling sweep animation
+  // Track mount state to prevent layoutEffect from re-teleporting on internal cover changes
+  const isInitialMountedRef = useRef(false);
+  const prevItemsRef = useRef(items);
+  if (prevItemsRef.current !== items) {
+    prevItemsRef.current = items;
+    isInitialMountedRef.current = false;
+  }
+
+  // Position initial center cover ONCE on mount or when items change
   useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el || infiniteItems.length === 0) return;
+
+    if (isInitialMountedRef.current) return;
+    isInitialMountedRef.current = true;
 
     let targetIndexInItems = 0;
     if (focusedCoverId !== null && focusedCoverId !== undefined) {
@@ -254,7 +273,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
     const onPointerUp = () => {
       isUserDraggingRef.current = false;
-      scheduleSnap();
+      scheduleSnap(20);
     };
 
     el.addEventListener('scroll', onScroll, { passive: true });
