@@ -23,6 +23,7 @@ export function App() {
   // Randomize initial covers dataset
   const [covers, setCovers] = useState(() => shuffleArray(COVERS_DATA));
   const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'list'
+  const [focusedCoverId, setFocusedCoverId] = useState(null); // Keeps track of last viewed cover in List mode
   const mainContainerRef = useRef(null);
   
   // Camera state locked at 1.0 zoom
@@ -143,6 +144,8 @@ export function App() {
         ) : (
           <ListView
             items={filteredCovers}
+            focusedCoverId={focusedCoverId}
+            onActiveCoverChange={(id) => setFocusedCoverId(id)}
             onCardClick={(item) => setSelectedCard(item)}
           />
         )}
