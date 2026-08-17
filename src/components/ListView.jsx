@@ -16,11 +16,19 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
   const wrapCooldownRef = useRef(false); // blocks snaps right after a wrap
 
   // Triple items array for seamless infinite looping scroll (Set 0, Set 1, Set 2)
-  const infiniteItems = useMemo(() => {
-    if (!items || items.length === 0) return [];
+  // Small item lists (e.g. 1 filter result) are repeated within each set to ensure total set height > viewport height
+  const { infiniteItems, setLength } = useMemo(() => {
+    if (!items || items.length === 0) return { infiniteItems: [], setLength: 0 };
+
+    const repeatFactor = Math.ceil(8 / items.length);
+    const expandedItems = [];
+    for (let r = 0; r < repeatFactor; r++) {
+      items.forEach((item) => expandedItems.push(item));
+    }
+
     const repeated = [];
     for (let setIndex = 0; setIndex < 3; setIndex++) {
-      items.forEach((item, idx) => {
+      expandedItems.forEach((item, idx) => {
         repeated.push({
           ...item,
           loopKey: `set${setIndex}-${item.id}-${idx}`,
@@ -28,7 +36,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
         });
       });
     }
-    return repeated;
+    return { infiniteItems: repeated, setLength: expandedItems.length };
   }, [items]);
 
   // Find the closest cover element to the viewport center and return its scroll offset
@@ -101,27 +109,31 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     if (!el || infiniteItems.length === 0) return;
 
     const viewportCenter = el.getBoundingClientRect().top + el.clientHeight / 2;
-    const scrollHeight = el.scrollHeight;
     const scrollTop = el.scrollTop;
 
-    // Exact height of 1 full set of items
-    const singleSetHeight = scrollHeight / 3;
+    // Exact vertical distance of 1 full set of items measured between Set 0 Item 0 and Set 1 Item 0
+    const firstKeySet0 = infiniteItems[0]?.loopKey;
+    const firstKeySet1 = infiniteItems[setLength]?.loopKey;
+    const el0 = itemMapRef.current.get(firstKeySet0);
+    const el1 = itemMapRef.current.get(firstKeySet1);
 
-    // SEAMLESS ZERO-JUMP STRATEGY: Wrap position in the safe middle zone
-    if (singleSetHeight > 0 && !isWrappingRef.current) {
-      if (scrollTop < singleSetHeight * 0.7) {
+    if (el0 && el1 && !isWrappingRef.current) {
+      const singleSetHeight = el1.offsetTop - el0.offsetTop;
+      const middleSetStartScrollTop = el1.offsetTop - el.clientHeight / 2 + el1.offsetHeight / 2;
+      const diff = scrollTop - middleSetStartScrollTop;
+
+      // Wrap symmetrically whenever scroll strays too far into Set 0 or Set 2
+      if (diff < -singleSetHeight / 2) {
         isWrappingRef.current = true;
         wrapCooldownRef.current = true;
-        // Cancel any pending snap — the wrap scroll event must NOT trigger a snap
         if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
         isSnappingRef.current = false;
         el.scrollTop += singleSetHeight;
         requestAnimationFrame(() => {
           isWrappingRef.current = false;
-          // Keep cooldown active a bit longer so the idle-timer from wrap scroll events expires harmlessly
           setTimeout(() => { wrapCooldownRef.current = false; }, 300);
         });
-      } else if (scrollTop > singleSetHeight * 1.9) {
+      } else if (diff > singleSetHeight / 2) {
         isWrappingRef.current = true;
         wrapCooldownRef.current = true;
         if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
@@ -169,7 +181,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
         onActiveCoverChange(closestItem.originalId);
       }
     }
-  }, [infiniteItems, onActiveCoverChange]);
+  }, [infiniteItems, setLength, onActiveCoverChange]);
 
   // Scroll handler: update visuals + schedule snap
   const onScroll = useCallback(() => {
@@ -193,8 +205,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       if (foundIdx !== -1) targetIndexInItems = foundIdx;
     }
 
-    const middleSetStartIndex = items.length;
-    const targetLoopIndex = middleSetStartIndex + targetIndexInItems;
+    const targetLoopIndex = setLength + targetIndexInItems;
     const targetLoopKey = infiniteItems[targetLoopIndex]?.loopKey;
 
     const setInstantPosition = () => {
@@ -211,7 +222,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     setInstantPosition();
     const frameId = requestAnimationFrame(setInstantPosition);
     return () => cancelAnimationFrame(frameId);
-  }, [items, infiniteItems, focusedCoverId, updateScrollPhysics]);
+  }, [items, infiniteItems, setLength, focusedCoverId, updateScrollPhysics]);
 
   // Set up scroll + pointer listeners for magnetism
   useEffect(() => {
