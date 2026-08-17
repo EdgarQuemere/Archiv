@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { ExternalLink, BookOpen, MapPin, User } from 'lucide-react';
+import gsap from 'gsap';
 
 export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardClick }) {
   const containerRef = useRef(null);
@@ -9,11 +10,12 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
   const isWrappingRef = useRef(false);
   const [activeItem, setActiveItem] = useState(null);
 
-  // Magnetism state refs — JS-driven snap instead of CSS scroll-snap
+  // Magnetism state refs — GSAP-driven ultra-smooth snap
   const scrollIdleTimerRef = useRef(null);
   const isUserDraggingRef = useRef(false);
   const isSnappingRef = useRef(false);
   const wrapCooldownRef = useRef(false); // blocks snaps right after a wrap
+  const snapTweenRef = useRef(null);
 
   // Triple items array for seamless infinite looping scroll (Set 0, Set 1, Set 2)
   // Small item lists (e.g. 1 filter result) are repeated within each set to ensure total set height > viewport height
@@ -68,42 +70,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     return { scrollTop: targetScrollTop, item: closestItem, distance: closestDist };
   }, [infiniteItems]);
 
-  // Smoothly scroll to snap the nearest cover to center
-  const snapToNearest = useCallback(() => {
-    const el = containerRef.current;
-    if (!el || isUserDraggingRef.current || isWrappingRef.current || wrapCooldownRef.current) return;
-
-    const target = findSnapTarget();
-    if (!target) return;
-
-    // Don't snap if already very close (within 2px)
-    if (Math.abs(el.scrollTop - target.scrollTop) < 2) return;
-
-    isSnappingRef.current = true;
-    el.scrollTo({
-      top: target.scrollTop,
-      behavior: 'smooth'
-    });
-
-    // The 'smooth' scroll will trigger scroll events. We detect snap completion
-    // by watching for scroll to settle (handled by the idle timer resetting).
-    // Set a safety timeout to clear isSnapping after the animation would finish.
-    setTimeout(() => {
-      isSnappingRef.current = false;
-    }, 500);
-  }, [findSnapTarget]);
-
-  // Schedule a snap after scroll goes idle
-  const scheduleSnap = useCallback(() => {
-    if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
-    scrollIdleTimerRef.current = setTimeout(() => {
-      if (!isUserDraggingRef.current) {
-        snapToNearest();
-      }
-    }, 150);
-  }, [snapToNearest]);
-
-  // Distance-based scaling + infinite wrapping (no CSS scroll-snap)
+  // Distance-based scaling + infinite wrapping
   const updateScrollPhysics = useCallback(() => {
     const el = containerRef.current;
     if (!el || infiniteItems.length === 0) return;
@@ -126,6 +93,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       if (diff < -singleSetHeight / 2) {
         isWrappingRef.current = true;
         wrapCooldownRef.current = true;
+        if (snapTweenRef.current) snapTweenRef.current.kill();
         if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
         isSnappingRef.current = false;
         el.scrollTop += singleSetHeight;
@@ -136,6 +104,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       } else if (diff > singleSetHeight / 2) {
         isWrappingRef.current = true;
         wrapCooldownRef.current = true;
+        if (snapTweenRef.current) snapTweenRef.current.kill();
         if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
         isSnappingRef.current = false;
         el.scrollTop -= singleSetHeight;
@@ -159,7 +128,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
       const normalizedDist = Math.min(dist / maxRange, 1.0);
       
-      // Slight scale (1.10 at center, 0.85 when far) and opacity boost (1.0 at center, 0.50 when far)
+      // Scale (1.10 at center, 0.85 when far) and opacity (1.0 at center, 0.50 when far)
       const scale = 0.85 + 0.25 * Math.cos(normalizedDist * (Math.PI / 2));
       const opacity = 0.50 + 0.50 * Math.cos(normalizedDist * (Math.PI / 2));
 
@@ -182,6 +151,45 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       }
     }
   }, [infiniteItems, setLength, onActiveCoverChange]);
+
+  // Ultra-smooth GSAP magnetic snap to center
+  const snapToNearest = useCallback(() => {
+    const el = containerRef.current;
+    if (!el || isUserDraggingRef.current || isWrappingRef.current || wrapCooldownRef.current) return;
+
+    const target = findSnapTarget();
+    if (!target) return;
+
+    // Don't snap if already within 2px
+    if (Math.abs(el.scrollTop - target.scrollTop) < 2) return;
+
+    isSnappingRef.current = true;
+
+    if (snapTweenRef.current) snapTweenRef.current.kill();
+
+    snapTweenRef.current = gsap.to(el, {
+      scrollTop: target.scrollTop,
+      duration: 0.65,
+      ease: 'power2.out',
+      onUpdate: () => {
+        updateScrollPhysics();
+      },
+      onComplete: () => {
+        isSnappingRef.current = false;
+        snapTweenRef.current = null;
+      }
+    });
+  }, [findSnapTarget, updateScrollPhysics]);
+
+  // Schedule a snap after scroll goes idle
+  const scheduleSnap = useCallback(() => {
+    if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
+    scrollIdleTimerRef.current = setTimeout(() => {
+      if (!isUserDraggingRef.current) {
+        snapToNearest();
+      }
+    }, 80);
+  }, [snapToNearest]);
 
   // Scroll handler: update visuals + schedule snap
   const onScroll = useCallback(() => {
@@ -229,16 +237,23 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     const el = containerRef.current;
     if (!el) return;
 
-    // Track mouse/touch down to prevent snapping while user is actively interacting
+    // Interrupt snap animation if user starts interacting
+    const stopActiveSnap = () => {
+      if (snapTweenRef.current) {
+        snapTweenRef.current.kill();
+        snapTweenRef.current = null;
+      }
+    };
+
     const onPointerDown = () => {
       isUserDraggingRef.current = true;
-      isSnappingRef.current = false; // Cancel any in-progress snap
+      isSnappingRef.current = false;
+      stopActiveSnap();
       if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
     };
 
     const onPointerUp = () => {
       isUserDraggingRef.current = false;
-      // Schedule snap now that user released
       scheduleSnap();
     };
 
@@ -248,8 +263,8 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     el.addEventListener('touchstart', onPointerDown, { passive: true });
     window.addEventListener('touchend', onPointerUp, { passive: true });
 
-    // Also snap after wheel scroll stops (no pointer down/up for wheel)
     const onWheel = () => {
+      stopActiveSnap();
       isSnappingRef.current = false;
       scheduleSnap();
     };
@@ -264,6 +279,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       el.removeEventListener('wheel', onWheel);
       if (rAFRef.current) cancelAnimationFrame(rAFRef.current);
       if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
+      stopActiveSnap();
     };
   }, [onScroll, scheduleSnap]);
 
@@ -306,7 +322,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
               transformOrigin: 'center center',
               willChange: 'transform, opacity'
             }}
-            className="cursor-pointer flex flex-col items-center py-2 transition-transform duration-75 ease-out"
+            className="cursor-pointer flex flex-col items-center py-2"
           >
             {/* Clean Raw Cover Image Container */}
             <div className="w-64 sm:w-72 h-[380px] sm:h-[420px] bg-transparent flex items-center justify-center overflow-hidden">
