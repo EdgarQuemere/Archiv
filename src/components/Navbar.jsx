@@ -35,22 +35,9 @@ export function Navbar({
           )}
         </button>
 
-        {/* View Switcher Segmented Block */}
+        {/* View Switcher Segmented Block: Swapped (Canvas Left, List Right) */}
         <div className="h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0">
-          <button
-            onClick={() => setActiveView('list')}
-            title="Vue Liste"
-            className={`w-12 h-full flex items-center justify-center transition-colors rounded-none ${
-              activeView === 'list'
-                ? 'bg-[#111111] text-white'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
-            }`}
-          >
-            <List className="w-5 h-5 stroke-[2]" />
-          </button>
-
-          <div className="w-[1.5px] h-full bg-[#111111]" />
-
+          {/* Left Segment: Canvas */}
           <button
             onClick={() => setActiveView('canvas')}
             title="Vue Canva Infini"
@@ -61,6 +48,21 @@ export function Navbar({
             }`}
           >
             <LayoutGrid className="w-5 h-5 stroke-[2]" />
+          </button>
+
+          <div className="w-[1.5px] h-full bg-[#111111]" />
+
+          {/* Right Segment: List */}
+          <button
+            onClick={() => setActiveView('list')}
+            title="Vue Liste"
+            className={`w-12 h-full flex items-center justify-center transition-colors rounded-none ${
+              activeView === 'list'
+                ? 'bg-[#111111] text-white'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
+            }`}
+          >
+            <List className="w-5 h-5 stroke-[2]" />
           </button>
         </div>
       </div>
