@@ -27,9 +27,12 @@ export function InfiniteCanvas({
   const totalDragDistanceRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
+  // STRICTLY LOCKED ZOOM = 1.0 ALWAYS (NO ZOOMING PERMITTED)
+  const FIXED_ZOOM = 1.0;
+
   // Target and Current camera states for smooth lerp & momentum
-  const targetCamRef = useRef({ x: camera.x, y: camera.y, zoom: camera.zoom || 1.0 });
-  const currentCamRef = useRef({ x: camera.x, y: camera.y, zoom: camera.zoom || 1.0 });
+  const targetCamRef = useRef({ x: camera.x, y: camera.y, zoom: FIXED_ZOOM });
+  const currentCamRef = useRef({ x: camera.x, y: camera.y, zoom: FIXED_ZOOM });
 
   // Enhanced Velocity & Momentum Physics for snappy Figma-style panning
   const velocityRef = useRef({ x: 0, y: 0 });
@@ -42,9 +45,9 @@ export function InfiniteCanvas({
     if (!isDraggingRef.current) {
       targetCamRef.current.x = camera.x;
       targetCamRef.current.y = camera.y;
-      targetCamRef.current.zoom = camera.zoom;
+      targetCamRef.current.zoom = FIXED_ZOOM;
     }
-  }, [camera.x, camera.y, camera.zoom]);
+  }, [camera.x, camera.y]);
 
   // Handle window resize
   useEffect(() => {
@@ -61,7 +64,7 @@ export function InfiniteCanvas({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // High performance GSAP Ticker for smooth velocity decay & ultra-smooth lerp zoom/pan
+  // High performance GSAP Ticker for smooth velocity decay & lerp panning
   useEffect(() => {
     const updatePhysics = () => {
       const target = targetCamRef.current;
@@ -80,25 +83,23 @@ export function InfiniteCanvas({
         if (Math.abs(velocityRef.current.y) < 0.02) velocityRef.current.y = 0;
       }
 
-      // Ultra-smooth Lerp Factor for pan & zoom
-      const lerpFactor = 0.20;
+      // Responsive Lerp Factor for panning
+      const lerpFactor = 0.28;
       const newX = current.x + (target.x - current.x) * lerpFactor;
       const newY = current.y + (target.y - current.y) * lerpFactor;
-      const newZoom = current.zoom + (target.zoom - current.zoom) * lerpFactor;
 
       const dx = Math.abs(newX - current.x);
       const dy = Math.abs(newY - current.y);
-      const dz = Math.abs(newZoom - current.zoom);
 
-      if (dx > 0.01 || dy > 0.01 || dz > 0.0001) {
+      if (dx > 0.01 || dy > 0.01) {
         current.x = newX;
         current.y = newY;
-        current.zoom = newZoom;
+        current.zoom = FIXED_ZOOM;
 
         setCamera({
           x: newX,
           y: newY,
-          zoom: newZoom
+          zoom: FIXED_ZOOM
         });
       }
     };
@@ -109,43 +110,22 @@ export function InfiniteCanvas({
     };
   }, [setCamera]);
 
-  // Trackpad 2-finger pan & Cmd/Pinch Zoom / Smooth Mouse Wheel Zoom
+  // Trackpad / Mouse wheel handler: STRICT PANNING ONLY (NO ZOOMING)
   const handleWheel = useCallback((e) => {
     e.preventDefault();
 
-    const isPinchOrCtrl = e.ctrlKey || e.metaKey;
+    // Any wheel event (standard scroll, trackpad 2-finger, or pinch gesture) performs panning ONLY
+    const panSensitivity = 1.1;
+    targetCamRef.current.x -= e.deltaX * panSensitivity;
+    targetCamRef.current.y -= e.deltaY * panSensitivity;
 
-    if (isPinchOrCtrl) {
-      // Smooth Pinch / Cmd-scroll Zoom centered on mouse cursor
-      const rect = containerRef.current.getBoundingClientRect();
-      const cursorX = e.clientX - rect.left;
-      const cursorY = e.clientY - rect.top;
-
-      const currentTarget = targetCamRef.current;
-      const worldX = (cursorX - currentTarget.x) / currentTarget.zoom;
-      const worldY = (cursorY - currentTarget.y) / currentTarget.zoom;
-
-      // Exponential continuous smooth zoom factor
-      const zoomFactor = Math.pow(0.993, e.deltaY);
-      const newZoom = Math.min(Math.max(currentTarget.zoom * zoomFactor, 0.3), 3.0);
-
-      const newPanX = cursorX - worldX * newZoom;
-      const newPanY = cursorY - worldY * newZoom;
-
-      targetCamRef.current = {
-        x: newPanX,
-        y: newPanY,
-        zoom: newZoom
-      };
-    } else {
-      // 2-finger Figma-style trackpad pan
-      const panSensitivity = 1.1;
-      targetCamRef.current.x -= e.deltaX * panSensitivity;
+    // Direct scroll wheel vertical pan if no deltaX
+    if (e.deltaX === 0 && e.deltaY !== 0 && !e.ctrlKey && !e.metaKey) {
       targetCamRef.current.y -= e.deltaY * panSensitivity;
-
-      velocityRef.current.x = -e.deltaX * 0.4;
-      velocityRef.current.y = -e.deltaY * 0.4;
     }
+
+    velocityRef.current.x = -e.deltaX * 0.4;
+    velocityRef.current.y = -e.deltaY * 0.4;
   }, []);
 
   useEffect(() => {
@@ -193,7 +173,7 @@ export function InfiniteCanvas({
     setIsDragging(false);
   };
 
-  // Touch gestures for mobile pan
+  // Touch gestures for mobile pan (Pinch zoom disabled)
   const handleTouchStart = (e) => {
     if (e.touches.length === 1) {
       isDraggingRef.current = true;
@@ -206,6 +186,11 @@ export function InfiniteCanvas({
   };
 
   const handleTouchMove = (e) => {
+    if (e.touches.length > 1) {
+      // Prevent mobile pinch zoom
+      e.preventDefault();
+      return;
+    }
     if (isDraggingRef.current && e.touches.length === 1) {
       const dx = e.touches[0].clientX - dragStartRef.current.x;
       const dy = e.touches[0].clientY - dragStartRef.current.y;
@@ -226,9 +211,8 @@ export function InfiniteCanvas({
       return;
     }
 
-    const currentZoom = camera.zoom;
-    const centeredX = viewportSize.width / 2 - (position.x + position.width / 2) * currentZoom;
-    const centeredY = viewportSize.height / 2 - (position.y + position.height / 2) * currentZoom;
+    const centeredX = viewportSize.width / 2 - (position.x + position.width / 2);
+    const centeredY = viewportSize.height / 2 - (position.y + position.height / 2);
 
     gsap.to(targetCamRef.current, {
       x: centeredX,
@@ -241,11 +225,11 @@ export function InfiniteCanvas({
     });
   };
 
-  // Viewport Culling & Visible Tiles Generation
+  // Viewport Culling & Visible Tiles Generation at FIXED_ZOOM = 1.0
   const tileRange = getVisibleTileRange(
     camera.x,
     camera.y,
-    camera.zoom,
+    FIXED_ZOOM,
     viewportSize.width,
     viewportSize.height,
     cardWidth,
@@ -268,17 +252,18 @@ export function InfiniteCanvas({
     }
   }
 
-  // Dot background pattern scaled with camera.zoom
-  const gridCellSize = 24 * camera.zoom;
+  // Dot background pattern (0.9px radius)
+  const gridCellSize = 24;
   const dotColor = 'rgba(160, 160, 160, 0.7)';
 
   const containerStyle = {
     backgroundColor: '#EEEEEE',
-    backgroundImage: `radial-gradient(circle, ${dotColor} ${Math.max(0.6, 0.9 * camera.zoom)}px, transparent ${Math.max(0.6, 0.9 * camera.zoom)}px)`,
+    backgroundImage: `radial-gradient(circle, ${dotColor} 0.9px, transparent 0.9px)`,
     backgroundSize: `${gridCellSize}px ${gridCellSize}px`,
     backgroundPosition: `${camera.x}px ${camera.y}px`,
     userSelect: 'none',
-    WebkitUserSelect: 'none'
+    WebkitUserSelect: 'none',
+    touchAction: 'none'
   };
 
   return (
@@ -297,12 +282,12 @@ export function InfiniteCanvas({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* World Plane Container */}
+      {/* World Plane Container - Locked strictly at 1.0 zoom */}
       <div
         className="absolute top-0 left-0 origin-top-left pointer-events-auto transform-gpu select-none"
         onDragStart={(e) => e.preventDefault()}
         style={{
-          transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`,
+          transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${FIXED_ZOOM})`,
           willChange: 'transform',
           userSelect: 'none',
           WebkitUserSelect: 'none'
@@ -313,7 +298,7 @@ export function InfiniteCanvas({
             key={item.uniqueKey}
             item={item}
             position={position}
-            zoom={camera.zoom}
+            zoom={FIXED_ZOOM}
             onClick={(itm) => handleCardClick(itm, position)}
           />
         ))}
