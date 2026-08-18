@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { InfiniteCanvas } from './components/InfiniteCanvas';
-import { CompactGridCanvas } from './components/CompactGridCanvas';
 import { NetworkGraphCanvas } from './components/NetworkGraphCanvas';
 import { ListView } from './components/ListView';
 import { Navbar } from './components/Navbar';
@@ -9,7 +8,6 @@ import { FilterDrawer } from './components/FilterDrawer';
 import { DetailModal } from './components/DetailModal';
 import { SubmitModal } from './components/SubmitModal';
 import { COVERS_DATA } from './data/coversData';
-import { DEFAULT_GAP } from './utils/gridAlgorithm';
 
 // Fisher-Yates Shuffle algorithm for randomizing memory covers
 function shuffleArray(array) {
@@ -24,7 +22,7 @@ function shuffleArray(array) {
 export function App() {
   // Randomize initial covers dataset
   const [covers, setCovers] = useState(() => shuffleArray(COVERS_DATA));
-  const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'list'
+  const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'network' | 'list'
   const [focusedCoverId, setFocusedCoverId] = useState(null); // Keeps track of last viewed cover in List mode
   const mainContainerRef = useRef(null);
   
@@ -34,9 +32,6 @@ export function App() {
     y: typeof window !== 'undefined' ? window.innerHeight / 2 - 177 : 0,
     zoom: 1.0
   });
-
-  // Gap Size state (Defaulted to 140px)
-  const [gap] = useState(DEFAULT_GAP);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
@@ -137,14 +132,6 @@ export function App() {
       <main ref={mainContainerRef} className="w-full h-full transform-gpu">
         {activeView === 'canvas' ? (
           <InfiniteCanvas
-            items={filteredCovers}
-            gap={gap}
-            camera={camera}
-            setCamera={setCamera}
-            onCardClick={(item) => setSelectedCard(item)}
-          />
-        ) : activeView === 'compact' ? (
-          <CompactGridCanvas
             items={filteredCovers}
             camera={camera}
             setCamera={setCamera}

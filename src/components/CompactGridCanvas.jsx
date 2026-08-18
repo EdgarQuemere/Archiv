@@ -1,14 +1,13 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import gsap from 'gsap';
-import { getItemForGridCoordinate } from '../utils/gridAlgorithm';
+import { Compass } from 'lucide-react';
 
 export function CompactGridCanvas({
   items,
   camera,
   setCamera,
   onCardClick,
-  cardWidth = 220,
-  cardHeight = 310
+  cardWidth = 220
 }) {
   const containerRef = useRef(null);
   const [viewportSize, setViewportSize] = useState({
@@ -16,7 +15,7 @@ export function CompactGridCanvas({
     height: typeof window !== 'undefined' ? window.innerHeight : 800
   });
 
-  // Hover state for subtle highlight
+  // Hover state
   const [hoveredKey, setHoveredKey] = useState(null);
 
   // Dragging state & displacement tracker
@@ -24,7 +23,7 @@ export function CompactGridCanvas({
   const totalDragDistanceRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // STRICTLY LOCKED ZOOM = 1.0 ALWAYS (NO ZOOM)
+  // STRICTLY LOCKED ZOOM = 1.0 ALWAYS (NO CAMERA ZOOM)
   const FIXED_ZOOM = 1.0;
 
   // Target and Current camera states for smooth lerp & momentum
@@ -201,58 +200,99 @@ export function CompactGridCanvas({
     });
   };
 
-  // ----------------------------------------------------------------------
-  // ZERO-GAP PUZZLE MASONRY GRID (Edge-to-edge seamless wall of covers)
-  // ----------------------------------------------------------------------
-  const pitchX = cardWidth; // Zero margin X
-  const pitchY = cardHeight; // Zero margin Y
+  // Standard fixed column width (220px)
+  const colWidth = cardWidth;
 
-  // Staggered vertical offset formula to create an interlocking puzzle / brickwork pattern
-  const getPuzzleOffsetY = (col) => {
-    const mod = Math.abs(col) % 4;
-    switch (mod) {
-      case 1: return 50;
-      case 2: return 20;
-      case 3: return 60;
-      default: return 0;
-    }
-  };
-
-  const visibleTiles = useMemo(() => {
+  // Calculate EXACT height for each cover image so container aspect ratio matches image native ratio 100%
+  const itemsWithMetrics = useMemo(() => {
     if (!items || items.length === 0) return [];
+    return items.map(item => {
+      let ar = 1.4;
+      if (item.nativeHeight && item.nativeWidth) {
+        ar = item.nativeHeight / item.nativeWidth;
+      } else if (item.aspectRatio) {
+        ar = item.aspectRatio;
+      }
+      // Exact height matching the image's original proportions at colWidth
+      const exactHeight = Math.round(colWidth * ar);
+      return {
+        ...item,
+        scaledHeight: exactHeight
+      };
+    });
+  }, [items, colWidth]);
 
-    const worldLeft = (0 - camera.x) / FIXED_ZOOM;
-    const worldRight = (viewportSize.width - camera.x) / FIXED_ZOOM;
-    const worldTop = (0 - camera.y) / FIXED_ZOOM;
-    const worldBottom = (viewportSize.height - camera.y) / FIXED_ZOOM;
+  // ZERO-HOLE GAPLESS MASONRY COLUMN CANVAS
+  const visibleTiles = useMemo(() => {
+    if (!itemsWithMetrics || itemsWithMetrics.length === 0) return [];
 
-    const buffer = 3;
-    const minCol = Math.floor(worldLeft / pitchX) - buffer;
-    const maxCol = Math.ceil(worldRight / pitchX) + buffer;
-    const minRow = Math.floor((worldTop - 70) / pitchY) - buffer;
-    const maxRow = Math.ceil((worldBottom + 70) / pitchY) + buffer;
+    const worldLeft = 0 - camera.x;
+    const worldRight = viewportSize.width - camera.x;
+    const worldTop = 0 - camera.y;
+    const worldBottom = viewportSize.height - camera.y;
+
+    const minCol = Math.floor(worldLeft / colWidth) - 2;
+    const maxCol = Math.ceil(worldRight / colWidth) + 2;
 
     const tiles = [];
-    for (let r = minRow; r <= maxRow; r++) {
-      for (let c = minCol; c <= maxCol; c++) {
-        const item = getItemForGridCoordinate(c, r, items);
-        if (item) {
-          const x = c * pitchX;
-          const offsetY = getPuzzleOffsetY(c);
-          const y = r * pitchY + offsetY;
+    const N = itemsWithMetrics.length;
 
-          tiles.push({
-            position: { col: c, row: r, x, y, width: cardWidth, height: cardHeight },
-            item
-          });
+    for (let c = minCol; c <= maxCol; c++) {
+      // Deterministic shift for varied column arrangement
+      const colShift = Math.abs(c * 7) % N;
+      
+      let cycleHeight = 0;
+      const colOrder = [];
+      for (let i = 0; i < N; i++) {
+        const item = itemsWithMetrics[(i + colShift) % N];
+        colOrder.push(item);
+        cycleHeight += item.scaledHeight;
+      }
+
+      if (cycleHeight === 0) continue;
+
+      // Find initial cycle Y position above viewport top
+      const startCycleIndex = Math.floor((worldTop - 300) / cycleHeight);
+      let currentY = startCycleIndex * cycleHeight;
+      let cycleIdx = startCycleIndex;
+
+      // Fill column downward continuously with ZERO vertical gaps
+      while (currentY < worldBottom + 300) {
+        for (let i = 0; i < N; i++) {
+          const item = colOrder[i];
+          const itemY = currentY;
+          const itemH = item.scaledHeight;
+
+          // Push tile if visible in active viewport buffer
+          if (itemY + itemH >= worldTop - 300 && itemY <= worldBottom + 300) {
+            const uniqueKey = `${c}_${cycleIdx}_${i}_${item.id}`;
+            tiles.push({
+              position: {
+                col: c,
+                x: c * colWidth,
+                y: itemY,
+                width: colWidth,
+                height: itemH
+              },
+              item: {
+                ...item,
+                uniqueKey
+              }
+            });
+          }
+
+          currentY += itemH; // Seamless zero-gap stacking
+          if (currentY >= worldBottom + 300) break;
         }
+        cycleIdx++;
       }
     }
+
     return tiles;
-  }, [items, camera.x, camera.y, viewportSize, cardWidth, cardHeight, pitchX, pitchY]);
+  }, [itemsWithMetrics, camera.x, camera.y, viewportSize.width, viewportSize.height, colWidth]);
 
   const containerStyle = {
-    backgroundColor: '#111111', // Sleek dark slate backdrop for seamless edge-to-edge puzzle
+    backgroundColor: '#111111',
     userSelect: 'none',
     WebkitUserSelect: 'none',
     touchAction: 'none'
@@ -300,34 +340,64 @@ export function CompactGridCanvas({
                 width: `${position.width}px`,
                 height: `${position.height}px`,
                 transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-                zIndex: isHovered ? 30 : 10,
-                transition: 'filter 0.25s ease, opacity 0.25s ease',
-                opacity: isHovered ? 1.0 : 0.92,
+                zIndex: isHovered ? 50 : 10,
                 cursor: 'pointer'
               }}
-              className="pointer-events-auto overflow-hidden bg-black"
+              className="pointer-events-auto group overflow-visible"
             >
-              {/* SEAMLESS EDGE-TO-EDGE RAW COVER IMAGE (Zero Margins) */}
-              <img
-                src={item.coverUrl}
-                alt={item.title}
-                loading="lazy"
-                draggable={false}
-                onDragStart={(e) => e.preventDefault()}
-                style={{
-                  WebkitUserDrag: 'none',
-                  userSelect: 'none',
-                  pointerEvents: 'none',
-                  filter: isHovered
-                    ? 'brightness(1.15) contrast(1.05)'
-                    : 'brightness(0.95)'
-                }}
-                className="w-full h-full object-cover block select-none transition-all duration-200"
-              />
+              {/* GAPLESS MASONRY CARD (Exact ratio match = 100% Uncropped & Zero dark bars!) */}
+              <div
+                className={`w-full h-full transition-all duration-300 ease-out origin-center ${
+                  isHovered
+                    ? 'scale-125 bg-white p-2.5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] border-2 border-[#111111] z-50'
+                    : 'scale-100 p-0 bg-transparent shadow-none border-0'
+                }`}
+              >
+                <img
+                  src={item.coverUrl}
+                  alt={item.title}
+                  loading="lazy"
+                  draggable={false}
+                  onDragStart={(e) => e.preventDefault()}
+                  style={{
+                    WebkitUserDrag: 'none',
+                    userSelect: 'none',
+                    pointerEvents: 'none',
+                    filter: isHovered ? 'brightness(1.08) contrast(1.02)' : 'brightness(0.95)'
+                  }}
+                  className="w-full h-full object-contain block select-none transition-all duration-200"
+                />
+
+                {/* Title Overlay on Hover */}
+                {isHovered && (
+                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-[#111111] text-white px-2.5 py-1 text-[11px] font-mono whitespace-nowrap shadow-2xl z-50 pointer-events-none">
+                    {item.title}
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
       </div>
+
+      {/* Recenter Button (Matching Navbar DA) */}
+      <button
+        onClick={() => {
+          gsap.to(targetCamRef.current, {
+            x: 0,
+            y: 0,
+            duration: 0.6,
+            ease: 'power2.out',
+            onComplete: () => {
+              setCamera({ x: 0, y: 0, zoom: FIXED_ZOOM });
+            }
+          });
+        }}
+        className="fixed bottom-6 right-6 z-50 h-12 px-6 bg-[#111111] hover:bg-black text-white text-sm font-normal tracking-wide rounded-none flex items-center gap-2.5 transition-colors cursor-pointer shadow-none pointer-events-auto border border-white/10"
+      >
+        <Compass className="w-4 h-4 text-white opacity-90 stroke-[2]" />
+        <span>Recentrer</span>
+      </button>
     </div>
   );
 }

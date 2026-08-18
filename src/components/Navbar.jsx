@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, X, List, LayoutGrid, Grid3X3, Share2 } from 'lucide-react';
+import { Search, X, List, LayoutGrid, Share2 } from 'lucide-react';
 
 export function Navbar({
   activeView,
@@ -35,7 +35,7 @@ export function Navbar({
           )}
         </button>
 
-        {/* View Switcher Segmented Block */}
+        {/* View Switcher Segmented Block (3 Views: Canvas, Network, List) */}
         <div className="h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0">
           {/* 1. Canvas View */}
           <button
@@ -52,22 +52,7 @@ export function Navbar({
 
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
-          {/* 2. Compact Grid View */}
-          <button
-            onClick={() => setActiveView('compact')}
-            title="Vue Grille Compacte"
-            className={`w-12 h-full flex items-center justify-center transition-colors rounded-none ${
-              activeView === 'compact'
-                ? 'bg-[#111111] text-white'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
-            }`}
-          >
-            <Grid3X3 className="w-5 h-5 stroke-[2]" />
-          </button>
-
-          <div className="w-[1.5px] h-full bg-[#111111]" />
-
-          {/* 3. Network Graph View */}
+          {/* 2. Network Graph View */}
           <button
             onClick={() => setActiveView('network')}
             title="Vue Graphe Relationnel"
@@ -82,7 +67,7 @@ export function Navbar({
 
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
-          {/* 4. List View */}
+          {/* 3. List View */}
           <button
             onClick={() => setActiveView('list')}
             title="Vue Liste"
