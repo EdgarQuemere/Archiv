@@ -498,60 +498,104 @@ export function NetworkGraphCanvas({
             </div>
           );
         })}
-
         {/* OVERLAY LAYER FOR ACTIVE FIL D'ARIANE TAG BADGES (zIndex: 100 ensures badges stay ABOVE all cards!) */}
         <div className="absolute top-0 left-0 overflow-visible pointer-events-none" style={{ zIndex: 100 }}>
-          {activeLinks.map((link, i) => {
-            const sId = typeof link.source === 'object' ? link.source.id : link.source;
-            const tId = typeof link.target === 'object' ? link.target.id : link.target;
-            const sNode = typeof link.source === 'object' ? link.source : graphData.nodes.find(n => n.id === sId);
-            const tNode = typeof link.target === 'object' ? link.target : graphData.nodes.find(n => n.id === tId);
+          {(() => {
+            const rawItems = activeLinks.map((link, i) => {
+              const sId = typeof link.source === 'object' ? link.source.id : link.source;
+              const tId = typeof link.target === 'object' ? link.target.id : link.target;
+              const sNode = typeof link.source === 'object' ? link.source : graphData.nodes.find(n => n.id === sId);
+              const tNode = typeof link.target === 'object' ? link.target : graphData.nodes.find(n => n.id === tId);
 
-            if (!sNode || !tNode) return null;
+              if (!sNode || !tNode) return null;
 
-            const dx = tNode.x - sNode.x;
-            const dy = tNode.y - sNode.y;
-            const dr = Math.sqrt(dx * dx + dy * dy);
-            const cx = (sNode.x + tNode.x) / 2;
-            const cy = (sNode.y + tNode.y) / 2 + (dr * 0.12);
-            
-            // Midpoint of the quadratic bezier curve
-            const midX = (sNode.x + tNode.x) / 2;
-            const midY = (sNode.y + tNode.y) / 2 + (dr * 0.06);
+              const sharedText = (link.sharedTags || []).join(' • ');
+              if (!sharedText) return null;
 
-            const sharedText = (link.sharedTags || []).join(' • ');
-            if (!sharedText) return null;
+              const dx = tNode.x - sNode.x;
+              const dy = tNode.y - sNode.y;
+              const dr = Math.sqrt(dx * dx + dy * dy);
+              const midX = (sNode.x + tNode.x) / 2;
+              const midY = (sNode.y + tNode.y) / 2 + (dr * 0.06);
 
-            const sharedCount = (link.sharedTags || []).length;
+              const estimatedWidth = Math.max(110, 50 + sharedText.length * 7.5);
+              const estimatedHeight = 30;
+
+              return {
+                id: i,
+                link,
+                sharedText,
+                x: midX,
+                y: midY,
+                width: estimatedWidth,
+                height: estimatedHeight,
+                sharedCount: (link.sharedTags || []).length
+              };
+            }).filter(Boolean);
+
+            // Iterative 2D Box Collision Relaxation algorithm to eliminate overlaps
+            for (let iter = 0; iter < 12; iter++) {
+              for (let i = 0; i < rawItems.length; i++) {
+                for (let j = i + 1; j < rawItems.length; j++) {
+                  const b1 = rawItems[i];
+                  const b2 = rawItems[j];
+
+                  const dx = b2.x - b1.x;
+                  const dy = b2.y - b1.y;
+
+                  const minSpacingX = (b1.width + b2.width) / 2 + 14;
+                  const minSpacingY = (b1.height + b2.height) / 2 + 10;
+
+                  if (Math.abs(dx) < minSpacingX && Math.abs(dy) < minSpacingY) {
+                    const overlapX = minSpacingX - Math.abs(dx);
+                    const overlapY = minSpacingY - Math.abs(dy);
+
+                    if (overlapX < overlapY) {
+                      const shiftX = (overlapX / 2) * (dx >= 0 ? 1 : -1);
+                      b1.x -= shiftX;
+                      b2.x += shiftX;
+                    } else {
+                      const shiftY = (overlapY / 2) * (dy >= 0 ? 1 : -1);
+                      b1.y -= shiftY;
+                      b2.y += shiftY;
+                    }
+                  }
+                }
+              }
+            }
+
             const getHeatColor = (count, active) => {
               if (count >= 4) return active ? '#BE123C' : '#E11D48';
               if (count === 3) return active ? '#C2410C' : '#EA580C';
               if (count === 2) return active ? '#D97706' : '#F59E0B';
               return active ? '#1D4ED8' : '#38BDF8';
             };
-            const heatColor = getHeatColor(sharedCount, true);
 
-            return (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  left: `${midX}px`,
-                  top: `${midY}px`,
-                  transform: 'translate(-50%, -50%)',
-                  pointerEvents: 'none',
-                  transition: 'none',
-                  borderColor: heatColor
-                }}
-                className="bg-[#111111] text-white text-[10px] font-mono font-bold px-3 py-1.5 shadow-2xl border whitespace-nowrap animate-in fade-in zoom-in-95 duration-200 flex items-center gap-1.5"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill={heatColor} viewBox="0 0 256 256">
-                  <path d="M100,56H40A16,16,0,0,0,24,72v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,100,56Zm0,80H40V72h60ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Zm0,80H156V72h60Z"></path>
-                </svg>
-                {sharedText}
-              </div>
-            );
-          })}
+            return rawItems.map((item) => {
+              const heatColor = getHeatColor(item.sharedCount, true);
+
+              return (
+                <div
+                  key={item.id}
+                  style={{
+                    position: 'absolute',
+                    left: `${item.x}px`,
+                    top: `${item.y}px`,
+                    transform: 'translate(-50%, -50%)',
+                    pointerEvents: 'none',
+                    transition: 'none',
+                    borderColor: heatColor
+                  }}
+                  className="bg-[#111111] text-white text-[10px] font-mono font-bold px-3 py-1.5 shadow-2xl border whitespace-nowrap animate-in fade-in zoom-in-95 duration-200 flex items-center gap-1.5"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill={heatColor} viewBox="0 0 256 256">
+                    <path d="M100,56H40A16,16,0,0,0,24,72v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,100,56Zm0,80H40V72h60ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Zm0,80H156V72h60Z"></path>
+                  </svg>
+                  {item.sharedText}
+                </div>
+              );
+            });
+          })()}
         </div>
       </div>
 
