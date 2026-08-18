@@ -1,42 +1,37 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import gsap from 'gsap';
-import { CoverCard } from './CoverCard';
-import {
-  getTilePosition,
-  getVisibleTileRange,
-  getItemForGridCoordinate,
-  DEFAULT_CARD_WIDTH,
-  DEFAULT_CARD_HEIGHT
-} from '../utils/gridAlgorithm';
+import { getItemForGridCoordinate } from '../utils/gridAlgorithm';
 
 export function CompactGridCanvas({
   items,
-  gap = 0, // No gap!
   camera,
   setCamera,
   onCardClick,
-  cardWidth = 200,
-  cardHeight = 283
+  cardWidth = 220,
+  cardHeight = 310
 }) {
   const containerRef = useRef(null);
-  const [viewportSize, setViewportSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const [viewportSize, setViewportSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800
+  });
 
-  // Hover state for pushing neighbors
-  const [hoveredCoord, setHoveredCoord] = useState(null); // { col, row }
+  // Hover state for subtle highlight
+  const [hoveredKey, setHoveredKey] = useState(null);
 
-  // Dragging state & displacement distance tracker
+  // Dragging state & displacement tracker
   const isDraggingRef = useRef(false);
   const totalDragDistanceRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // STRICTLY LOCKED ZOOM = 1.0 ALWAYS (NO ZOOMING PERMITTED)
+  // STRICTLY LOCKED ZOOM = 1.0 ALWAYS (NO ZOOM)
   const FIXED_ZOOM = 1.0;
 
   // Target and Current camera states for smooth lerp & momentum
   const targetCamRef = useRef({ x: camera.x, y: camera.y, zoom: FIXED_ZOOM });
   const currentCamRef = useRef({ x: camera.x, y: camera.y, zoom: FIXED_ZOOM });
 
-  // Enhanced Velocity & Momentum Physics for snappy Figma-style panning
+  // Physics momentum velocity
   const velocityRef = useRef({ x: 0, y: 0 });
   const lastMousePosRef = useRef({ x: 0, y: 0, time: 0 });
   const dragStartRef = useRef({ x: 0, y: 0 });
@@ -66,26 +61,23 @@ export function CompactGridCanvas({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // High performance GSAP Ticker for smooth velocity decay & lerp panning
+  // GSAP Ticker for smooth velocity decay & momentum panning
   useEffect(() => {
     const updatePhysics = () => {
       const target = targetCamRef.current;
       const current = currentCamRef.current;
 
-      // Apply momentum velocity if not actively dragging
       if (!isDraggingRef.current) {
         target.x += velocityRef.current.x;
         target.y += velocityRef.current.y;
 
-        // Friction decay
-        velocityRef.current.x *= 0.94;
-        velocityRef.current.y *= 0.94;
+        velocityRef.current.x *= 0.92;
+        velocityRef.current.y *= 0.92;
 
-        if (Math.abs(velocityRef.current.x) < 0.02) velocityRef.current.x = 0;
-        if (Math.abs(velocityRef.current.y) < 0.02) velocityRef.current.y = 0;
+        if (Math.abs(velocityRef.current.x) < 0.01) velocityRef.current.x = 0;
+        if (Math.abs(velocityRef.current.y) < 0.01) velocityRef.current.y = 0;
       }
 
-      // Responsive Lerp Factor for panning
       const lerpFactor = 0.28;
       const newX = current.x + (target.x - current.x) * lerpFactor;
       const newY = current.y + (target.y - current.y) * lerpFactor;
@@ -112,17 +104,14 @@ export function CompactGridCanvas({
     };
   }, [setCamera]);
 
-  // Trackpad / Mouse wheel handler: STRICT PANNING ONLY (NO ZOOMING)
+  // Wheel / Trackpad handler (PANNING ONLY)
   const handleWheel = useCallback((e) => {
     e.preventDefault();
     const panSensitivity = 1.1;
     targetCamRef.current.x -= e.deltaX * panSensitivity;
     targetCamRef.current.y -= e.deltaY * panSensitivity;
-    if (e.deltaX === 0 && e.deltaY !== 0 && !e.ctrlKey && !e.metaKey) {
-      targetCamRef.current.y -= e.deltaY * panSensitivity;
-    }
-    velocityRef.current.x = -e.deltaX * 0.4;
-    velocityRef.current.y = -e.deltaY * 0.4;
+    velocityRef.current.x = -e.deltaX * 0.35;
+    velocityRef.current.y = -e.deltaY * 0.35;
   }, []);
 
   useEffect(() => {
@@ -182,10 +171,6 @@ export function CompactGridCanvas({
   };
 
   const handleTouchMove = (e) => {
-    if (e.touches.length > 1) {
-      e.preventDefault();
-      return;
-    }
     if (isDraggingRef.current && e.touches.length === 1) {
       const dx = e.touches[0].clientX - dragStartRef.current.x;
       const dy = e.touches[0].clientY - dragStartRef.current.y;
@@ -208,7 +193,7 @@ export function CompactGridCanvas({
     gsap.to(targetCamRef.current, {
       x: centeredX,
       y: centeredY,
-      duration: 0.5,
+      duration: 0.45,
       ease: 'power2.out',
       onComplete: () => {
         if (onCardClick) onCardClick(item);
@@ -216,109 +201,58 @@ export function CompactGridCanvas({
     });
   };
 
-  // ----------------------------------------------------
-  // Custom Compact Grid Math (Zero Gaps, Tight Rows)
-  // ----------------------------------------------------
-  const compactRowHeight = cardHeight; // e.g. 283
-  const pitchX = cardWidth + gap;
-  const pitchY = compactRowHeight + gap;
+  // ----------------------------------------------------------------------
+  // ZERO-GAP PUZZLE MASONRY GRID (Edge-to-edge seamless wall of covers)
+  // ----------------------------------------------------------------------
+  const pitchX = cardWidth; // Zero margin X
+  const pitchY = cardHeight; // Zero margin Y
 
-  const getCompactVisibleTileRange = (panX, panY, zoom, vw, vh, buffer = 3) => {
-    const worldLeft = (0 - panX) / zoom;
-    const worldRight = (vw - panX) / zoom;
-    const worldTop = (0 - panY) / zoom;
-    const worldBottom = (vh - panY) / zoom;
-
-    const minCol = Math.floor(worldLeft / pitchX) - buffer;
-    const maxCol = Math.ceil(worldRight / pitchX) + buffer;
-    const minRow = Math.floor(worldTop / pitchY) - buffer;
-    const maxRow = Math.ceil(worldBottom / pitchY) + buffer;
-
-    return { minCol, maxCol, minRow, maxRow };
+  // Staggered vertical offset formula to create an interlocking puzzle / brickwork pattern
+  const getPuzzleOffsetY = (col) => {
+    const mod = Math.abs(col) % 4;
+    switch (mod) {
+      case 1: return 50;
+      case 2: return 20;
+      case 3: return 60;
+      default: return 0;
+    }
   };
-
-  const getCompactTilePosition = (col, row, item) => {
-    // Force a strict uniform grid block to ensure ZERO holes between covers
-    return {
-      col,
-      row,
-      x: col * pitchX,
-      y: row * pitchY, // No cellOffsetY, everything is strictly packed
-      width: cardWidth,
-      height: compactRowHeight,
-      gap
-    };
-  };
-
-  const expansionScale = 1.4;
 
   const visibleTiles = useMemo(() => {
-    // Determine visible tile range based on compact layout
-    const tileRange = getCompactVisibleTileRange(
-      camera.x,
-      camera.y,
-      FIXED_ZOOM,
-      viewportSize.width,
-      viewportSize.height,
-      3
-    );
+    if (!items || items.length === 0) return [];
+
+    const worldLeft = (0 - camera.x) / FIXED_ZOOM;
+    const worldRight = (viewportSize.width - camera.x) / FIXED_ZOOM;
+    const worldTop = (0 - camera.y) / FIXED_ZOOM;
+    const worldBottom = (viewportSize.height - camera.y) / FIXED_ZOOM;
+
+    const buffer = 3;
+    const minCol = Math.floor(worldLeft / pitchX) - buffer;
+    const maxCol = Math.ceil(worldRight / pitchX) + buffer;
+    const minRow = Math.floor((worldTop - 70) / pitchY) - buffer;
+    const maxRow = Math.ceil((worldBottom + 70) / pitchY) + buffer;
 
     const tiles = [];
-    if (items && items.length > 0) {
-      for (let r = tileRange.minRow; r <= tileRange.maxRow; r++) {
-        for (let c = tileRange.minCol; c <= tileRange.maxCol; c++) {
-          const item = getItemForGridCoordinate(c, r, items);
-          if (item) {
-            
-            let w = cardWidth;
-            let h = compactRowHeight;
-            let x = c * pitchX;
-            let y = r * pitchY;
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        const item = getItemForGridCoordinate(c, r, items);
+        if (item) {
+          const x = c * pitchX;
+          const offsetY = getPuzzleOffsetY(c);
+          const y = r * pitchY + offsetY;
 
-            if (hoveredCoord) {
-              const diffW = (cardWidth * expansionScale - cardWidth);
-              const diffH = (compactRowHeight * expansionScale - compactRowHeight);
-              
-              // Column logic (Width and X)
-              if (c === hoveredCoord.col) {
-                w = cardWidth * expansionScale;
-                x -= diffW / 2;
-              } else if (c < hoveredCoord.col) {
-                x -= diffW / 2;
-              } else if (c > hoveredCoord.col) {
-                x += diffW / 2;
-              }
-
-              // Row logic (Height and Y)
-              if (r === hoveredCoord.row) {
-                h = compactRowHeight * expansionScale;
-                y -= diffH / 2;
-              } else if (r < hoveredCoord.row) {
-                y -= diffH / 2;
-              } else if (r > hoveredCoord.row) {
-                y += diffH / 2;
-              }
-            }
-
-            tiles.push({
-              position: { col: c, row: r, x, y, width: w, height: h, gap: 0 },
-              item,
-              isHovered: hoveredCoord && c === hoveredCoord.col && r === hoveredCoord.row
-            });
-          }
+          tiles.push({
+            position: { col: c, row: r, x, y, width: cardWidth, height: cardHeight },
+            item
+          });
         }
       }
     }
     return tiles;
-  }, [items, camera.x, camera.y, viewportSize, cardWidth, gap, hoveredCoord]);
+  }, [items, camera.x, camera.y, viewportSize, cardWidth, cardHeight, pitchX, pitchY]);
 
-  const gridCellSize = 24;
-  const dotColor = 'rgba(160, 160, 160, 0.7)';
   const containerStyle = {
-    backgroundColor: '#EEEEEE',
-    backgroundImage: `radial-gradient(circle, ${dotColor} 0.9px, transparent 0.9px)`,
-    backgroundSize: `${gridCellSize}px ${gridCellSize}px`,
-    backgroundPosition: `${camera.x}px ${camera.y}px`,
+    backgroundColor: '#111111', // Sleek dark slate backdrop for seamless edge-to-edge puzzle
     userSelect: 'none',
     WebkitUserSelect: 'none',
     touchAction: 'none'
@@ -350,37 +284,49 @@ export function CompactGridCanvas({
           WebkitUserSelect: 'none'
         }}
       >
-        {visibleTiles.map(({ position, item, isHovered }) => (
-          <div
-            key={item.uniqueKey}
-            onMouseEnter={() => setHoveredCoord({ col: item.gridCol, row: item.gridRow })}
-            onMouseLeave={() => setHoveredCoord(null)}
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              width: `${position.width}px`,
-              height: `${position.height}px`,
-              transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-              zIndex: isHovered ? 50 : 10,
-              transition: 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease',
-              boxShadow: isHovered ? '0 30px 60px rgba(0,0,0,0.4)' : 'none',
-              cursor: 'pointer'
-            }}
-            onClick={() => handleCardClick(item, position)}
-          >
-            <div className="w-full h-full relative overflow-visible bg-transparent transform-gpu pointer-events-none">
+        {visibleTiles.map(({ position, item }) => {
+          const isHovered = hoveredKey === item.uniqueKey;
+
+          return (
+            <div
+              key={item.uniqueKey}
+              onMouseEnter={() => setHoveredKey(item.uniqueKey)}
+              onMouseLeave={() => setHoveredKey(null)}
+              onClick={() => handleCardClick(item, position)}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                width: `${position.width}px`,
+                height: `${position.height}px`,
+                transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+                zIndex: isHovered ? 30 : 10,
+                transition: 'filter 0.25s ease, opacity 0.25s ease',
+                opacity: isHovered ? 1.0 : 0.92,
+                cursor: 'pointer'
+              }}
+              className="pointer-events-auto overflow-hidden bg-black"
+            >
+              {/* SEAMLESS EDGE-TO-EDGE RAW COVER IMAGE (Zero Margins) */}
               <img
                 src={item.coverUrl}
                 alt={item.title}
                 loading="lazy"
                 draggable={false}
-                style={{ WebkitUserDrag: 'none', userSelect: 'none', pointerEvents: 'none' }}
-                className="w-full h-full object-cover block select-none"
+                onDragStart={(e) => e.preventDefault()}
+                style={{
+                  WebkitUserDrag: 'none',
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                  filter: isHovered
+                    ? 'brightness(1.15) contrast(1.05)'
+                    : 'brightness(0.95)'
+                }}
+                className="w-full h-full object-cover block select-none transition-all duration-200"
               />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
