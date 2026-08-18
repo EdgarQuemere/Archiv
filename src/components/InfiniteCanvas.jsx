@@ -352,14 +352,26 @@ export function InfiniteCanvas({
         {visibleTiles.map(({ position, item }) => {
           const isHovered = hoveredKey === item.uniqueKey;
 
-          // Uniform hover dimensions & centered tile coordinates
+          const HOVER_SCALE = 1.25;
+          const HOVER_PADDING = 14; // Exact 14px padding on ALL 4 sides
+
+          // Scaled image size
+          const scaledImgW = position.width * HOVER_SCALE;
+          const scaledImgH = position.height * HOVER_SCALE;
+
+          // Outer frame size including uniform padding
+          const hoverFrameW = Math.round(scaledImgW + HOVER_PADDING * 2);
+          const hoverFrameH = Math.round(scaledImgH + HOVER_PADDING * 2);
+
+          // Center position of current tile
           const centerX = position.x + position.width / 2;
           const centerY = position.y + position.height / 2;
-          const hoveredX = centerX - UNIFORM_HOVER_WIDTH / 2;
-          const hoveredY = centerY - UNIFORM_HOVER_HEIGHT / 2;
 
-          const renderWidth = isHovered ? UNIFORM_HOVER_WIDTH : position.width;
-          const renderHeight = isHovered ? UNIFORM_HOVER_HEIGHT : position.height;
+          const hoveredX = Math.round(centerX - hoverFrameW / 2);
+          const hoveredY = Math.round(centerY - hoverFrameH / 2);
+
+          const renderWidth = isHovered ? hoverFrameW : position.width;
+          const renderHeight = isHovered ? hoverFrameH : position.height;
           const renderX = isHovered ? hoveredX : position.x;
           const renderY = isHovered ? hoveredY : position.y;
 
@@ -382,12 +394,15 @@ export function InfiniteCanvas({
               }}
               className="pointer-events-auto group overflow-visible"
             >
-              {/* UNIFORM HOVER FRAME: Every single hovered cover box is 100% identical in size */}
+              {/* PASSE-PARTOUT HOVER FRAME: 100% Equal Padding on All 4 Sides! */}
               <div
+                style={{
+                  padding: isHovered ? `${HOVER_PADDING}px` : '0px'
+                }}
                 className={`w-full h-full flex flex-col items-center justify-center transition-all duration-250 ease-out origin-center ${
                   isHovered
-                    ? 'bg-white p-3 shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
-                    : 'bg-transparent p-0 shadow-none border-0'
+                    ? 'bg-white shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
+                    : 'bg-transparent shadow-none border-0'
                 }`}
               >
                 <img
@@ -402,7 +417,7 @@ export function InfiniteCanvas({
                     pointerEvents: 'none',
                     filter: isHovered ? 'brightness(1.05) contrast(1.02)' : 'brightness(0.95)'
                   }}
-                  className="w-full h-full object-contain block select-none"
+                  className="w-full h-full object-cover block select-none"
                 />
 
                 {/* Title Overlay on Hover */}
