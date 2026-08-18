@@ -16,43 +16,37 @@ export function NetworkGraphCanvas({
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
   const simulationRef = useRef(null);
 
-  // Active hover node / tag filter state
+  // Active hover node filter state
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
-  const [selectedTag, setSelectedTag] = useState(null);
 
   // Dragging state & displacement distance tracker
   const isDraggingRef = useRef(false);
   const totalDragDistanceRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  const targetCamRef = useRef({ x: camera.x, y: camera.y, zoom: camera.zoom || 1.0 });
-  const currentCamRef = useRef({ x: camera.x, y: camera.y, zoom: camera.zoom || 1.0 });
+  // Initial zoom logic
+  const targetCamRef = useRef({ x: camera.x, y: camera.y, zoom: camera.zoom || 0.5 });
+  const currentCamRef = useRef({ x: camera.x, y: camera.y, zoom: camera.zoom || 0.5 });
   const velocityRef = useRef({ x: 0, y: 0 });
   const lastMousePosRef = useRef({ x: 0, y: 0, time: 0 });
   const dragStartRef = useRef({ x: 0, y: 0 });
   const panStartRef = useRef({ x: 0, y: 0 });
 
-  // List of top popular tags for the interactive tag filter bar
-  const topTags = useMemo(() => {
-    if (!items) return [];
-    const counts = {};
-    items.forEach(item => {
-      (item.tags || []).forEach(t => {
-        counts[t] = (counts[t] || 0) + 1;
-      });
-    });
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([tag]) => tag);
-  }, [items]);
-
+  // Center camera on mount
   useEffect(() => {
-    if (!isDraggingRef.current) {
-      targetCamRef.current.x = camera.x;
-      targetCamRef.current.y = camera.y;
+    if (viewportSize.width > 0) {
+      const cx = viewportSize.width / 2;
+      const cy = viewportSize.height / 2;
+      targetCamRef.current.zoom = 0.5;
+      targetCamRef.current.x = cx;
+      targetCamRef.current.y = cy;
+      
+      currentCamRef.current.x = cx;
+      currentCamRef.current.y = cy;
+      currentCamRef.current.zoom = 0.5;
+      setCamera({ x: cx, y: cy, zoom: 0.5 });
     }
-  }, [camera.x, camera.y]);
+  }, [viewportSize.width, viewportSize.height]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -72,70 +66,110 @@ export function NetworkGraphCanvas({
   useEffect(() => {
     if (!items || items.length === 0) return;
 
-    // 1. Build Nodes in a balanced radius
+    // 1. Build Nodes centered around (0,0)
     const spreadRadius = Math.max(900, items.length * 48);
     const nodes = items.map((item, idx) => {
       const angle = (idx / items.length) * Math.PI * 2;
       const r = 320 + Math.random() * (spreadRadius - 320);
       return {
         ...item,
-        x: viewportSize.width / 2 + Math.cos(angle) * r,
-        y: viewportSize.height / 2 + Math.sin(angle) * r,
+        x: Math.cos(angle) * r,
+        y: Math.sin(angle) * r,
       };
     });
 
-    // 2. Build Links strictly based on shared tags
+    const getWords = (text) => {
+      if (!text) return [];
+      const stopWords = new Set(["de", "la", "le", "les", "des", "un", "une", "et", "ou", "en", "dans", "par", "pour", "sur", "au", "aux", "du", "qui", "que", "quoi", "dont", "où", "il", "elle", "ils", "elles", "on", "nous", "vous", "je", "tu", "me", "te", "se", "ce", "cette", "ces", "mon", "ton", "son", "ma", "ta", "sa", "mes", "tes", "ses", "notre", "votre", "leur", "nos", "vos", "leurs", "avec", "sans", "sous", "vers", "chez", "est", "sont", "a", "ont", "pas", "ne", "plus", "moins", "très", "bien", "fait", "comme", "tout", "tous", "toute", "toutes", "comment", "faire", "l", "d", "qu", "n", "s", "m", "t", "c", "j", "d'un", "d'une", "l'on"]);
+      return text.toLowerCase()
+        .replace(/['’]/g, " ")
+        .split(/[\s,.;:!?()[\]{}"]+/)
+        .filter(w => w.length > 2 && !stopWords.has(w));
+    };
+
     const links = [];
+    const degreeMap = {};
+    nodes.forEach(n => degreeMap[n.id] = 0);
+
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const a = nodes[i];
         const b = nodes[j];
         
-        const aTags = a.tags || [];
-        const bTags = b.tags || [];
-        const shared = aTags.filter(t => bTags.includes(t));
+        const aWords = getWords(a.abstract);
+        const bWords = getWords(b.abstract);
+        let shared = [...new Set(aWords.filter(w => bWords.includes(w)))];
+        
+        // Cap the number of connecting words to 4 max to avoid heavy visual clutter
+        if (shared.length > 4) {
+          shared = shared.slice(0, 4);
+        }
         
         if (shared.length > 0) {
           links.push({ 
             source: a.id, 
             target: b.id, 
-            value: shared.length,
+            value: shared.length * 2,
             sharedTags: shared
           });
+          degreeMap[a.id]++;
+          degreeMap[b.id]++;
         }
       }
     }
 
-    // Ensure no isolated nodes
-    const connectedNodes = new Set();
-    links.forEach(l => {
-      connectedNodes.add(l.source);
-      connectedNodes.add(l.target);
-    });
+    // Identify the node with max connections. Tie-breaker: most recent (year), then highest id.
+    let maxDegree = -1;
+    let maxYear = -1;
+    let maxId = -1;
+    let centerNode = nodes[0];
 
-    nodes.forEach(node => {
-      if (!connectedNodes.has(node.id)) {
-        const other = nodes.find(n => n.id !== node.id && n.field === node.field) || nodes[0];
-        if (other) {
-          links.push({
-            source: node.id,
-            target: other.id,
-            value: 1,
-            sharedTags: [node.field || "Thème"]
-          });
+    nodes.forEach(n => {
+      const deg = degreeMap[n.id] || 0;
+      const yr = parseInt(n.year, 10) || 0;
+      const idNum = parseInt(n.id, 10) || 0;
+
+      if (deg > maxDegree) {
+        maxDegree = deg;
+        maxYear = yr;
+        maxId = idNum;
+        centerNode = n;
+      } else if (deg === maxDegree) {
+        if (yr > maxYear || (yr === maxYear && idNum > maxId)) {
+          maxYear = yr;
+          maxId = idNum;
+          centerNode = n;
         }
       }
     });
 
-    // 3. D3 Force Simulation
+    // Pin the chosen center node to (0,0) during layout computation
+    if (centerNode) {
+      centerNode.fx = 0;
+      centerNode.fy = 0;
+    }
+
+    // 3. D3 Force Simulation around (0,0)
     const simulation = forceSimulation(nodes)
       .force("link", forceLink(links).id(d => d.id).distance(d => Math.max(220, 520 - d.value * 75)))
       .force("charge", forceManyBody().strength(-2200))
-      .force("center", forceCenter(viewportSize.width / 2, viewportSize.height / 2))
-      .force("collide", forceCollide().radius(160))
-      .on("tick", () => {
-        setGraphData({ nodes: [...nodes], links: [...links] });
-      });
+      .force("center", forceCenter(0, 0))
+      .force("collide", forceCollide().radius(160));
+
+    // Pre-calculate physics 300 ticks synchronously so covers are ALREADY at their exact place on arrival
+    for (let i = 0; i < 300; i++) {
+      simulation.tick();
+    }
+
+    // Unfix center node so it isn't unnaturally frozen anymore
+    if (centerNode) {
+      delete centerNode.fx;
+      delete centerNode.fy;
+    }
+
+    // Set initial static graph data once
+    setGraphData({ nodes: [...nodes], links: [...links] });
+    simulation.stop();
 
     simulationRef.current = simulation;
 
@@ -192,17 +226,12 @@ export function NetworkGraphCanvas({
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
       
-      const worldX = (mouseX - currentCamRef.current.x) / currentCamRef.current.zoom;
-      const worldY = (mouseY - currentCamRef.current.y) / currentCamRef.current.zoom;
+      const worldX = (mouseX - targetCamRef.current.x) / targetCamRef.current.zoom;
+      const worldY = (mouseY - targetCamRef.current.y) / targetCamRef.current.zoom;
       
       targetCamRef.current.zoom = newZoom;
       targetCamRef.current.x = mouseX - worldX * newZoom;
       targetCamRef.current.y = mouseY - worldY * newZoom;
-      
-      currentCamRef.current.x = targetCamRef.current.x;
-      currentCamRef.current.y = targetCamRef.current.y;
-      currentCamRef.current.zoom = targetCamRef.current.zoom;
-      setCamera({ x: currentCamRef.current.x, y: currentCamRef.current.y, zoom: currentCamRef.current.zoom });
 
     } else {
       const panSensitivity = 1.1;
@@ -225,8 +254,10 @@ export function NetworkGraphCanvas({
     const newZoom = Math.min(4.0, targetCamRef.current.zoom * 1.3);
     const centerX = viewportSize.width / 2;
     const centerY = viewportSize.height / 2;
-    const worldX = (centerX - targetCamRef.current.x) / targetCamRef.current.zoom;
-    const worldY = (centerY - targetCamRef.current.y) / targetCamRef.current.zoom;
+    
+    // Use current visual state for accurate centering
+    const worldX = (centerX - currentCamRef.current.x) / currentCamRef.current.zoom;
+    const worldY = (centerY - currentCamRef.current.y) / currentCamRef.current.zoom;
     
     targetCamRef.current.zoom = newZoom;
     targetCamRef.current.x = centerX - worldX * newZoom;
@@ -237,8 +268,10 @@ export function NetworkGraphCanvas({
     const newZoom = Math.max(0.15, targetCamRef.current.zoom / 1.3);
     const centerX = viewportSize.width / 2;
     const centerY = viewportSize.height / 2;
-    const worldX = (centerX - targetCamRef.current.x) / targetCamRef.current.zoom;
-    const worldY = (centerY - targetCamRef.current.y) / targetCamRef.current.zoom;
+    
+    // Use current visual state for accurate centering
+    const worldX = (centerX - currentCamRef.current.x) / currentCamRef.current.zoom;
+    const worldY = (centerY - currentCamRef.current.y) / currentCamRef.current.zoom;
 
     targetCamRef.current.zoom = newZoom;
     targetCamRef.current.x = centerX - worldX * newZoom;
@@ -293,7 +326,7 @@ export function NetworkGraphCanvas({
     });
   };
 
-  // Determine active connections for Fil d'Ariane
+  // Determine active connections for hover highlighting
   const activeNeighborIds = useMemo(() => {
     const set = new Set();
     if (hoveredNodeId) {
@@ -304,36 +337,19 @@ export function NetworkGraphCanvas({
         if (sId === hoveredNodeId) set.add(tId);
         if (tId === hoveredNodeId) set.add(sId);
       });
-    } else if (selectedTag) {
-      graphData.nodes.forEach(n => {
-        if ((n.tags || []).includes(selectedTag)) {
-          set.add(n.id);
-        }
-      });
     }
     return set;
-  }, [hoveredNodeId, selectedTag, graphData]);
+  }, [hoveredNodeId, graphData]);
 
   // Active links for badge rendering
   const activeLinks = useMemo(() => {
-    if (!hoveredNodeId && !selectedTag) return [];
+    if (!hoveredNodeId) return [];
     return graphData.links.filter(link => {
       const sId = typeof link.source === 'object' ? link.source.id : link.source;
       const tId = typeof link.target === 'object' ? link.target.id : link.target;
-      const sNode = typeof link.source === 'object' ? link.source : graphData.nodes.find(n => n.id === sId);
-      const tNode = typeof link.target === 'object' ? link.target : graphData.nodes.find(n => n.id === tId);
-
-      if (!sNode || !tNode) return false;
-
-      if (hoveredNodeId) {
-        return sId === hoveredNodeId || tId === hoveredNodeId;
-      }
-      if (selectedTag) {
-        return (sNode.tags || []).includes(selectedTag) && (tNode.tags || []).includes(selectedTag);
-      }
-      return false;
+      return sId === hoveredNodeId || tId === hoveredNodeId;
     });
-  }, [hoveredNodeId, selectedTag, graphData]);
+  }, [hoveredNodeId, graphData]);
 
   const cardWidth = 170;
   const currentZoomPercent = Math.round((camera.zoom || 1.0) * 100);
@@ -350,37 +366,6 @@ export function NetworkGraphCanvas({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      {/* REDESIGNED FIL D'ARIANE TOP BAR (Glassmorphism & Crisp Pills) */}
-      <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-[#111111] text-white px-4 py-2 flex items-center gap-2.5 shadow-2xl border border-white/20">
-        <span className="text-[11px] font-mono font-bold tracking-wider text-slate-300 flex items-center gap-1.5 border-r border-white/20 pr-3">
-          <Sparkles className="w-3.5 h-3.5 text-yellow-400 animate-pulse" />
-          FIL D'ARIANE :
-        </span>
-        <button
-          onClick={() => setSelectedTag(null)}
-          className={`px-3 py-1 text-xs font-mono transition-all ${
-            selectedTag === null
-              ? 'bg-white text-[#111111] font-bold shadow-md'
-              : 'bg-white/10 text-white hover:bg-white/20'
-          }`}
-        >
-          Tous ({items.length})
-        </button>
-        {topTags.map(tag => (
-          <button
-            key={tag}
-            onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-            className={`px-3 py-1 text-xs font-mono flex items-center gap-1.5 transition-all ${
-              selectedTag === tag
-                ? 'bg-white text-[#111111] font-bold shadow-md'
-                : 'bg-white/10 text-white hover:bg-white/20'
-            }`}
-          >
-            <Tag className="w-3 h-3 opacity-70" />
-            {tag}
-          </button>
-        ))}
-      </div>
 
       <div
         className="absolute top-0 left-0 origin-top-left pointer-events-auto transform-gpu select-none"
@@ -401,10 +386,27 @@ export function NetworkGraphCanvas({
 
             const isLinkActive =
               hoveredNodeId === sId ||
-              hoveredNodeId === tId ||
-              (selectedTag && (sNode.tags || []).includes(selectedTag) && (tNode.tags || []).includes(selectedTag));
+              hoveredNodeId === tId;
 
-            const hasActiveFilter = Boolean(hoveredNodeId || selectedTag);
+            const hasActiveFilter = Boolean(hoveredNodeId);
+
+            const sharedCount = (link.sharedTags || []).length;
+            
+            // Shared color scale function: 1=Blue, 2=Amber, 3=Orange, 4+=Crimson
+            const getHeatColor = (count, active) => {
+              if (count >= 4) return active ? '#BE123C' : '#E11D48';
+              if (count === 3) return active ? '#C2410C' : '#EA580C';
+              if (count === 2) return active ? '#D97706' : '#F59E0B';
+              return active ? '#1D4ED8' : '#38BDF8';
+            };
+
+            const strokeColor = getHeatColor(sharedCount, isLinkActive);
+
+            const baseWidth = sharedCount >= 4 ? 2.6 : sharedCount === 3 ? 2.0 : sharedCount === 2 ? 1.4 : 1.0;
+            const activeWidth = sharedCount >= 4 ? 4.0 : sharedCount === 3 ? 3.2 : sharedCount === 2 ? 2.5 : 1.8;
+
+            const baseOpacity = sharedCount >= 4 ? 0.75 : sharedCount === 3 ? 0.60 : sharedCount === 2 ? 0.45 : 0.30;
+            const activeOpacity = 0.95;
 
             const dx = tNode.x - sNode.x;
             const dy = tNode.y - sNode.y;
@@ -418,12 +420,11 @@ export function NetworkGraphCanvas({
                 key={i}
                 d={pathData}
                 fill="none"
-                stroke={isLinkActive ? '#111111' : '#94A3B8'}
-                strokeWidth={isLinkActive ? 2.5 : 1.0}
-                strokeOpacity={isLinkActive ? 0.9 : hasActiveFilter ? 0.03 : 0.22}
+                stroke={strokeColor}
+                strokeWidth={isLinkActive ? activeWidth : baseWidth}
+                strokeOpacity={isLinkActive ? activeOpacity : hasActiveFilter ? 0.04 : baseOpacity}
                 strokeDasharray={isLinkActive ? 'none' : '4 4'}
-                vectorEffect="non-scaling-stroke"
-                className="transition-all duration-300"
+                style={{ transition: 'stroke 0.3s ease, stroke-width 0.3s ease, stroke-opacity 0.3s ease' }}
               />
             );
           })}
@@ -438,7 +439,7 @@ export function NetworkGraphCanvas({
 
           const isHovered = hoveredNodeId === node.id;
           const isActiveNeighbor = activeNeighborIds.has(node.id);
-          const hasActiveFilter = Boolean(hoveredNodeId || selectedTag);
+          const hasActiveFilter = Boolean(hoveredNodeId);
 
           let nodeOpacity = 1.0;
           if (hasActiveFilter) {
@@ -457,15 +458,23 @@ export function NetworkGraphCanvas({
                 top: 0,
                 width: `${cardWidth}px`,
                 height: `${cardHeight}px`,
-                transform: `translate3d(${posX}px, ${posY}px, 0) scale(${isHovered ? 1.15 : isActiveNeighbor && hasActiveFilter ? 1.04 : 1.0})`,
+                transform: `translate3d(${posX}px, ${posY}px, 0)`,
                 zIndex: isHovered ? 60 : isActiveNeighbor && hasActiveFilter ? 40 : 10,
                 opacity: nodeOpacity,
-                transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
+                transition: 'opacity 0.3s ease',
                 cursor: 'pointer'
               }}
               className="group pointer-events-auto"
             >
-              {/* CLEAN NO-OUTLINE FRAME with rich high-elevation drop shadow */}
+              <div 
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  transform: `scale(${isHovered ? 1.15 : isActiveNeighbor && hasActiveFilter ? 1.04 : 1.0})`,
+                  transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
+                {/* CLEAN NO-OUTLINE FRAME with rich high-elevation drop shadow */}
               <div
                 className={`w-full h-full relative overflow-visible bg-white transition-all duration-300 ${
                   isHovered
@@ -484,13 +493,7 @@ export function NetworkGraphCanvas({
                   style={{ WebkitUserDrag: 'none', userSelect: 'none', pointerEvents: 'none' }}
                   className="w-full h-full object-contain block select-none p-1"
                 />
-
-                {/* Title badge floating underneath when hovered */}
-                {isHovered && (
-                  <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 bg-[#111111] text-white px-3 py-1 text-[11px] font-mono whitespace-nowrap shadow-2xl z-50 pointer-events-none">
-                    {node.title} • <span className="text-slate-300">{node.author}</span>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           );
@@ -511,23 +514,41 @@ export function NetworkGraphCanvas({
             const dr = Math.sqrt(dx * dx + dy * dy);
             const cx = (sNode.x + tNode.x) / 2;
             const cy = (sNode.y + tNode.y) / 2 + (dr * 0.12);
+            
+            // Midpoint of the quadratic bezier curve
+            const midX = (sNode.x + tNode.x) / 2;
+            const midY = (sNode.y + tNode.y) / 2 + (dr * 0.06);
 
             const sharedText = (link.sharedTags || []).join(' • ');
             if (!sharedText) return null;
+
+            const sharedCount = (link.sharedTags || []).length;
+            const getHeatColor = (count, active) => {
+              if (count >= 4) return active ? '#BE123C' : '#E11D48';
+              if (count === 3) return active ? '#C2410C' : '#EA580C';
+              if (count === 2) return active ? '#D97706' : '#F59E0B';
+              return active ? '#1D4ED8' : '#38BDF8';
+            };
+            const heatColor = getHeatColor(sharedCount, true);
 
             return (
               <div
                 key={i}
                 style={{
                   position: 'absolute',
-                  left: `${cx}px`,
-                  top: `${cy}px`,
+                  left: `${midX}px`,
+                  top: `${midY}px`,
                   transform: 'translate(-50%, -50%)',
-                  pointerEvents: 'none'
+                  pointerEvents: 'none',
+                  transition: 'none',
+                  borderColor: heatColor
                 }}
-                className="bg-[#111111] text-white text-[10px] font-mono font-bold px-2.5 py-1 shadow-2xl border border-white/20 whitespace-nowrap animate-in fade-in zoom-in-95 duration-200"
+                className="bg-[#111111] text-white text-[10px] font-mono font-bold px-3 py-1.5 shadow-2xl border whitespace-nowrap animate-in fade-in zoom-in-95 duration-200 flex items-center gap-1.5"
               >
-                🏷️ {sharedText}
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill={heatColor} viewBox="0 0 256 256">
+                  <path d="M100,56H40A16,16,0,0,0,24,72v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,100,56Zm0,80H40V72h60ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Zm0,80H156V72h60Z"></path>
+                </svg>
+                {sharedText}
               </div>
             );
           })}
@@ -569,15 +590,14 @@ export function NetworkGraphCanvas({
         {/* 2. Recenter Button (Matching 'Filtres' / 'Advertise Here' Button DA) */}
         <button
           onClick={() => {
+            const cx = viewportSize.width / 2;
+            const cy = viewportSize.height / 2;
             gsap.to(targetCamRef.current, {
-              x: 0,
-              y: 0,
-              zoom: 1.0,
+              x: cx,
+              y: cy,
+              zoom: 0.5,
               duration: 0.8,
-              ease: 'power2.out',
-              onComplete: () => {
-                setCamera({ x: 0, y: 0, zoom: 1.0 });
-              }
+              ease: 'power2.out'
             });
           }}
           className="h-12 px-6 bg-[#111111] hover:bg-black text-white text-sm font-normal tracking-wide rounded-none flex items-center gap-2.5 transition-colors cursor-pointer shadow-none"

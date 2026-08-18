@@ -13,7 +13,7 @@ export const COVERS_DATA = [
     nativeHeight: 308,
     aspectRatio: 1.273,
     tags: ["Édition", "Design Spatiale", "Typographie"],
-    abstract: "Une recherche approfondie sur les structures narratives contemporaines et l'influence des réseaux autoroutiers sur la conception visuelle du XXe siècle.",
+    abstract: "Une recherche approfondie sur les structures narratives contemporaines et l'influence des réseaux autoroutiers sur la conception visuelle du XXe siècle. Ce mémoire étudie la matérialité, la typographie, la création numérique et l experimentation visuelle.",
     readTime: "24 min read",
     pages: 142
   },
@@ -31,7 +31,7 @@ export const COVERS_DATA = [
     nativeHeight: 346,
     aspectRatio: 1.407,
     tags: ["Hybride", "Reliure", "Graphisme"],
-    abstract: "Étude des flux de production imprimés versus numériques. Comment la matérialité de la reliure réinvente l'expérience de lecture à l'ère des écrans.",
+    abstract: "Étude des flux de production imprimés versus numériques. Comment la matérialité de la reliure réinvente l'expérience de lecture à l'ère des écrans. Une analyse sur la matérialité, la typographie, le design numérique et l experimentation imprimée.",
     readTime: "30 min read",
     pages: 188
   },
@@ -49,7 +49,7 @@ export const COVERS_DATA = [
     nativeHeight: 246,
     aspectRatio: 0.996,
     tags: ["Automates", "Minimalisme", "Technologie"],
-    abstract: "Ce mémoire analyse l'autonomie créative des outils algorithmiques et leur impact sur le statut d'auteur dans les arts visuels contemporains.",
+    abstract: "Ce mémoire analyse l'autonomie créative des outils algorithmiques et leur impact sur le statut d'auteur dans les arts visuels contemporains. Recherche sur l archéologie, le dispositif mécanique et l approche algorithmique du design.",
     readTime: "18 min read",
     pages: 110
   },
@@ -67,7 +67,7 @@ export const COVERS_DATA = [
     nativeHeight: 368,
     aspectRatio: 1.490,
     tags: ["Pixel Art", "UI/UX", "Nostalgie"],
-    abstract: "Une cartographie visuelle des micro-icônes et symboles de bureau qui ont façonné le langage visuel des premiers ordinateurs personnels.",
+    abstract: "Une cartographie visuelle des micro-icônes et symboles de bureau qui ont façonné le langage visuel des premiers ordinateurs personnels. Analyse centrée sur l archéologie, le dispositif graphique et le calcul algorithmique.",
     readTime: "15 min read",
     pages: 96
   },
@@ -85,7 +85,7 @@ export const COVERS_DATA = [
     nativeHeight: 420,
     aspectRatio: 1.707,
     tags: ["Identité Visuelle", "JO 1984", "Architecture"],
-    abstract: "Analyse du travail de Deborah Sussman pour les JO de 1984 : comment une identité visuelle éphémère a transformé l'espace urbain de Los Angeles.",
+    abstract: "Analyse du travail de Deborah Sussman pour les JO de 1984 : comment une identité visuelle éphémère a transformé l'espace urbain de Los Angeles. Exploration axée sur la matérialité, la typographie et l experimentation dans l espace urbain.",
     readTime: "35 min read",
     pages: 210
   },
@@ -121,7 +121,7 @@ export const COVERS_DATA = [
     nativeHeight: 345,
     aspectRatio: 1.420,
     tags: ["Patrimoine", "Symbolique", "Afrique"],
-    abstract: "Étude des caractères typographiques traditionnels africains, leur réappropriation contemporaine et la transmission des récits oraux par le signe.",
+    abstract: "Étude des caractères typographiques traditionnels africains, leur réappropriation contemporaine et la transmission des récits oraux par le signe. Une étude de l archéologie des médias et du dispositif numérique.",
     readTime: "28 min read",
     pages: 175
   },
@@ -139,7 +139,7 @@ export const COVERS_DATA = [
     nativeHeight: 365,
     aspectRatio: 1.502,
     tags: ["Surréalisme", "3D", "Philosophie"],
-    abstract: "Quand les formes rigides fondent : étude de la déconstruction des jeux de réflexion et de la défaillance des systèmes d'ordre géométrique.",
+    abstract: "Quand les formes rigides fondent : étude de la déconstruction des jeux de réflexion et de la défaillance des systèmes d'ordre géométrique. Analyse de l espace urbain et de l architecture contemporaine.",
     readTime: "22 min read",
     pages: 130
   },
@@ -175,7 +175,7 @@ export const COVERS_DATA = [
     nativeHeight: 355,
     aspectRatio: 1.443,
     tags: ["Affiches", "Chaumont", "Sémiologie"],
-    abstract: "Analyse comparative de 30 ans d'affiches présentées au Festival international du graphisme de Chaumont et leur impact sur les tendances graphiques.",
+    abstract: "Analyse comparative de 30 ans d'affiches présentées au Festival international du graphisme de Chaumont et leur impact sur les tendances graphiques. Cartographie des réseaux et analyse de l espace virtuel.",
     readTime: "32 min read",
     pages: 195
   },
@@ -211,7 +211,7 @@ export const COVERS_DATA = [
     nativeHeight: 349,
     aspectRatio: 1.430,
     tags: ["Livre d'Artiste", "Édition", "Réalité Augmentée"],
-    abstract: "Comment dépasser la couverture et les tranches physiques d'un ouvrage grâce aux interactions mobiles et à la réalité augmentée.",
+    abstract: "Comment dépasser la couverture et les tranches physiques d'un ouvrage grâce aux interactions mobiles et à la réalité augmentée. Réflexion sur l espace scénographique et l architecture éphémère.",
     readTime: "20 min read",
     pages: 125
   },
@@ -247,7 +247,7 @@ export const COVERS_DATA = [
     nativeHeight: 483,
     aspectRatio: 1.477,
     tags: ["Typographie", "Biomimétisme", "Hybride"],
-    abstract: "Conception de polices de caractères paramétriques inspirées des réseaux de mycélium et de la croissance cellulaire.",
+    abstract: "Conception de polices de caractères paramétriques inspirées des réseaux de mycélium et de la croissance cellulaire. Une cartographie rétrospective des médias interactifs.",
     readTime: "27 min read",
     pages: 165
   },
