@@ -292,7 +292,7 @@ export function CompactGridCanvas({
   }, [itemsWithMetrics, camera.x, camera.y, viewportSize.width, viewportSize.height, colWidth]);
 
   const containerStyle = {
-    backgroundColor: '#111111',
+    backgroundColor: '#EEEEEE',
     userSelect: 'none',
     WebkitUserSelect: 'none',
     touchAction: 'none'

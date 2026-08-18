@@ -307,8 +307,14 @@ export function InfiniteCanvas({
     return tiles;
   }, [itemsWithMetrics, camera.x, camera.y, viewportSize.width, viewportSize.height, colWidth, canvasGap]);
 
+  const gridCellSize = 24;
+  const dotColor = 'rgba(160, 160, 160, 0.7)';
+
   const containerStyle = {
-    backgroundColor: '#111111',
+    backgroundColor: '#EEEEEE',
+    backgroundImage: `radial-gradient(circle, ${dotColor} 0.9px, transparent 0.9px)`,
+    backgroundSize: `${gridCellSize}px ${gridCellSize}px`,
+    backgroundPosition: `${camera.x}px ${camera.y}px`,
     userSelect: 'none',
     WebkitUserSelect: 'none',
     touchAction: 'none'
