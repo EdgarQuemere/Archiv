@@ -222,7 +222,7 @@ export function CompactGridCanvas({
     });
   }, [items, colWidth]);
 
-  // ZERO-HOLE GAPLESS MASONRY COLUMN CANVAS
+  // MAX RANDOM NON-REPETITIVE INFINITE MASONRY CANVAS
   const visibleTiles = useMemo(() => {
     if (!itemsWithMetrics || itemsWithMetrics.length === 0) return [];
 
@@ -237,35 +237,54 @@ export function CompactGridCanvas({
     const tiles = [];
     const N = itemsWithMetrics.length;
 
-    for (let c = minCol; c <= maxCol; c++) {
-      // Deterministic shift for varied column arrangement
-      const colShift = Math.abs(c * 7) % N;
-      
-      let cycleHeight = 0;
-      const colOrder = [];
-      for (let i = 0; i < N; i++) {
-        const item = itemsWithMetrics[(i + colShift) % N];
-        colOrder.push(item);
-        cycleHeight += item.scaledHeight;
+    // Total average height of 1 full set of items
+    const avgCycleHeight = itemsWithMetrics.reduce((sum, it) => sum + it.scaledHeight, 0);
+    if (avgCycleHeight === 0) return [];
+
+    // PRNG helper
+    const getRand = (seed) => {
+      let s = Math.abs(seed) % 233280;
+      return () => {
+        s = (s * 9301 + 49297) % 233280;
+        return s / 233280;
+      };
+    };
+
+    // Deterministic shuffle for each (column, cycle) block
+    const getShuffledItems = (c, cycleIdx) => {
+      const rand = getRand(c * 9973 + cycleIdx * 104729 + 17);
+      const arr = [...itemsWithMetrics];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
       }
+      return arr;
+    };
 
-      if (cycleHeight === 0) continue;
+    for (let c = minCol; c <= maxCol; c++) {
+      // Deterministic Y-offset per column to break horizontal grid alignment
+      const colRand = getRand(c * 48271 + 31);
+      const colYOffset = (colRand() - 0.5) * 500;
 
-      // Find initial cycle Y position above viewport top
-      const startCycleIndex = Math.floor((worldTop - 300) / cycleHeight);
-      let currentY = startCycleIndex * cycleHeight;
-      let cycleIdx = startCycleIndex;
+      // Calculate approximate cycle index range covering current viewport top -> bottom
+      const startCycleIndex = Math.floor((worldTop - colYOffset - 400) / avgCycleHeight) - 1;
+      const endCycleIndex = Math.ceil((worldBottom - colYOffset + 400) / avgCycleHeight) + 1;
 
-      // Fill column downward continuously with ZERO vertical gaps
-      while (currentY < worldBottom + 300) {
+      for (let cycleIdx = startCycleIndex; cycleIdx <= endCycleIndex; cycleIdx++) {
+        // Compute precise Y position for the start of this cycle
+        let currentY = cycleIdx * avgCycleHeight + colYOffset;
+        const cycleItems = getShuffledItems(c, cycleIdx);
+
         for (let i = 0; i < N; i++) {
-          const item = colOrder[i];
+          const item = cycleItems[i];
           const itemY = currentY;
           const itemH = item.scaledHeight;
 
-          // Push tile if visible in active viewport buffer
-          if (itemY + itemH >= worldTop - 300 && itemY <= worldBottom + 300) {
-            const uniqueKey = `${c}_${cycleIdx}_${i}_${item.id}`;
+          // Render tile if inside active buffer
+          if (itemY + itemH >= worldTop - 400 && itemY <= worldBottom + 400) {
+            const uniqueKey = `c${c}_cy${cycleIdx}_i${i}_item${item.id}`;
             tiles.push({
               position: {
                 col: c,
@@ -281,10 +300,8 @@ export function CompactGridCanvas({
             });
           }
 
-          currentY += itemH; // Seamless zero-gap stacking
-          if (currentY >= worldBottom + 300) break;
+          currentY += itemH;
         }
-        cycleIdx++;
       }
     }
 
