@@ -15,7 +15,7 @@ export function InfiniteCanvas({
     height: typeof window !== 'undefined' ? window.innerHeight : 800
   });
 
-  // Dynamic Spacing Gap State (0px = No, 24px = Medium, 60px = Large)
+  // Dynamic Spacing Gap State (0px = Serré, 48px = Moyen, 120px = Large)
   const [canvasGap, setCanvasGap] = useState(0);
 
   // Hover state
@@ -402,13 +402,13 @@ export function InfiniteCanvas({
         })}
       </div>
 
-      {/* BOTTOM RIGHT CONTROL BAR (SPACING GAP TOGGLE: No / Medium / Large & RECENTER) */}
+      {/* BOTTOM RIGHT CONTROL BAR (SPACING GAP TOGGLE) */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 pointer-events-auto font-sans">
-        {/* Segmented Cover Spacing Selector (No = 0px, Medium = 24px, Large = 60px) */}
+        {/* Segmented Cover Spacing Selector (0px, 48px, 120px) */}
         <div className="h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0 shadow-none">
           <button
             onClick={() => setCanvasGap(0)}
-            title="Espacement 0px (No)"
+            title="Espacement 0px (Serré)"
             className={`h-full px-4 flex items-center gap-1.5 text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
               canvasGap === 0
                 ? 'bg-[#111111] text-white'
@@ -416,30 +416,30 @@ export function InfiniteCanvas({
             }`}
           >
             <Grid className="w-3.5 h-3.5" />
-            <span>No</span>
+            <span>Serré</span>
           </button>
 
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
           <button
-            onClick={() => setCanvasGap(24)}
-            title="Espacement 24px (Medium)"
+            onClick={() => setCanvasGap(48)}
+            title="Espacement 48px (Moyen)"
             className={`h-full px-4 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
-              canvasGap === 24
+              canvasGap === 48
                 ? 'bg-[#111111] text-white'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
             }`}
           >
-            <span>Medium</span>
+            <span>Moyen</span>
           </button>
 
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
           <button
-            onClick={() => setCanvasGap(60)}
-            title="Espacement 60px (Large)"
+            onClick={() => setCanvasGap(120)}
+            title="Espacement 120px (Large)"
             className={`h-full px-4 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
-              canvasGap === 60
+              canvasGap === 120
                 ? 'bg-[#111111] text-white'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
             }`}
@@ -447,25 +447,6 @@ export function InfiniteCanvas({
             <span>Large</span>
           </button>
         </div>
-
-        {/* Recenter Button */}
-        <button
-          onClick={() => {
-            gsap.to(targetCamRef.current, {
-              x: 0,
-              y: 0,
-              duration: 0.6,
-              ease: 'power2.out',
-              onComplete: () => {
-                setCamera({ x: 0, y: 0, zoom: FIXED_ZOOM });
-              }
-            });
-          }}
-          className="h-12 px-6 bg-[#111111] hover:bg-black text-white text-sm font-normal tracking-wide rounded-none flex items-center gap-2.5 transition-colors cursor-pointer shadow-none pointer-events-auto border border-white/10"
-        >
-          <Compass className="w-4 h-4 text-white opacity-90 stroke-[2]" />
-          <span>Recentrer</span>
-        </button>
       </div>
     </div>
   );
