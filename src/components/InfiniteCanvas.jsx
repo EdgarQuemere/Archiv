@@ -73,14 +73,14 @@ export function InfiniteCanvas({
         target.x += velocityRef.current.x;
         target.y += velocityRef.current.y;
 
-        velocityRef.current.x *= 0.92;
-        velocityRef.current.y *= 0.92;
+        velocityRef.current.x *= 0.94;
+        velocityRef.current.y *= 0.94;
 
         if (Math.abs(velocityRef.current.x) < 0.01) velocityRef.current.x = 0;
         if (Math.abs(velocityRef.current.y) < 0.01) velocityRef.current.y = 0;
       }
 
-      const lerpFactor = 0.28;
+      const lerpFactor = 0.45;
       const newX = current.x + (target.x - current.x) * lerpFactor;
       const newY = current.y + (target.y - current.y) * lerpFactor;
 
@@ -106,14 +106,14 @@ export function InfiniteCanvas({
     };
   }, [setCamera]);
 
-  // Wheel / Trackpad handler (PANNING ONLY)
+  // Wheel / Trackpad handler (LIGHTWEIGHT RESPONSIVE PANNING)
   const handleWheel = useCallback((e) => {
     e.preventDefault();
-    const panSensitivity = 1.1;
+    const panSensitivity = 1.45;
     targetCamRef.current.x -= e.deltaX * panSensitivity;
     targetCamRef.current.y -= e.deltaY * panSensitivity;
-    velocityRef.current.x = -e.deltaX * 0.35;
-    velocityRef.current.y = -e.deltaY * 0.35;
+    velocityRef.current.x = -e.deltaX * 0.45;
+    velocityRef.current.y = -e.deltaY * 0.45;
   }, []);
 
   useEffect(() => {
@@ -146,8 +146,8 @@ export function InfiniteCanvas({
     const dy = e.clientY - dragStartRef.current.y;
     totalDragDistanceRef.current = Math.hypot(dx, dy);
 
-    const vx = ((e.clientX - lastMousePosRef.current.x) / dt) * 16;
-    const vy = ((e.clientY - lastMousePosRef.current.y) / dt) * 16;
+    const vx = ((e.clientX - lastMousePosRef.current.x) / dt) * 22;
+    const vy = ((e.clientY - lastMousePosRef.current.y) / dt) * 22;
 
     velocityRef.current = { x: vx, y: vy };
     lastMousePosRef.current = { x: e.clientX, y: e.clientY, time: now };
@@ -205,6 +205,10 @@ export function InfiniteCanvas({
 
   // Standard fixed column width (220px)
   const colWidth = cardWidth;
+
+  // UNIFORM HOVER FRAME SIZE FOR ALL COVERS (Exact same border size on hover!)
+  const UNIFORM_HOVER_WIDTH = 280;
+  const UNIFORM_HOVER_HEIGHT = 360;
 
   // Calculate EXACT height for each cover image so container aspect ratio matches image native ratio 100%
   const itemsWithMetrics = useMemo(() => {
@@ -312,14 +316,8 @@ export function InfiniteCanvas({
     return tiles;
   }, [itemsWithMetrics, camera.x, camera.y, viewportSize.width, viewportSize.height, colWidth, canvasGap]);
 
-  const gridCellSize = 24;
-  const dotColor = 'rgba(160, 160, 160, 0.7)';
-
   const containerStyle = {
     backgroundColor: '#EEEEEE',
-    backgroundImage: `radial-gradient(circle, ${dotColor} 0.9px, transparent 0.9px)`,
-    backgroundSize: `${gridCellSize}px ${gridCellSize}px`,
-    backgroundPosition: `${camera.x}px ${camera.y}px`,
     userSelect: 'none',
     WebkitUserSelect: 'none',
     touchAction: 'none'
@@ -354,6 +352,17 @@ export function InfiniteCanvas({
         {visibleTiles.map(({ position, item }) => {
           const isHovered = hoveredKey === item.uniqueKey;
 
+          // Uniform hover dimensions & centered tile coordinates
+          const centerX = position.x + position.width / 2;
+          const centerY = position.y + position.height / 2;
+          const hoveredX = centerX - UNIFORM_HOVER_WIDTH / 2;
+          const hoveredY = centerY - UNIFORM_HOVER_HEIGHT / 2;
+
+          const renderWidth = isHovered ? UNIFORM_HOVER_WIDTH : position.width;
+          const renderHeight = isHovered ? UNIFORM_HOVER_HEIGHT : position.height;
+          const renderX = isHovered ? hoveredX : position.x;
+          const renderY = isHovered ? hoveredY : position.y;
+
           return (
             <div
               key={item.uniqueKey}
@@ -364,20 +373,21 @@ export function InfiniteCanvas({
                 position: 'absolute',
                 left: 0,
                 top: 0,
-                width: `${position.width}px`,
-                height: `${position.height}px`,
-                transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-                zIndex: isHovered ? 50 : 10,
+                width: `${renderWidth}px`,
+                height: `${renderHeight}px`,
+                transform: `translate3d(${renderX}px, ${renderY}px, 0)`,
+                zIndex: isHovered ? 60 : 10,
+                transition: 'width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                 cursor: 'pointer'
               }}
               className="pointer-events-auto group overflow-visible"
             >
-              {/* GAPLESS MASONRY CARD (Exact ratio match = 100% Uncropped & Zero dark bars!) */}
+              {/* UNIFORM HOVER FRAME: Every single hovered cover box is 100% identical in size */}
               <div
-                className={`w-full h-full transition-all duration-300 ease-out origin-center ${
+                className={`w-full h-full flex flex-col items-center justify-center transition-all duration-250 ease-out origin-center ${
                   isHovered
-                    ? 'scale-125 bg-white p-2.5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] border-2 border-[#111111] z-50'
-                    : 'scale-100 p-0 bg-transparent shadow-none border-0'
+                    ? 'bg-white p-3 shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
+                    : 'bg-transparent p-0 shadow-none border-0'
                 }`}
               >
                 <img
@@ -390,14 +400,14 @@ export function InfiniteCanvas({
                     WebkitUserDrag: 'none',
                     userSelect: 'none',
                     pointerEvents: 'none',
-                    filter: isHovered ? 'brightness(1.08) contrast(1.02)' : 'brightness(0.95)'
+                    filter: isHovered ? 'brightness(1.05) contrast(1.02)' : 'brightness(0.95)'
                   }}
-                  className="w-full h-full object-contain block select-none transition-all duration-200"
+                  className="w-full h-full object-contain block select-none"
                 />
 
                 {/* Title Overlay on Hover */}
                 {isHovered && (
-                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-[#111111] text-white px-2.5 py-1 text-[11px] font-mono whitespace-nowrap shadow-2xl z-50 pointer-events-none">
+                  <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 bg-[#111111] text-white px-3 py-1.5 text-xs font-mono whitespace-nowrap shadow-2xl z-50 pointer-events-none border border-white/20">
                     {item.title}
                   </div>
                 )}
