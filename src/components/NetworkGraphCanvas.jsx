@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import gsap from 'gsap';
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force';
-import { Tag, Sparkles, RefreshCw, ZoomIn, ZoomOut, Compass } from 'lucide-react';
+import { ZoomIn, ZoomOut, Compass } from 'lucide-react';
 
 export function NetworkGraphCanvas({
   items,
