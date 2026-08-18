@@ -66,11 +66,11 @@ export function NetworkGraphCanvas({
   useEffect(() => {
     if (!items || items.length === 0) return;
 
-    // 1. Build Nodes centered around (0,0)
-    const spreadRadius = Math.max(900, items.length * 48);
+    // 1. Build Nodes centered around (0,0) with wider initial spread
+    const spreadRadius = Math.max(1400, items.length * 75);
     const nodes = items.map((item, idx) => {
       const angle = (idx / items.length) * Math.PI * 2;
-      const r = 320 + Math.random() * (spreadRadius - 320);
+      const r = 450 + Math.random() * (spreadRadius - 450);
       return {
         ...item,
         x: Math.cos(angle) * r,
@@ -149,12 +149,12 @@ export function NetworkGraphCanvas({
       centerNode.fy = 0;
     }
 
-    // 3. D3 Force Simulation around (0,0)
+    // 3. D3 Force Simulation around (0,0) with significantly larger spacing parameters
     const simulation = forceSimulation(nodes)
-      .force("link", forceLink(links).id(d => d.id).distance(d => Math.max(220, 520 - d.value * 75)))
-      .force("charge", forceManyBody().strength(-2200))
+      .force("link", forceLink(links).id(d => d.id).distance(d => Math.max(380, 750 - d.value * 90)))
+      .force("charge", forceManyBody().strength(-4800))
       .force("center", forceCenter(0, 0))
-      .force("collide", forceCollide().radius(160));
+      .force("collide", forceCollide().radius(240));
 
     // Pre-calculate physics 300 ticks synchronously so covers are ALREADY at their exact place on arrival
     for (let i = 0; i < 300; i++) {
