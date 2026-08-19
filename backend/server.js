@@ -7,6 +7,7 @@ const path = require('path');
 
 // Initialisation de l'application
 const app = express();
+app.set('trust proxy', 1);
 
 // --- MIDDLEWARES GLOBAUX ---
 app.use(helmet());
