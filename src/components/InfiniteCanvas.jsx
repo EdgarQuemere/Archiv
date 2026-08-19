@@ -437,7 +437,7 @@ export function InfiniteCanvas({
 
       {/* BOTTOM RIGHT CONTROL BAR (SPACING GAP TOGGLE) */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 pointer-events-auto font-sans">
-        {/* Segmented Cover Spacing Selector (0px, 48px, 120px) */}
+        {/* Segmented Cover Spacing Selector (0px, 96px, 480px) */}
         <div className="h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0 shadow-none">
           <button
             onClick={() => setCanvasGap(0)}
@@ -455,10 +455,10 @@ export function InfiniteCanvas({
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
           <button
-            onClick={() => setCanvasGap(48)}
-            title="Espacement 48px (Moyen)"
+            onClick={() => setCanvasGap(96)}
+            title="Espacement 96px (Moyen)"
             className={`h-full px-4 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
-              canvasGap === 48
+              canvasGap === 96
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
             }`}
@@ -469,10 +469,10 @@ export function InfiniteCanvas({
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
           <button
-            onClick={() => setCanvasGap(240)}
-            title="Espacement 240px (Large)"
+            onClick={() => setCanvasGap(480)}
+            title="Espacement 480px (Large)"
             className={`h-full px-4 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
-              canvasGap === 240
+              canvasGap === 480
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
             }`}
