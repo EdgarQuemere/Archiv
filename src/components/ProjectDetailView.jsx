@@ -73,7 +73,7 @@ export function ProjectDetailView({ item, onClose }) {
     if (targetRef && targetRef.current && scrollContainerRef.current) {
       isNavigatingRef.current = true;
       setCurrentPage(pageIndex);
-      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
       if (navTimerRef.current) clearTimeout(navTimerRef.current);
       navTimerRef.current = setTimeout(() => {
@@ -219,13 +219,13 @@ export function ProjectDetailView({ item, onClose }) {
             return (
               <div
                 key={spreadIdx}
-                className="flex flex-row items-center justify-center gap-4 shrink-0 transition-all duration-200 ease-out"
+                className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0 transition-all duration-200 ease-out`}
               >
                 {pages.map((pageNum) => (
                   <div
                     key={pageNum}
                     ref={pageRefs.current[pageNum - 1]}
-                    className="shadow-2xl bg-white flex items-center justify-center shrink-0 border-0 transition-all duration-200 ease-out"
+                    className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0 transition-all duration-200 ease-out`}
                     style={{
                       width: viewMode === 'double'
                         ? (isPortrait ? `${zoomLevel * 6.5}px` : `${zoomLevel * 8.5}px`)
