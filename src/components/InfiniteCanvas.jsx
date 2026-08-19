@@ -15,7 +15,7 @@ export function InfiniteCanvas({
     height: typeof window !== 'undefined' ? window.innerHeight : 800
   });
 
-  // Dynamic Spacing Gap State (0px = Serré, 48px = Moyen, 120px = Large)
+  // Dynamic Spacing Gap State (0px = Serré, 48px = Moyen, 240px = Large)
   const [canvasGap, setCanvasGap] = useState(0);
 
   // Hover state
@@ -469,10 +469,10 @@ export function InfiniteCanvas({
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
           <button
-            onClick={() => setCanvasGap(120)}
-            title="Espacement 120px (Large)"
+            onClick={() => setCanvasGap(240)}
+            title="Espacement 240px (Large)"
             className={`h-full px-4 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
-              canvasGap === 120
+              canvasGap === 240
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
             }`}
