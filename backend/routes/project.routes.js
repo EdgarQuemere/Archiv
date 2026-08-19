@@ -18,4 +18,6 @@ router.delete('/:id', requireAuth, projectController.deleteProject);
 
 router.get('/', projectController.getProjects);
 
+router.get('/:id', projectController.getProjectById);
+
 module.exports = router;

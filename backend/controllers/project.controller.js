@@ -90,7 +90,16 @@ exports.getProjects = async (req, res) => {
       where,
       skip,
       take: limit,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        school: true,
+        year: true,
+        domain: true,
+        coverUrl: true,
+        userId: true,
+        createdAt: true,
         author: {
           select: { name: true, profilePicture: true }
         }
@@ -179,5 +188,29 @@ exports.deleteProject = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur lors de la suppression du projet' });
+  }
+};
+
+
+exports.getProjectById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: { name: true, profilePicture: true }
+        }
+      }
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Projet introuvable.' });
+    }
+
+    res.json({ project });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erreur lors de la récupération du projet' });
   }
 };

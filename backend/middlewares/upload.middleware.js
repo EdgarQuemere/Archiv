@@ -62,7 +62,7 @@ const upload = multer({
       cb(null, uniqueSuffix + path.extname(file.originalname));
     }
   }),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
+  limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB max limit
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
