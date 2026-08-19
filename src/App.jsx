@@ -45,6 +45,7 @@ export function App() {
   // Modals & Drawers state
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
 
   // GSAP View Transition Animation on activeView change
@@ -123,6 +124,7 @@ export function App() {
         setActiveView={setActiveView}
         onOpenFilter={() => setIsFilterOpen(true)}
         onOpenSubmit={() => setIsSubmitOpen(true)}
+        onOpenRegister={() => setIsRegisterOpen(true)}
         activeFilterCount={activeFilterCount}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
