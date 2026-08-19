@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, BookOpen, Share2, Heart, Calendar, MapPin, Tag, FileText } from 'lucide-react';
+import { X, BookOpen, Share2, Heart, Calendar, MapPin } from 'lucide-react';
 import gsap from 'gsap';
 
 export function DetailModal({ item, onClose }) {
@@ -120,23 +120,6 @@ export function DetailModal({ item, onClose }) {
               <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
                 {item.abstract}
               </p>
-            </div>
-
-            {/* Metadata Chips */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {item.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium bg-[#EEEEEE] text-[#111111] border border-[#111111] px-2.5 py-1 rounded-none"
-                >
-                  <Tag className="w-3 h-3 text-[#111111]" />
-                  {tag}
-                </span>
-              ))}
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono bg-[#111111] text-[#EEEEEE] px-2.5 py-1 rounded-none">
-                <FileText className="w-3 h-3" />
-                {item.pages} pages • {item.readTime}
-              </span>
             </div>
           </div>
 
