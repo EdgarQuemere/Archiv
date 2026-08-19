@@ -19,12 +19,14 @@ export function ProjectDetailView({ item, onClose }) {
   const navTimerRef = useRef(null);
   const isInitialMount = useRef(true);
 
+  const focalRatioRef = useRef(0.5);
+
   // Initialize refs for scroll target tracking
   if (pageRefs.current.length !== totalPages) {
     pageRefs.current = Array(totalPages).fill(0).map((_, i) => pageRefs.current[i] || React.createRef());
   }
 
-  // Scroll listener to update page indicator dynamically
+  // Scroll listener to update page indicator and track exact focalRatio dynamically
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
@@ -49,13 +51,19 @@ export function ProjectDetailView({ item, onClose }) {
       });
 
       setCurrentPage(closestPage);
+
+      // Track exact focal ratio of current viewport center relative to active page
+      const activeElem = pageRefs.current[closestPage - 1]?.current;
+      if (activeElem && activeElem.clientHeight > 0) {
+        focalRatioRef.current = (viewportCenter - activeElem.offsetTop) / activeElem.clientHeight;
+      }
     };
 
     el.addEventListener('scroll', handleScroll, { passive: true });
     return () => el.removeEventListener('scroll', handleScroll);
   }, [totalPages]);
 
-  // Synchronously lock scroll focus on currentPage when zoomLevel or viewMode changes
+  // Synchronously lock zoom focus on exact focal spot when zoomLevel or viewMode changes
   useLayoutEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -66,13 +74,17 @@ export function ProjectDetailView({ item, onClose }) {
     if (targetRef && targetRef.current && container) {
       isNavigatingRef.current = true;
       const targetElem = targetRef.current;
-      const newScrollTop = targetElem.offsetTop + (targetElem.clientHeight / 2) - (container.clientHeight / 2);
+
+      const ratio = focalRatioRef.current || 0.5;
+      const newFocalY = targetElem.offsetTop + ratio * targetElem.clientHeight;
+      const newScrollTop = newFocalY - container.clientHeight / 2;
+
       container.scrollTop = Math.max(0, newScrollTop);
 
       if (navTimerRef.current) clearTimeout(navTimerRef.current);
       navTimerRef.current = setTimeout(() => {
         isNavigatingRef.current = false;
-      }, 250);
+      }, 200);
     }
   }, [zoomLevel, viewMode]);
 
@@ -81,6 +93,7 @@ export function ProjectDetailView({ item, onClose }) {
     const targetRef = pageRefs.current[pageIndex - 1];
     if (targetRef && targetRef.current && scrollContainerRef.current) {
       isNavigatingRef.current = true;
+      focalRatioRef.current = 0.5; // Reset focal ratio to center for fresh page navigation
       setCurrentPage(pageIndex);
       targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
