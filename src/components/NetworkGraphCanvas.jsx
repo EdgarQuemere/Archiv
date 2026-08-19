@@ -106,14 +106,14 @@ export function NetworkGraphCanvas({
       }
     }
 
-    // 2. Build Nodes centered around (0,0) with compact initial radius for unlinked nodes
+    // 2. Build Nodes centered around (0,0) with eccentric outer orbit for unlinked nodes
     const spreadRadius = Math.max(1000, items.length * 60);
     const nodes = items.map((item, idx) => {
       const angle = (idx / items.length) * Math.PI * 2;
       const isUnlinked = (degreeMap[item.id] || 0) === 0;
       const r = isUnlinked
-        ? 280 + Math.random() * 150
-        : 400 + Math.random() * (spreadRadius - 400);
+        ? 750 + Math.random() * 200
+        : 350 + Math.random() * (spreadRadius - 350);
       return {
         ...item,
         x: Math.cos(angle) * r,
@@ -152,11 +152,11 @@ export function NetworkGraphCanvas({
       centerNode.fy = 0;
     }
 
-    // 3. D3 Force Simulation with radial attraction for unlinked covers
+    // 3. D3 Force Simulation with eccentric radial ring (850px) for unlinked covers
     const simulation = forceSimulation(nodes)
       .force("link", forceLink(links).id(d => d.id).distance(d => Math.max(380, 750 - d.value * 90)))
-      .force("charge", forceManyBody().strength(d => ((degreeMap[d.id] || 0) === 0 ? -1200 : -4500)))
-      .force("radial", forceRadial(360, 0, 0).strength(d => ((degreeMap[d.id] || 0) === 0 ? 0.45 : 0.02)))
+      .force("charge", forceManyBody().strength(d => ((degreeMap[d.id] || 0) === 0 ? -2200 : -4500)))
+      .force("radial", forceRadial(850, 0, 0).strength(d => ((degreeMap[d.id] || 0) === 0 ? 0.35 : 0.01)))
       .force("center", forceCenter(0, 0))
       .force("collide", forceCollide().radius(240));
 
