@@ -10,20 +10,16 @@ const app = express();
 
 // --- MIDDLEWARES GLOBAUX ---
 app.use(helmet());
-app.use(cors({
-  origin: 'http://localhost:5173', // Port par défaut de Vite
-  credentials: true
-}));
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://localhost:3006', 'https://archiv.omniscientproject.com'],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
 // Dossier public pour accéder aux fichiers uploadés
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:3006'],
-  credentials: true,
-};
 
 
 // --- IMPORT DES ROUTES & SWAGGER ---
