@@ -259,77 +259,77 @@ export function ProjectDetailView({ item, onClose }) {
           })}
         </div>
 
-        {/* Bottom Right Floating Control Bar (DA: Solid #111111 & #EEEEEE, NO stroke) */}
-        <div className="fixed bottom-6 right-6 z-50 flex items-center pointer-events-auto font-sans">
-          <div className="h-12 bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0 shadow-2xl border-0">
+        {/* Bottom Floating Control Bar (Centered on mobile, Right-aligned on desktop) */}
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50 flex items-center pointer-events-auto font-sans max-w-[95vw] sm:max-w-none">
+          <div className="h-10 sm:h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0 shadow-2xl">
             
             {/* View Mode Toggle: 1 Page vs 2 Pages */}
             <button
               onClick={() => setViewMode((m) => (m === 'single' ? 'double' : 'single'))}
               title={viewMode === 'single' ? 'Passer en affichage Double Page' : 'Passer en affichage Page Simple'}
-              className="h-full px-3.5 flex items-center gap-2 bg-[#111111] text-[#EEEEEE] text-xs font-mono font-bold hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0 shrink-0"
+              className="h-full px-2.5 sm:px-3.5 flex items-center gap-1.5 sm:gap-2 bg-[#111111] text-[#EEEEEE] text-[11px] sm:text-xs font-mono font-bold hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0 shrink-0"
             >
               {viewMode === 'single' ? (
                 <>
-                  <Columns className="w-4 h-4 stroke-[2.5]" />
+                  <Columns className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
                   <span className="hidden sm:inline">2 Pages</span>
                 </>
               ) : (
                 <>
-                  <Square className="w-4 h-4 stroke-[2.5]" />
+                  <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
                   <span className="hidden sm:inline">1 Page</span>
                 </>
               )}
             </button>
 
-            <div className="w-[1.5px] h-full bg-[#EEEEEE]" />
+            <div className="w-[1.5px] h-full bg-[#111111]" />
 
             {/* Zoom Out (-) */}
             <button
               onClick={handleZoomOut}
               title="Dézoomer (-)"
-              className="w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
             >
-              <ZoomOut className="w-4 h-4 stroke-[2.5]" />
+              <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
             </button>
 
-            <div className="w-[1.5px] h-full bg-[#EEEEEE]" />
+            <div className="w-[1.5px] h-full bg-[#111111]" />
 
             {/* Zoom In (+) */}
             <button
               onClick={handleZoomIn}
               title="Zoomer (+)"
-              className="w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
             >
-              <ZoomIn className="w-4 h-4 stroke-[2.5]" />
+              <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
             </button>
 
-            <div className="w-[1.5px] h-full bg-[#EEEEEE]" />
+            <div className="w-[1.5px] h-full bg-[#111111]" />
 
             {/* Page Up (↑) */}
             <button
               onClick={handlePrevPage}
               title="Page précédente"
-              className="w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
             >
-              <ChevronUp className="w-4 h-4 stroke-[2.5]" />
+              <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
             </button>
 
-            <div className="w-[1.5px] h-full bg-[#EEEEEE]" />
+            <div className="w-[1.5px] h-full bg-[#111111]" />
 
             {/* Page Down (↓) */}
             <button
               onClick={handleNextPage}
               title="Page suivante"
-              className="w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
             >
-              <ChevronDown className="w-4 h-4 stroke-[2.5]" />
+              <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
             </button>
 
-            <div className="w-[1.5px] h-full bg-[#EEEEEE]" />
+            <div className="w-[1.5px] h-full bg-[#111111]" />
 
             {/* Page Counter Display */}
-            <div className="h-full px-4 flex items-center justify-center bg-[#EEEEEE] text-[#111111] text-xs font-mono font-bold select-none min-w-[105px] border-0">
+            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#EEEEEE] text-[#111111] text-[11px] sm:text-xs font-mono font-bold select-none min-w-[85px] sm:min-w-[105px] border-0">
               {getPageCounterText()}
             </div>
           </div>
