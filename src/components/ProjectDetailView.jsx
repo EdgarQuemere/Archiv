@@ -5,8 +5,8 @@ export function ProjectDetailView({ item, onClose }) {
   const [showInfo, setShowInfo] = useState(true);
   const isPortrait = item?.orientation === 'portrait' || (item?.aspectRatio && item?.aspectRatio > 1.1);
 
-  // Initial zoom: 65% for portrait so full height/width fits in viewport, 85% for landscape
-  const [zoomLevel, setZoomLevel] = useState(isPortrait ? 65 : 85);
+  // Initial zoom: 48% for portrait so full page fits comfortably inside viewport height, 80% for landscape
+  const [zoomLevel, setZoomLevel] = useState(isPortrait ? 48 : 80);
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = item?.pdfPages || (isPortrait ? 12 : 14);
