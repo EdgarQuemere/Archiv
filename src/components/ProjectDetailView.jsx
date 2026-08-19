@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Columns, Square, Download } from 'lucide-react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+// Initialize PDF.js worker via CDN to avoid Vite build issues
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export function ProjectDetailView({ item, onClose }) {
   const [showInfo, setShowInfo] = useState(true);
@@ -9,10 +15,7 @@ export function ProjectDetailView({ item, onClose }) {
   const [zoomLevel, setZoomLevel] = useState(isPortrait ? 48 : 80);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState('single'); // 'single' (1 page) or 'double' (2 pages side-by-side)
-
-  const totalPages = item?.pdfPages || 12;
-  const pagesDir = item?.pagesDir || (isPortrait ? '/pdf/portrait_pages' : '/pdf/landscape_pages');
-  const pdfUrl = item?.pdfUrl || (isPortrait ? '/pdf/Book.pdf' : '/pdf/Book-2.pdf');
+  const [numPages, setNumPages] = useState(0);
 
   const scrollContainerRef = useRef(null);
   const pageRefs = useRef([]);
@@ -22,9 +25,9 @@ export function ProjectDetailView({ item, onClose }) {
 
   const focalRatioRef = useRef(0.5);
 
-  // Initialize refs for scroll target tracking
-  if (pageRefs.current.length !== totalPages) {
-    pageRefs.current = Array(totalPages).fill(0).map((_, i) => pageRefs.current[i] || React.createRef());
+  // Initialize refs for scroll target tracking dynamically
+  if (pageRefs.current.length !== numPages) {
+    pageRefs.current = Array(numPages).fill(0).map((_, i) => pageRefs.current[i] || React.createRef());
   }
 
   // Scroll listener to update page indicator and track exact focalRatio dynamically
@@ -62,7 +65,7 @@ export function ProjectDetailView({ item, onClose }) {
 
     el.addEventListener('scroll', handleScroll, { passive: true });
     return () => el.removeEventListener('scroll', handleScroll);
-  }, [totalPages]);
+  }, [numPages]);
 
   // Synchronously lock zoom focus on exact focal spot when zoomLevel or viewMode changes
   useLayoutEffect(() => {
@@ -107,8 +110,8 @@ export function ProjectDetailView({ item, onClose }) {
 
   const handleNextPage = () => {
     const step = viewMode === 'double' ? 2 : 1;
-    if (currentPage < totalPages) {
-      const nextPage = Math.min(totalPages, currentPage + step);
+    if (currentPage < numPages) {
+      const nextPage = Math.min(numPages, currentPage + step);
       scrollToPage(nextPage);
     }
   };
@@ -133,11 +136,11 @@ export function ProjectDetailView({ item, onClose }) {
   // Group pages for Double Page View Mode (spreads: [1], [2, 3], [4, 5]...)
   const getSpreads = () => {
     if (viewMode === 'single') {
-      return Array.from({ length: totalPages }, (_, i) => [i + 1]);
+      return Array.from({ length: numPages }, (_, i) => [i + 1]);
     }
     const spreads = [[1]];
-    for (let i = 2; i <= totalPages; i += 2) {
-      if (i + 1 <= totalPages) {
+    for (let i = 2; i <= numPages; i += 2) {
+      if (i + 1 <= numPages) {
         spreads.push([i, i + 1]);
       } else {
         spreads.push([i]);
@@ -152,17 +155,17 @@ export function ProjectDetailView({ item, onClose }) {
   const getPageCounterText = () => {
     if (viewMode === 'double' && currentPage > 1) {
       const firstPage = currentPage % 2 === 0 ? currentPage : currentPage - 1;
-      const secondPage = Math.min(totalPages, firstPage + 1);
-      return `${firstPage}-${secondPage} sur ${totalPages}`;
+      const secondPage = Math.min(numPages, firstPage + 1);
+      return `${firstPage}-${secondPage} sur ${numPages}`;
     }
-    return `${currentPage} sur ${totalPages}`;
+    return `${currentPage} sur ${numPages}`;
   };
 
   if (!item) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden select-none animate-in fade-in duration-200">
-      
+
       {/* Top Floating Close Button (DA: Solid #111111 Block, NO stroke) */}
       <div className="fixed top-6 right-6 z-50 pointer-events-auto">
         <button
@@ -176,7 +179,7 @@ export function ProjectDetailView({ item, onClose }) {
 
       {/* Main Container Area */}
       <div className="relative flex-1 w-full h-full overflow-hidden flex bg-[#EEEEEE]">
-        
+
         {/* Left Floating Info Overlay Card (Solid #111111 Card, NO stroke) */}
         {showInfo && (
           <div className="fixed top-6 left-6 z-40 w-80 sm:w-96 bg-[#111111] p-6 text-[#EEEEEE] rounded-none shadow-2xl animate-in fade-in slide-in-from-left-4 duration-200 pointer-events-auto border-0">
@@ -211,18 +214,18 @@ export function ProjectDetailView({ item, onClose }) {
               </div>
             )}
 
-            {/* Download PDF Button with File Size */}
+            {/* Download PDF Button */}
             <div className="mt-4 pt-3 border-t border-white/20">
               <a
-                href={pdfUrl}
+                href={item.pdfUrl}
                 download
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full h-11 bg-[#EEEEEE] hover:bg-white text-[#111111] text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-none transition-colors cursor-pointer border-0 shadow-lg"
-                title={`Télécharger le fichier PDF (${item.pdfSize || (isPortrait ? '1.2 Mo' : '12.0 Mo')})`}
+                title={`Télécharger le fichier PDF (${item.pdfSize})`}
               >
                 <Download className="w-4 h-4 stroke-[2.5]" />
-                <span>Télécharger PDF ({item.pdfSize || (isPortrait ? '1.2 Mo' : '12.0 Mo')})</span>
+                <span>Télécharger le PDF ({item.pdfSize})</span>
               </a>
             </div>
           </div>
@@ -241,44 +244,62 @@ export function ProjectDetailView({ item, onClose }) {
         )}
 
         {/* Document Reader View Area (Supports Vertical & Horizontal Scrolling / Panning) */}
-        <div
-          ref={scrollContainerRef}
-          className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] flex flex-col items-center py-12 px-8 space-y-8"
+        <Document
+          file={item.pdfUrl}
+          onLoadSuccess={({ numPages }) => {
+            setNumPages(numPages);
+            console.log("PDF chargé avec succès, nombre de pages:", numPages);
+          }}
+          onLoadError={(error) => {
+            console.error("Erreur de chargement du PDF:", error);
+            alert("Erreur de chargement du PDF. Regarde la console (F12). C'est probablement un problème de CORS avec MinIO.");
+          }}
+          className="w-full h-full overflow-hidden"
+          loading={
+            <div className="flex items-center justify-center h-full w-full bg-[#EEEEEE]">
+              <span className="text-black font-mono text-sm font-bold">Chargement du PDF...</span>
+            </div>
+          }
         >
-          {spreads.map((pages, spreadIdx) => {
-            return (
-              <div
-                key={spreadIdx}
-                className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0`}
-              >
-                {pages.map((pageNum) => (
-                  <div
-                    key={pageNum}
-                    ref={pageRefs.current[pageNum - 1]}
-                    className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0`}
-                    style={{
-                      width: viewMode === 'double'
-                        ? (isPortrait ? `${zoomLevel * 6.5}px` : `${zoomLevel * 8.5}px`)
-                        : (isPortrait ? `${zoomLevel * 10}px` : `${zoomLevel * 14}px`),
-                    }}
-                  >
-                    <img
-                      src={`${pagesDir}/page_${pageNum}.jpg`}
-                      alt={`${item.title} - Page ${pageNum}`}
-                      className="w-full h-auto block select-none pointer-events-none"
-                      loading={pageNum <= 4 ? 'eager' : 'lazy'}
-                    />
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
+          <div
+            ref={scrollContainerRef}
+            className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] flex flex-col items-center py-12 px-8 space-y-8"
+          >
+            {spreads.map((pages, spreadIdx) => {
+              return (
+                <div
+                  key={spreadIdx}
+                  className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0`}
+                >
+                  {pages.map((pageNum) => (
+                    <div
+                      key={pageNum}
+                      ref={pageRefs.current[pageNum - 1]}
+                      className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0`}
+                    >
+                      <Page
+                        pageNumber={pageNum}
+                        width={
+                          viewMode === 'double'
+                            ? (isPortrait ? zoomLevel * 6.5 : zoomLevel * 8.5)
+                            : (isPortrait ? zoomLevel * 10 : zoomLevel * 14)
+                        }
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                        className="block select-none pointer-events-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </Document>
 
         {/* Bottom Floating Control Bar (Centered on mobile, Right-aligned on desktop) */}
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50 flex items-center pointer-events-auto font-sans max-w-[95vw] sm:max-w-none">
           <div className="h-10 sm:h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0 shadow-2xl">
-            
+
             {/* View Mode Toggle: 1 Page vs 2 Pages */}
             <button
               onClick={() => setViewMode((m) => (m === 'single' ? 'double' : 'single'))}

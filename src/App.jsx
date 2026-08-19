@@ -7,7 +7,7 @@ import { Navbar } from './components/Navbar';
 import { FilterDrawer } from './components/FilterDrawer';
 import { ProjectDetailView } from './components/ProjectDetailView';
 import { SubmitModal } from './components/SubmitModal';
-import { COVERS_DATA } from './data/coversData';
+import axios from './api/axios';
 
 // Fisher-Yates Shuffle algorithm for randomizing memory covers
 function shuffleArray(array) {
@@ -20,8 +20,7 @@ function shuffleArray(array) {
 }
 
 export function App() {
-  // Randomize initial covers dataset
-  const [covers, setCovers] = useState(() => shuffleArray(COVERS_DATA));
+  const [covers, setCovers] = useState([]);
   const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'network' | 'list'
   const [focusedCoverId, setFocusedCoverId] = useState(null); // Keeps track of last viewed cover in List mode
   const mainContainerRef = useRef(null);
@@ -58,6 +57,39 @@ export function App() {
       );
     }
   }, [activeView]);
+
+  // Fetch projects from backend
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get('/projects?limit=1000');
+        // The backend returns { projects: [...] }
+        if (response.data && response.data.projects) {
+          // Normalize the data to match expected frontend format
+          const formattedProjects = response.data.projects.map(p => ({
+            id: p.id,
+            title: p.title,
+            author: p.author ? p.author.name : 'Unknown',
+            authorProfilePicture: p.author ? p.author.profilePicture : null,
+            school: p.school,
+            year: p.year.toString(),
+            type: p.type,
+            field: p.domain, // Backend uses 'domain', frontend filters use 'field'
+            description: p.description,
+            coverUrl: p.coverUrl,
+            pdfUrl: p.pdfUrl,
+            pdfSize: p.pdfSize || 'Inconnu',
+            tags: [], // Tags aren't in DB yet, but keep it empty array to avoid errors
+            date: p.createdAt
+          }));
+          setCovers(shuffleArray(formattedProjects));
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des projets:", error);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   // Reset filters
   const handleResetFilters = () => {
