@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import gsap from 'gsap';
-import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force';
+import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, forceRadial } from 'd3-force';
 import { ZoomIn, ZoomOut, Compass } from 'lucide-react';
 
 export function NetworkGraphCanvas({
@@ -66,41 +66,29 @@ export function NetworkGraphCanvas({
   useEffect(() => {
     if (!items || items.length === 0) return;
 
-    // 1. Build Nodes centered around (0,0) with wider initial spread
-    const spreadRadius = Math.max(1400, items.length * 75);
-    const nodes = items.map((item, idx) => {
-      const angle = (idx / items.length) * Math.PI * 2;
-      const r = 450 + Math.random() * (spreadRadius - 450);
-      return {
-        ...item,
-        x: Math.cos(angle) * r,
-        y: Math.sin(angle) * r,
-      };
-    });
-
     const getWords = (text) => {
       if (!text) return [];
-      const stopWords = new Set(["de", "la", "le", "les", "des", "un", "une", "et", "ou", "en", "dans", "par", "pour", "sur", "au", "aux", "du", "qui", "que", "quoi", "dont", "où", "il", "elle", "ils", "elles", "on", "nous", "vous", "je", "tu", "me", "te", "se", "ce", "cette", "ces", "mon", "ton", "son", "ma", "ta", "sa", "mes", "tes", "ses", "notre", "votre", "leur", "nos", "vos", "leurs", "avec", "sans", "sous", "vers", "chez", "est", "sont", "a", "ont", "pas", "ne", "plus", "moins", "très", "bien", "fait", "comme", "tout", "tous", "toute", "toutes", "comment", "faire", "l", "d", "qu", "n", "s", "m", "t", "c", "j", "d'un", "d'une", "l'on"]);
+      const stopWords = new Set(["de", "la", "le", "les", "des", "un", "une", "et", "ou", "en", "dans", "par", "pour", "sur", "au", "aux", "du", "qui", "que", "quoi", "dont", "où", "il", "elle", "ils", "elles", "on", "nous", "vous", "je", "tu", "me", "te", "se", "ce", "cette", "ces", "mon", "ton", "son", "ma", "ta", "sa", "mes", "tes", "ses", "notre", "votre", "leur", "nos", "vos", "leurs", "avec", "sans", "sous", "vers", "chez", "est", "sont", "a", "ont", "pas", "ne", "plus", "moins", "très", "bien", "fait", "comme", "tout", "tous", "toute", "toutes", "comment", "faire", "l", "d", "qu", "n", "s", "m", "t", "c", "j", "d'un", "d me", "l'on"]);
       return text.toLowerCase()
         .replace(/['’]/g, " ")
         .split(/[\s,.;:!?()[\]{}"]+/)
         .filter(w => w.length > 2 && !stopWords.has(w));
     };
 
+    // 1. Calculate links and node degrees first
     const links = [];
     const degreeMap = {};
-    nodes.forEach(n => degreeMap[n.id] = 0);
+    items.forEach(n => degreeMap[n.id] = 0);
 
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i];
-        const b = nodes[j];
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        const a = items[i];
+        const b = items[j];
         
         const aWords = getWords(a.abstract);
         const bWords = getWords(b.abstract);
         let shared = [...new Set(aWords.filter(w => bWords.includes(w)))];
         
-        // Cap the number of connecting words to 4 max to avoid heavy visual clutter
         if (shared.length > 4) {
           shared = shared.slice(0, 4);
         }
@@ -118,7 +106,22 @@ export function NetworkGraphCanvas({
       }
     }
 
-    // Identify the node with max connections. Tie-breaker: most recent (year), then highest id.
+    // 2. Build Nodes centered around (0,0) with compact initial radius for unlinked nodes
+    const spreadRadius = Math.max(1000, items.length * 60);
+    const nodes = items.map((item, idx) => {
+      const angle = (idx / items.length) * Math.PI * 2;
+      const isUnlinked = (degreeMap[item.id] || 0) === 0;
+      const r = isUnlinked
+        ? 280 + Math.random() * 150
+        : 400 + Math.random() * (spreadRadius - 400);
+      return {
+        ...item,
+        x: Math.cos(angle) * r,
+        y: Math.sin(angle) * r,
+      };
+    });
+
+    // Identify the node with max connections
     let maxDegree = -1;
     let maxYear = -1;
     let maxId = -1;
@@ -149,10 +152,11 @@ export function NetworkGraphCanvas({
       centerNode.fy = 0;
     }
 
-    // 3. D3 Force Simulation around (0,0) with significantly larger spacing parameters
+    // 3. D3 Force Simulation with radial attraction for unlinked covers
     const simulation = forceSimulation(nodes)
       .force("link", forceLink(links).id(d => d.id).distance(d => Math.max(380, 750 - d.value * 90)))
-      .force("charge", forceManyBody().strength(-4800))
+      .force("charge", forceManyBody().strength(d => ((degreeMap[d.id] || 0) === 0 ? -1200 : -4500)))
+      .force("radial", forceRadial(360, 0, 0).strength(d => ((degreeMap[d.id] || 0) === 0 ? 0.45 : 0.02)))
       .force("center", forceCenter(0, 0))
       .force("collide", forceCollide().radius(240));
 
