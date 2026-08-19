@@ -38,7 +38,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Étude des flux de production imprimés versus numériques. Comment la matérialité de la reliure réinvente l'expérience de lecture à l'ère des écrans. Une analyse sur la matérialité, la typographie, le design numérique et l experimentation imprimée.",
     readTime: "30 min read",
     pages: 188
@@ -82,7 +82,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Une cartographie visuelle des micro-icônes et symboles de bureau qui ont façonné le langage visuel des premiers ordinateurs personnels. Analyse centrée sur l archéologie, le dispositif graphique et le calcul algorithmique.",
     readTime: "15 min read",
     pages: 96
@@ -126,7 +126,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Exploration graphique des créatures bioluminescentes et des monstres abstraits à travers des sérigraphies en encres néon sur fond sombre.",
     readTime: "12 min read",
     pages: 80
@@ -170,7 +170,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Quand les formes rigides fondent : étude de la déconstruction des jeux de réflexion et de la défaillance des systèmes d'ordre géométrique. Analyse de l espace urbain et de l architecture contemporaine.",
     readTime: "22 min read",
     pages: 130
@@ -214,7 +214,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Analyse comparative de 30 ans d'affiches présentées au Festival international du graphisme de Chaumont et leur impact sur les tendances graphiques. Cartographie des réseaux et analyse de l espace virtuel.",
     readTime: "32 min read",
     pages: 195
@@ -258,7 +258,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Comment dépasser la couverture et les tranches physiques d'un ouvrage grâce aux interactions mobiles et à la réalité augmentée. Réflexion sur l espace scénographique et l architecture éphémère.",
     readTime: "20 min read",
     pages: 125
@@ -302,7 +302,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Conception de polices de caractères paramétriques inspirées des réseaux de mycélium et de la croissance cellulaire. Une cartographie rétrospective des médias interactifs.",
     readTime: "27 min read",
     pages: 165
@@ -346,7 +346,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Enquête sur la conservation des imprimés populaires et l'usure de la matière comme témoignage historique.",
     readTime: "31 min read",
     pages: 198
@@ -390,7 +390,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Parallèle entre les temps forts de la notation musicale jazz et les ruptures de rythme dans la typographie helvétique.",
     readTime: "17 min read",
     pages: 108
@@ -434,7 +434,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Expérimentations imprimées combinant encres photoluminescentes et algorithmes de bruit Perlin.",
     readTime: "14 min read",
     pages: 88
@@ -478,7 +478,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Principes de pliage japonais appliqués à la conception de pavillons temporaires et d'abris nomades.",
     readTime: "26 min read",
     pages: 168
@@ -522,7 +522,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Variable fonts déformées en temps réel selon le ton et l'intensité acoustique du lecteur.",
     readTime: "24 min read",
     pages: 148
@@ -566,7 +566,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Système d'orientation visuelle intégrant la lumière naturelle et la typographie monumentale dans les gares.",
     readTime: "21 min read",
     pages: 132
@@ -610,7 +610,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Scénographie d'objets domestiques détournés comme accessoires d'une pièce de théâtre absurde.",
     readTime: "18 min read",
     pages: 112
@@ -654,7 +654,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Recherche sur les idéogrammes sacrés d'Afrique de l'Ouest et leur transposition dans l'édition moderne.",
     readTime: "27 min read",
     pages: 170
@@ -698,7 +698,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Analyse des micro-éditions riso artisanales et de leur rôle d'émancipation politique dans le graphisme indépendant.",
     readTime: "25 min read",
     pages: 156
@@ -742,7 +742,7 @@ export const COVERS_DATA = [
         orientation: "landscape",
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
-    pdfPages: 14,
+    pdfPages: 12,
     abstract: "Le concept esthétique japonais du Ma (l'espace intermédiaire) transposé à la mise en page d'art contemporain.",
     readTime: "21 min read",
     pages: 134

@@ -10,7 +10,7 @@ export function ProjectDetailView({ item, onClose }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState('single'); // 'single' (1 page) or 'double' (2 pages side-by-side)
 
-  const totalPages = item?.pdfPages || (isPortrait ? 12 : 14);
+  const totalPages = item?.pdfPages || 12;
   const pagesDir = item?.pagesDir || (isPortrait ? '/pdf/portrait_pages' : '/pdf/landscape_pages');
 
   const scrollContainerRef = useRef(null);
