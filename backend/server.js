@@ -20,6 +20,11 @@ app.use(cookieParser());
 // Dossier public pour accéder aux fichiers uploadés
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://localhost:3006'],
+  credentials: true,
+};
+
 
 // --- IMPORT DES ROUTES & SWAGGER ---
 const authRoutes = require('./routes/auth.routes');
