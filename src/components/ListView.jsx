@@ -348,7 +348,6 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
               <img
                 src={item.coverUrl}
                 alt={item.title}
-                loading="eager"
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
                 style={{ WebkitUserDrag: 'none', userSelect: 'none' }}

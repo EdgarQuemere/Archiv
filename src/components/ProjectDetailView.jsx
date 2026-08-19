@@ -4,8 +4,9 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Initialize PDF.js worker via CDN to avoid Vite build issues
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Initialize PDF.js worker using reliable Vite ?url import
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 export function ProjectDetailView({ item, onClose }) {
   const [showInfo, setShowInfo] = useState(true);
@@ -246,6 +247,11 @@ export function ProjectDetailView({ item, onClose }) {
         {/* Document Reader View Area (Supports Vertical & Horizontal Scrolling / Panning) */}
         <Document
           file={item.pdfUrl}
+          options={{
+            cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
+            cMapPacked: true,
+            standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+          }}
           onLoadSuccess={({ numPages }) => {
             setNumPages(numPages);
             console.log("PDF chargé avec succès, nombre de pages:", numPages);
@@ -285,7 +291,8 @@ export function ProjectDetailView({ item, onClose }) {
                             : (isPortrait ? zoomLevel * 10 : zoomLevel * 14)
                         }
                         renderTextLayer={false}
-                        renderAnnotationLayer={false}
+                        renderAnnotationLayer={true}
+                        devicePixelRatio={Math.max(window.devicePixelRatio || 1, 2)}
                         className="block select-none pointer-events-none"
                       />
                     </div>

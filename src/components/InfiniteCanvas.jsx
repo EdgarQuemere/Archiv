@@ -456,7 +456,6 @@ export function InfiniteCanvas({
                 <img
                   src={item.coverUrl}
                   alt={item.title}
-                  loading="lazy"
                   draggable={false}
                   onDragStart={(e) => e.preventDefault()}
                   style={{
@@ -470,8 +469,8 @@ export function InfiniteCanvas({
 
                 {/* Title Overlay on Hover */}
                 {isHovered && (
-                  <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 bg-[#111111] text-[#EEEEEE] px-3 py-1.5 text-xs font-mono whitespace-nowrap shadow-2xl z-50 pointer-events-none border border-[#EEEEEE]/20">
-                    {item.title}
+                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-[#111111] text-[#EEEEEE] px-4 py-2 text-xs font-mono whitespace-nowrap shadow-xl z-[100] pointer-events-none border-2 border-[#111111]">
+                    {item.title.length > 35 ? item.title.substring(0, 35) + '...' : item.title}
                   </div>
                 )}
               </div>

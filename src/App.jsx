@@ -1,12 +1,16 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useContext } from 'react';
 import gsap from 'gsap';
 import { InfiniteCanvas } from './components/InfiniteCanvas';
 import { NetworkGraphCanvas } from './components/NetworkGraphCanvas';
 import { ListView } from './components/ListView';
 import { Navbar } from './components/Navbar';
 import { FilterDrawer } from './components/FilterDrawer';
+import { ProfileDrawer } from './components/ProfileDrawer';
 import { ProjectDetailView } from './components/ProjectDetailView';
 import { SubmitModal } from './components/SubmitModal';
+import { LoginModal } from './components/auth/LoginModal';
+import { RegisterModal } from './components/auth/RegisterModal';
+import { AuthContext } from './context/AuthContext';
 import axios from './api/axios';
 
 // Fisher-Yates Shuffle algorithm for randomizing memory covers
@@ -43,9 +47,66 @@ export function App() {
 
   // Modals & Drawers state
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [editProjectData, setEditProjectData] = useState(null); // Used to pass data to SubmitModal for editing
+
+  const { user, logout } = useContext(AuthContext);
+
+  // Deep Linking: Update URL when a project is selected/closed
+  useEffect(() => {
+    if (selectedCard) {
+      const url = new URL(window.location);
+      url.searchParams.set('project', selectedCard.id);
+      window.history.pushState({}, '', url);
+    } else {
+      const url = new URL(window.location);
+      url.searchParams.delete('project');
+      window.history.pushState({}, '', url);
+    }
+  }, [selectedCard]);
+
+  // Deep Linking: Check URL on mount and fetch specific project
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const projectId = params.get('project');
+    
+    if (projectId) {
+      const fetchSpecificProject = async () => {
+        try {
+          const response = await axios.get(`/projects/${projectId}`);
+          if (response.data && response.data.project) {
+            const p = response.data.project;
+            const formatted = {
+              id: p.id,
+              title: p.title,
+              author: p.author ? p.author.name : 'Unknown',
+              authorProfilePicture: p.author ? p.author.profilePicture : null,
+              school: p.school,
+              year: p.year.toString(),
+              type: p.type,
+              field: p.domain,
+              description: p.description,
+              coverUrl: p.coverUrl,
+              imageUrl: p.coverUrl,
+              pdfUrl: p.pdfUrl,
+              pdfSize: p.pdfSize || 'Inconnu',
+              userId: p.userId,
+              tags: [],
+              date: p.createdAt
+            };
+            setSelectedCard(formatted);
+          }
+        } catch (err) {
+          console.error("Erreur lors de la récupération du projet spécifique (Deep Link):", err);
+        }
+      };
+      fetchSpecificProject();
+    }
+  }, []); // Run once on mount
 
   // GSAP View Transition Animation on activeView change
   useEffect(() => {
@@ -58,14 +119,16 @@ export function App() {
     }
   }, [activeView]);
 
-  // Fetch projects from backend
+  // Fetch projects from backend (Progressive Loading)
   useEffect(() => {
-    const fetchProjects = async () => {
+    let isCancelled = false;
+
+    const fetchProjectsProgressively = async (page = 1) => {
+      if (isCancelled) return;
       try {
-        const response = await axios.get('/projects?limit=1000');
-        // The backend returns { projects: [...] }
+        // Load 40 projects per batch
+        const response = await axios.get(`/projects?limit=40&page=${page}`);
         if (response.data && response.data.projects) {
-          // Normalize the data to match expected frontend format
           const formattedProjects = response.data.projects.map(p => ({
             id: p.id,
             title: p.title,
@@ -74,21 +137,39 @@ export function App() {
             school: p.school,
             year: p.year.toString(),
             type: p.type,
-            field: p.domain, // Backend uses 'domain', frontend filters use 'field'
-            description: p.description,
+            field: p.domain,
+            // Excluded heavy fields from list: description, pdfUrl, pdfSize
             coverUrl: p.coverUrl,
-            pdfUrl: p.pdfUrl,
-            pdfSize: p.pdfSize || 'Inconnu',
-            tags: [], // Tags aren't in DB yet, but keep it empty array to avoid errors
+            imageUrl: p.coverUrl,
+            userId: p.userId,
+            tags: [],
             date: p.createdAt
           }));
-          setCovers(shuffleArray(formattedProjects));
+          
+          setCovers(prev => {
+            // Append new projects and shuffle the whole set to blend them in seamlessly
+            const newSet = [...prev, ...formattedProjects];
+            return shuffleArray(newSet);
+          });
+
+          // If there are more pages, fetch the next one progressively in the background
+          if (page < response.data.totalPages) {
+            // Small delay to allow browser to breathe and render images without blocking UI
+            setTimeout(() => {
+              fetchProjectsProgressively(page + 1);
+            }, 300);
+          }
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération des projets:", error);
+        console.error("Erreur lors de la récupération progressive des projets:", error);
       }
     };
-    fetchProjects();
+
+    fetchProjectsProgressively(1);
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   // Reset filters
@@ -142,6 +223,63 @@ export function App() {
     });
   }, [covers, filters, searchQuery]);
 
+  // Fetch full details on card click
+  const handleCardClick = async (item) => {
+    // If we already fetched the heavy fields (e.g. from Deep Linking), open it directly
+    if (item.pdfUrl) {
+      setSelectedCard(item);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`/projects/${item.id}`);
+      if (response.data && response.data.project) {
+        const p = response.data.project;
+        const formatted = {
+          id: p.id,
+          title: p.title,
+          author: p.author ? p.author.name : 'Unknown',
+          authorProfilePicture: p.author ? p.author.profilePicture : null,
+          school: p.school,
+          year: p.year.toString(),
+          type: p.type,
+          field: p.domain,
+          description: p.description,
+          coverUrl: p.coverUrl,
+          imageUrl: p.coverUrl,
+          pdfUrl: p.pdfUrl,
+          pdfSize: p.pdfSize || 'Inconnu',
+          userId: p.userId,
+          tags: [],
+          date: p.createdAt
+        };
+        // Update it in the local state so we don't re-fetch later
+        setCovers(prev => prev.map(c => c.id === item.id ? formatted : c));
+        setSelectedCard(formatted);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la récupération des détails:", err);
+      setSelectedCard(item); // Fallback
+    }
+  };
+
+  // Extract dynamic unique values for filters based on fetched data
+  const dynamicSchools = useMemo(() => {
+    const schools = new Set(covers.map(c => c.school).filter(Boolean));
+    return ['Toutes les écoles', ...Array.from(schools).sort()];
+  }, [covers]);
+
+  const dynamicFields = useMemo(() => {
+    const fields = new Set(covers.map(c => c.field).filter(Boolean));
+    return ['Tous les domaines', ...Array.from(fields).sort()];
+  }, [covers]);
+
+  const dynamicYears = useMemo(() => {
+    const years = new Set(covers.map(c => c.year).filter(Boolean));
+    // Sort years descending (newest first)
+    return ['Toutes', ...Array.from(years).sort((a, b) => b.localeCompare(a))];
+  }, [covers]);
+
   // Handle adding new cover submission
   const handleAddCover = (newCover) => {
     setCovers((prev) => [newCover, ...prev]);
@@ -155,8 +293,18 @@ export function App() {
         activeView={activeView}
         setActiveView={setActiveView}
         onOpenFilter={() => setIsFilterOpen(true)}
-        onOpenSubmit={() => setIsSubmitOpen(true)}
-        onOpenRegister={() => setIsRegisterOpen(true)}
+        onOpenSubmit={() => {
+          if (user) {
+            setEditProjectData(null); // Ensure it's not in edit mode
+            setIsSubmitOpen(true);
+          } else {
+            setIsLoginOpen(true);
+          }
+        }}
+        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenProfile={() => setIsProfileOpen(true)}
+        user={user}
+        logout={logout}
         activeFilterCount={activeFilterCount}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -169,21 +317,21 @@ export function App() {
             items={filteredCovers}
             camera={camera}
             setCamera={setCamera}
-            onCardClick={(item) => setSelectedCard(item)}
+            onCardClick={handleCardClick}
           />
         ) : activeView === 'network' ? (
           <NetworkGraphCanvas
             items={filteredCovers}
             camera={camera}
             setCamera={setCamera}
-            onCardClick={(item) => setSelectedCard(item)}
+            onCardClick={handleCardClick}
           />
         ) : (
           <ListView
             items={filteredCovers}
             focusedCoverId={focusedCoverId}
             onActiveCoverChange={(id) => setFocusedCoverId(id)}
-            onCardClick={(item) => setSelectedCard(item)}
+            onCardClick={handleCardClick}
           />
         )}
       </main>
@@ -196,6 +344,9 @@ export function App() {
         setFilters={setFilters}
         resetFilters={handleResetFilters}
         totalResults={filteredCovers.length}
+        dynamicSchools={dynamicSchools}
+        dynamicFields={dynamicFields}
+        dynamicYears={dynamicYears}
       />
 
       {/* Full-screen Project View with PDF Reader */}
@@ -206,11 +357,50 @@ export function App() {
         />
       )}
 
-      {/* Submit Cover Modal */}
+      {/* Profile Drawer */}
+      <ProfileDrawer
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        user={user}
+        logout={logout}
+        covers={covers}
+        onEditProject={(project) => {
+          setEditProjectData(project);
+          setIsSubmitOpen(true);
+          setIsProfileOpen(false);
+        }}
+        onDeleteProject={(projectId) => {
+          setCovers(prev => prev.filter(c => c.id !== projectId));
+        }}
+      />
+
+      {/* Submit/Edit Cover Modal */}
       <SubmitModal
         isOpen={isSubmitOpen}
-        onClose={() => setIsSubmitOpen(false)}
+        onClose={() => {
+          setIsSubmitOpen(false);
+          setTimeout(() => setEditProjectData(null), 300); // clear after animation
+        }}
         onAddCover={handleAddCover}
+        editData={editProjectData}
+        onUpdateCover={(updatedProject) => {
+          setCovers(prev => prev.map(c => c.id === updatedProject.id ? updatedProject : c));
+        }}
+      />
+
+      {/* Auth Modals */}
+      <LoginModal 
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onOpenRegister={() => setIsRegisterOpen(true)}
+        onSuccess={() => setIsSubmitOpen(true)} // Open submit right after login
+      />
+      
+      <RegisterModal 
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+        onOpenLogin={() => setIsLoginOpen(true)}
+        onSuccess={() => setIsSubmitOpen(true)} // Open submit right after register
       />
 
     </div>

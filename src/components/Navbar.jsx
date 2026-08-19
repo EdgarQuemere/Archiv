@@ -6,6 +6,10 @@ export function Navbar({
   setActiveView,
   onOpenFilter,
   onOpenSubmit,
+  onOpenLogin,
+  onOpenProfile,
+  user,
+  logout,
   activeFilterCount,
   searchQuery,
   setSearchQuery
@@ -14,13 +18,13 @@ export function Navbar({
     <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-40 flex items-center justify-between gap-2 pointer-events-none font-sans">
       {/* Top Left Buttons Group */}
       <div className="flex items-center gap-1.5 sm:gap-3 pointer-events-auto">
-        {/* Button 1: Advertise Here / Soumettre */}
+        {/* Button 1: Publier un projet */}
         <button
           onClick={onOpenSubmit}
           className="h-10 sm:h-12 px-3 sm:px-7 bg-[#111111] hover:opacity-90 text-[#EEEEEE] text-xs sm:text-sm font-normal tracking-wide rounded-none flex items-center justify-center transition-colors shadow-none shrink-0"
         >
-          <span className="hidden xs:inline sm:inline">Advertise Here</span>
-          <span className="xs:hidden sm:hidden">Submit</span>
+          <span className="hidden xs:inline sm:inline">Publier un projet</span>
+          <span className="xs:hidden sm:hidden">Publier</span>
         </button>
 
         {/* Button 2: Filtres */}
@@ -85,8 +89,9 @@ export function Navbar({
         </div>
       </div>
 
-      {/* Top Right Search Bar - Solid Black #111111 Style */}
-      <div className="pointer-events-auto flex items-center">
+      {/* Top Right Controls */}
+      <div className="pointer-events-auto flex items-center gap-2">
+        {/* Search Bar */}
         <div className="relative flex items-center">
           <input
             type="text"
@@ -105,6 +110,25 @@ export function Navbar({
             </button>
           )}
         </div>
+
+        {/* User Auth Button */}
+        {user ? (
+          <button
+            onClick={onOpenProfile}
+            title="Mon Profil"
+            className="h-10 sm:h-12 px-3 sm:px-4 bg-[#EEEEEE] border-2 border-[#111111] hover:bg-[#dddddd] text-[#111111] text-xs font-bold rounded-none flex items-center justify-center transition-colors shadow-none shrink-0"
+          >
+            {user.name?.split(' ')[0] || 'Profil'}
+          </button>
+        ) : (
+          <button
+            onClick={onOpenLogin}
+            title="Se connecter"
+            className="h-10 sm:h-12 px-3 sm:px-4 bg-[#EEEEEE] border-2 border-[#111111] hover:bg-[#dddddd] text-[#111111] text-xs font-bold rounded-none flex items-center justify-center transition-colors shadow-none shrink-0"
+          >
+            Connexion
+          </button>
+        )}
       </div>
     </header>
   );

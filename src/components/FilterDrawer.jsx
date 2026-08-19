@@ -9,7 +9,10 @@ export function FilterDrawer({
   filters,
   setFilters,
   resetFilters,
-  totalResults
+  totalResults,
+  dynamicSchools = [],
+  dynamicFields = [],
+  dynamicYears = []
 }) {
   const backdropRef = useRef(null);
   const panelRef = useRef(null);
@@ -119,7 +122,7 @@ export function FilterDrawer({
                 onChange={(e) => setFilters((prev) => ({ ...prev, school: e.target.value }))}
                 className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
               >
-                {SCHOOLS_LIST.map((school) => (
+                {(dynamicSchools.length > 0 ? dynamicSchools : SCHOOLS_LIST).map((school) => (
                   <option key={school} value={school}>
                     {school}
                   </option>
@@ -137,7 +140,7 @@ export function FilterDrawer({
                 onChange={(e) => setFilters((prev) => ({ ...prev, field: e.target.value }))}
                 className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
               >
-                {FIELDS_LIST.map((field) => (
+                {(dynamicFields.length > 0 ? dynamicFields : FIELDS_LIST).map((field) => (
                   <option key={field} value={field}>
                     {field}
                   </option>
@@ -151,7 +154,7 @@ export function FilterDrawer({
                 Année de publication
               </label>
               <div className="flex flex-wrap gap-2">
-                {['Toutes', '2025', '2024', '2023', '2021'].map((yr) => {
+                {(dynamicYears.length > 0 ? dynamicYears : ['Toutes', '2025', '2024', '2023', '2021']).map((yr) => {
                   const isActive = filters.year === yr;
                   return (
                     <button
