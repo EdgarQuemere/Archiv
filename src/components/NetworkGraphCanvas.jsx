@@ -476,7 +476,7 @@ export function NetworkGraphCanvas({
               >
                 {/* CLEAN NO-OUTLINE FRAME with rich high-elevation drop shadow */}
               <div
-                className={`w-full h-full relative overflow-visible bg-white transition-all duration-300 ${
+                className={`w-full h-full relative overflow-visible bg-[#EEEEEE] transition-all duration-300 ${
                   isHovered
                     ? 'shadow-[0_25px_50px_rgba(0,0,0,0.35)] border border-[#111111]'
                     : isActiveNeighbor && hasActiveFilter
@@ -586,7 +586,7 @@ export function NetworkGraphCanvas({
                     transition: 'none',
                     borderColor: heatColor
                   }}
-                  className="bg-[#111111] text-white text-[10px] font-mono font-bold px-3 py-1.5 shadow-2xl border whitespace-nowrap animate-in fade-in zoom-in-95 duration-200 flex items-center gap-1.5"
+                  className="bg-[#111111] text-[#EEEEEE] text-[10px] font-mono font-bold px-3 py-1.5 shadow-2xl border whitespace-nowrap animate-in fade-in zoom-in-95 duration-200 flex items-center gap-1.5"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill={heatColor} viewBox="0 0 256 256">
                     <path d="M100,56H40A16,16,0,0,0,24,72v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,100,56Zm0,80H40V72h60ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Zm0,80H156V72h60Z"></path>
@@ -607,25 +607,25 @@ export function NetworkGraphCanvas({
           <button
             onClick={handleZoomOut}
             title="Dézoomer (-)"
-            className="w-12 h-full flex items-center justify-center bg-[#111111] hover:bg-black text-white transition-colors rounded-none cursor-pointer"
+            className="w-12 h-full flex items-center justify-center bg-[#111111] hover:opacity-90 text-[#EEEEEE] transition-colors rounded-none cursor-pointer"
           >
             <ZoomOut className="w-5 h-5 stroke-[2]" />
           </button>
 
-          <div className="w-[1.5px] h-full bg-white/20" />
+          <div className="w-[1.5px] h-full bg-[#EEEEEE]/20" />
 
           {/* Zoom Percentage Display */}
-          <div className="h-full px-3.5 flex items-center justify-center bg-[#111111] text-white text-xs font-mono font-bold select-none min-w-[55px]">
+          <div className="h-full px-3.5 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs font-mono font-bold select-none min-w-[55px]">
             {currentZoomPercent}%
           </div>
 
-          <div className="w-[1.5px] h-full bg-white/20" />
+          <div className="w-[1.5px] h-full bg-[#EEEEEE]/20" />
 
           {/* Zoom In (+) */}
           <button
             onClick={handleZoomIn}
             title="Zoomer (+)"
-            className="w-12 h-full flex items-center justify-center bg-[#111111] hover:bg-black text-white transition-colors rounded-none cursor-pointer"
+            className="w-12 h-full flex items-center justify-center bg-[#111111] hover:opacity-90 text-[#EEEEEE] transition-colors rounded-none cursor-pointer"
           >
             <ZoomIn className="w-5 h-5 stroke-[2]" />
           </button>
@@ -644,9 +644,9 @@ export function NetworkGraphCanvas({
               ease: 'power2.out'
             });
           }}
-          className="h-12 px-6 bg-[#111111] hover:bg-black text-white text-sm font-normal tracking-wide rounded-none flex items-center gap-2.5 transition-colors cursor-pointer shadow-none"
+          className="h-12 px-6 bg-[#111111] hover:opacity-90 text-[#EEEEEE] text-sm font-normal tracking-wide rounded-none flex items-center gap-2.5 transition-colors cursor-pointer shadow-none"
         >
-          <Compass className="w-4 h-4 text-white opacity-90 stroke-[2]" />
+          <Compass className="w-4 h-4 text-[#EEEEEE] opacity-90 stroke-[2]" />
           <span>Recentrer</span>
         </button>
       </div>

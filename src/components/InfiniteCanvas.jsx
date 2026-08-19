@@ -318,6 +318,9 @@ export function InfiniteCanvas({
 
   const containerStyle = {
     backgroundColor: '#EEEEEE',
+    backgroundImage: 'radial-gradient(rgba(17, 17, 17, 0.28) 1.2px, transparent 1.2px)',
+    backgroundSize: '24px 24px',
+    backgroundPosition: `${camera.x}px ${camera.y}px`,
     userSelect: 'none',
     WebkitUserSelect: 'none',
     touchAction: 'none'
@@ -401,7 +404,7 @@ export function InfiniteCanvas({
                 }}
                 className={`w-full h-full flex flex-col items-center justify-center transition-all duration-250 ease-out origin-center ${
                   isHovered
-                    ? 'bg-white shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
+                    ? 'bg-[#EEEEEE] shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
                     : 'bg-transparent shadow-none border-0'
                 }`}
               >
@@ -422,7 +425,7 @@ export function InfiniteCanvas({
 
                 {/* Title Overlay on Hover */}
                 {isHovered && (
-                  <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 bg-[#111111] text-white px-3 py-1.5 text-xs font-mono whitespace-nowrap shadow-2xl z-50 pointer-events-none border border-white/20">
+                  <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 bg-[#111111] text-[#EEEEEE] px-3 py-1.5 text-xs font-mono whitespace-nowrap shadow-2xl z-50 pointer-events-none border border-[#EEEEEE]/20">
                     {item.title}
                   </div>
                 )}
@@ -441,8 +444,8 @@ export function InfiniteCanvas({
             title="Espacement 0px (Serré)"
             className={`h-full px-4 flex items-center gap-1.5 text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
               canvasGap === 0
-                ? 'bg-[#111111] text-white'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
             }`}
           >
             <Grid className="w-3.5 h-3.5" />
@@ -456,8 +459,8 @@ export function InfiniteCanvas({
             title="Espacement 48px (Moyen)"
             className={`h-full px-4 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
               canvasGap === 48
-                ? 'bg-[#111111] text-white'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
             }`}
           >
             <span>Moyen</span>
@@ -470,8 +473,8 @@ export function InfiniteCanvas({
             title="Espacement 120px (Large)"
             className={`h-full px-4 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
               canvasGap === 120
-                ? 'bg-[#111111] text-white'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#e0e0e0]'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
             }`}
           >
             <span>Large</span>

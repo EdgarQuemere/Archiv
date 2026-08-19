@@ -58,7 +58,7 @@ export function DetailModal({ item, onClose }) {
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 z-30 bg-[#111111] hover:bg-black text-white p-2 rounded-none transition-colors"
+          className="absolute top-4 right-4 z-30 bg-[#111111] hover:opacity-90 text-[#EEEEEE] p-2 rounded-none transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -79,7 +79,7 @@ export function DetailModal({ item, onClose }) {
           <div>
             {/* Header badges */}
             <div className="flex items-center gap-2 mb-3">
-              <span className="px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider bg-[#111111] text-white rounded-none">
+              <span className="px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider bg-[#111111] text-[#EEEEEE] rounded-none">
                 {item.type}
               </span>
               <span className="text-xs font-mono text-[#111111] flex items-center gap-1">
@@ -99,7 +99,7 @@ export function DetailModal({ item, onClose }) {
             )}
 
             {/* Author & School info card */}
-            <div className="bg-white p-3.5 rounded-none border-2 border-[#111111] mb-5 flex items-center justify-between">
+            <div className="bg-[#EEEEEE] p-3.5 rounded-none border-2 border-[#111111] mb-5 flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-600 font-medium">Auteur / Étudiant</p>
                 <p className="text-sm font-bold text-[#111111]">{item.author}</p>
@@ -127,13 +127,13 @@ export function DetailModal({ item, onClose }) {
               {item.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium bg-white text-[#111111] border border-[#111111] px-2.5 py-1 rounded-none"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium bg-[#EEEEEE] text-[#111111] border border-[#111111] px-2.5 py-1 rounded-none"
                 >
                   <Tag className="w-3 h-3 text-[#111111]" />
                   {tag}
                 </span>
               ))}
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono bg-[#111111] text-white px-2.5 py-1 rounded-none">
+              <span className="inline-flex items-center gap-1 text-[11px] font-mono bg-[#111111] text-[#EEEEEE] px-2.5 py-1 rounded-none">
                 <FileText className="w-3 h-3" />
                 {item.pages} pages • {item.readTime}
               </span>
@@ -144,7 +144,7 @@ export function DetailModal({ item, onClose }) {
           <div className="pt-4 border-t-2 border-[#111111] flex items-center gap-3">
             <button
               onClick={() => setPdfSimulated(true)}
-              className="flex-1 bg-[#111111] hover:bg-black text-white font-semibold py-2.5 px-4 rounded-none text-xs flex items-center justify-center gap-2 transition-colors"
+              className="flex-1 bg-[#111111] hover:opacity-90 text-[#EEEEEE] font-semibold py-2.5 px-4 rounded-none text-xs flex items-center justify-center gap-2 transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               <span>{pdfSimulated ? 'Ouverture PDF...' : 'Consulter le mémoire PDF'}</span>
@@ -154,12 +154,12 @@ export function DetailModal({ item, onClose }) {
               onClick={() => setLiked(!liked)}
               className={`p-2.5 rounded-none border-2 border-[#111111] transition-colors ${
                 liked
-                  ? 'bg-rose-500 text-white'
-                  : 'bg-white text-[#111111] hover:bg-[#e0e0e0]'
+                  ? 'bg-rose-500 text-[#EEEEEE]'
+                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
               }`}
               title="Ajouter aux favoris"
             >
-              <Heart className={`w-4 h-4 ${liked ? 'fill-white' : ''}`} />
+              <Heart className={`w-4 h-4 ${liked ? 'fill-[#EEEEEE]' : ''}`} />
             </button>
 
             <button

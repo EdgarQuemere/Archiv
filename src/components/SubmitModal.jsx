@@ -127,7 +127,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover }) {
                 placeholder="ex: L'archéologie des machines"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
               />
             </div>
 
@@ -142,7 +142,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover }) {
                   placeholder="ex: Thomas Martin"
                   value={formData.author}
                   onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
                 />
               </div>
 
@@ -153,7 +153,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover }) {
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
                 >
                   <option value="Mémoire">Mémoire</option>
                   <option value="Portfolio">Portfolio</option>
@@ -169,7 +169,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover }) {
                 <select
                   value={formData.school}
                   onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                  className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
                 >
                   {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
                     <option key={sch} value={sch}>
@@ -189,7 +189,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover }) {
                   max="2027"
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                  className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
                 />
               </div>
             </div>
@@ -203,7 +203,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover }) {
                 placeholder="Décrivez les thématiques principales abordées..."
                 value={formData.abstract}
                 onChange={(e) => setFormData({ ...formData, abstract: e.target.value })}
-                className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
               />
             </div>
 
@@ -211,13 +211,13 @@ export function SubmitModal({ isOpen, onClose, onAddCover }) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="px-4 py-2 border-2 border-[#111111] bg-white text-[#111111] rounded-none text-xs font-semibold hover:bg-[#e0e0e0] transition-colors"
+                className="px-4 py-2 border-2 border-[#111111] bg-[#EEEEEE] text-[#111111] rounded-none text-xs font-semibold hover:bg-[#dddddd] transition-colors"
               >
                 Annuler
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-[#111111] text-white rounded-none text-xs font-semibold hover:bg-black transition-colors flex items-center gap-1.5"
+                className="px-5 py-2 bg-[#111111] text-[#EEEEEE] rounded-none text-xs font-semibold hover:opacity-90 transition-colors flex items-center gap-1.5"
               >
                 <Upload className="w-3.5 h-3.5" />
                 <span>Publier la couverture</span>

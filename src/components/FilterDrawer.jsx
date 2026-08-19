@@ -63,9 +63,9 @@ export function FilterDrawer({
           className="w-screen max-w-md bg-[#EEEEEE] shadow-2xl flex flex-col h-full border-r-2 border-[#111111] transform-gpu rounded-none text-[#111111]"
         >
           {/* Drawer Header */}
-          <div className="px-6 py-5 bg-[#111111] text-white flex items-center justify-between rounded-none">
+          <div className="px-6 py-5 bg-[#111111] text-[#EEEEEE] flex items-center justify-between rounded-none">
             <div className="flex items-center gap-2.5">
-              <Filter className="w-5 h-5 text-white" />
+              <Filter className="w-5 h-5 text-[#EEEEEE]" />
               <div>
                 <h2 className="text-base font-bold tracking-tight">Filtres d'exploration</h2>
                 <p className="text-xs text-slate-300 font-mono">
@@ -75,7 +75,7 @@ export function FilterDrawer({
             </div>
             <button
               onClick={handleClose}
-              className="p-1.5 rounded-none text-white hover:opacity-75 transition-opacity"
+              className="p-1.5 rounded-none text-[#EEEEEE] hover:opacity-75 transition-opacity"
             >
               <X className="w-5 h-5" />
             </button>
@@ -98,8 +98,8 @@ export function FilterDrawer({
                       onClick={() => setFilters((prev) => ({ ...prev, type }))}
                       className={`px-3 py-2 text-xs font-semibold rounded-none border-2 border-[#111111] text-center transition-all ${
                         isActive
-                          ? 'bg-[#111111] text-white'
-                          : 'bg-white text-[#111111] hover:bg-[#e0e0e0]'
+                          ? 'bg-[#111111] text-[#EEEEEE]'
+                          : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
                       }`}
                     >
                       {type}
@@ -117,7 +117,7 @@ export function FilterDrawer({
               <select
                 value={filters.school}
                 onChange={(e) => setFilters((prev) => ({ ...prev, school: e.target.value }))}
-                className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
+                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
               >
                 {SCHOOLS_LIST.map((school) => (
                   <option key={school} value={school}>
@@ -135,7 +135,7 @@ export function FilterDrawer({
               <select
                 value={filters.field}
                 onChange={(e) => setFilters((prev) => ({ ...prev, field: e.target.value }))}
-                className="w-full bg-white border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
+                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
               >
                 {FIELDS_LIST.map((field) => (
                   <option key={field} value={field}>
@@ -159,8 +159,8 @@ export function FilterDrawer({
                       onClick={() => setFilters((prev) => ({ ...prev, year: yr }))}
                       className={`px-3 py-1.5 text-xs font-mono rounded-none border-2 border-[#111111] transition-all ${
                         isActive
-                          ? 'bg-[#111111] text-white font-bold'
-                          : 'bg-white text-[#111111] hover:bg-[#e0e0e0]'
+                          ? 'bg-[#111111] text-[#EEEEEE] font-bold'
+                          : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
                       }`}
                     >
                       {yr}
@@ -176,7 +176,7 @@ export function FilterDrawer({
           <div className="p-4 bg-[#EEEEEE] border-t-2 border-[#111111] flex items-center gap-3">
             <button
               onClick={resetFilters}
-              className="flex-1 py-2.5 border-2 border-[#111111] text-[#111111] bg-white hover:bg-[#e0e0e0] rounded-none text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+              className="flex-1 py-2.5 border-2 border-[#111111] text-[#111111] bg-[#EEEEEE] hover:bg-[#dddddd] rounded-none text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Réinitialiser</span>
@@ -184,7 +184,7 @@ export function FilterDrawer({
 
             <button
               onClick={handleClose}
-              className="flex-1 py-2.5 bg-[#111111] text-white hover:bg-black rounded-none text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+              className="flex-1 py-2.5 bg-[#111111] text-[#EEEEEE] hover:opacity-90 rounded-none text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Appliquer</span>
