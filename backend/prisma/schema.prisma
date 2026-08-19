@@ -31,6 +31,7 @@ model Project {
   year        Int      // Année
   domain      String   // Domaine (ex: Design, Architecture...)
   pdfUrl      String   // Lien vers le PDF uploadé
+  pdfSize     String?  // Poids du PDF en Mo (ex: "1.2 Mo")
   coverUrl    String?  // Lien vers la couverture (optionnel)
   
   // Relation avec l'utilisateur (Auteur)

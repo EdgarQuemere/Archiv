@@ -1,12 +1,33 @@
 const prisma = require('../config/db');
-const fs = require('fs');
-const path = require('path');
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+require('dotenv').config();
 
-const deleteFile = (filePath) => {
-  if (!filePath) return;
-  const fullPath = path.join(__dirname, '..', filePath);
-  if (fs.existsSync(fullPath)) {
-    fs.unlinkSync(fullPath);
+const s3 = new S3Client({
+  endpoint: process.env.MINIO_ENDPOINT,
+  region: 'us-east-1',
+  credentials: {
+    accessKeyId: process.env.MINIO_ACCESS_KEY,
+    secretAccessKey: process.env.MINIO_SECRET_KEY,
+  },
+  forcePathStyle: true,
+});
+
+const bucketName = process.env.MINIO_BUCKET_NAME || 'archiv-uploads';
+
+const deleteFile = async (fileUrl) => {
+  if (!fileUrl) return;
+  try {
+    // Extract key from URL (e.g. http://ip:9000/bucket/key -> key)
+    const urlParts = fileUrl.split(`/${bucketName}/`);
+    if (urlParts.length > 1) {
+      const key = urlParts[1];
+      await s3.send(new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: key
+      }));
+    }
+  } catch (error) {
+    console.error('Erreur lors de la suppression sur MinIO:', error);
   }
 };
 
@@ -22,8 +43,10 @@ exports.createProject = async (req, res) => {
       return res.status(400).json({ error: 'Le fichier PDF est obligatoire.' });
     }
 
-    const pdfUrl = `/uploads/${req.files['pdf'][0].filename}`;
-    const coverUrl = req.files['cover'] ? `/uploads/${req.files['cover'][0].filename}` : null;
+    const pdfUrl = req.files['pdf'][0].location;
+    const pdfSizeRaw = req.files['pdf'][0].size;
+    const pdfSize = (pdfSizeRaw / (1024 * 1024)).toFixed(1) + ' Mo';
+    const coverUrl = req.files['cover'] ? req.files['cover'][0].location : null;
 
     const project = await prisma.project.create({
       data: {
@@ -34,6 +57,7 @@ exports.createProject = async (req, res) => {
         year: parseInt(year),
         domain,
         pdfUrl,
+        pdfSize,
         coverUrl,
         userId: req.userId 
       }
@@ -57,7 +81,6 @@ exports.getProjects = async (req, res) => {
 
     const { type, domain, school } = req.query;
     
-    // Construction du filtre (si les champs sont fournis)
     let where = {};
     if (type) where.type = type;
     if (domain) where.domain = domain;
@@ -108,13 +131,14 @@ exports.updateProject = async (req, res) => {
     if (year) updateData.year = parseInt(year);
 
     if (req.files && req.files['pdf']) {
-      deleteFile(project.pdfUrl); // On supprime l'ancien PDF
-      updateData.pdfUrl = `/uploads/${req.files['pdf'][0].filename}`;
+      await deleteFile(project.pdfUrl);
+      updateData.pdfUrl = req.files['pdf'][0].location;
+      updateData.pdfSize = (req.files['pdf'][0].size / (1024 * 1024)).toFixed(1) + ' Mo';
     }
 
     if (req.files && req.files['cover']) {
-      if (project.coverUrl) deleteFile(project.coverUrl); // On supprime l'ancienne image
-      updateData.coverUrl = `/uploads/${req.files['cover'][0].filename}`;
+      if (project.coverUrl) await deleteFile(project.coverUrl);
+      updateData.coverUrl = req.files['cover'][0].location;
     }
 
     const updatedProject = await prisma.project.update({
@@ -146,9 +170,8 @@ exports.deleteProject = async (req, res) => {
       return res.status(403).json({ error: 'Action non autorisée. Vous n\'êtes pas le créateur de ce projet.' });
     }
 
-    // On supprime les fichiers associés
-    deleteFile(project.pdfUrl);
-    if (project.coverUrl) deleteFile(project.coverUrl);
+    await deleteFile(project.pdfUrl);
+    if (project.coverUrl) await deleteFile(project.coverUrl);
 
     await prisma.project.delete({ where: { id } });
 
