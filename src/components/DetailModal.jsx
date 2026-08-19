@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, BookOpen, Share2, Heart, Calendar, MapPin } from 'lucide-react';
+import { X, BookOpen, Share2, Heart } from 'lucide-react';
 import gsap from 'gsap';
 
 export function DetailModal({ item, onClose }) {
@@ -74,53 +74,37 @@ export function DetailModal({ item, onClose }) {
           </div>
         </div>
 
-        {/* Right Column: Metadata & Details */}
+        {/* Right Column: Metadata & Details matching Screen 2 style */}
         <div className="md:w-1/2 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto bg-[#EEEEEE]">
           <div>
-            {/* Header badges */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider bg-[#111111] text-[#EEEEEE] rounded-none">
-                {item.type}
-              </span>
-              <span className="text-xs font-mono text-[#111111] flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                {item.year}
-              </span>
-            </div>
-
-            {/* Title & Subtitle */}
-            <h1 className="text-xl sm:text-2xl font-bold text-[#111111] leading-tight mb-2">
+            {/* Title */}
+            <h1 className="text-xl sm:text-2xl font-bold text-[#111111] leading-tight mb-1">
               {item.title}
             </h1>
+
+            {/* Author */}
+            <p className="text-sm font-medium text-[#111111] mb-2">
+              par {item.author}
+            </p>
+
+            {/* Monospace Metadata Line (School — Year • Field) */}
+            <p className="text-xs font-mono text-slate-600 mb-4">
+              {item.school} — {item.year} • {item.field || item.type}
+            </p>
+
+            {/* Subtitle if available */}
             {item.subtitle && (
-              <p className="text-xs sm:text-sm text-slate-700 font-medium mb-4 italic">
+              <p className="text-xs sm:text-sm text-slate-700 font-medium mb-3 italic">
                 {item.subtitle}
               </p>
             )}
 
-            {/* Author & School info card */}
-            <div className="bg-[#EEEEEE] p-3.5 rounded-none border-2 border-[#111111] mb-5 flex items-center justify-between">
-              <div>
-                <p className="text-xs text-slate-600 font-medium">Auteur / Étudiant</p>
-                <p className="text-sm font-bold text-[#111111]">{item.author}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-slate-600 font-medium flex items-center justify-end gap-1">
-                  <MapPin className="w-3 h-3" /> École
-                </p>
-                <p className="text-xs font-bold text-[#111111]">{item.school}</p>
-              </div>
-            </div>
-
             {/* Abstract */}
-            <div className="mb-6">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] mb-2">
-                Résumé du travail
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
+            {item.abstract && (
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-6">
                 {item.abstract}
               </p>
-            </div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -150,7 +134,7 @@ export function DetailModal({ item, onClose }) {
                 navigator.clipboard.writeText(window.location.href);
                 alert("Lien du mémoire copié dans le presse-papier !");
               }}
-              className="p-2.5 rounded-none border-2 border-[#111111] bg-white text-[#111111] hover:bg-[#e0e0e0] transition-colors"
+              className="p-2.5 rounded-none border-2 border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd] transition-colors"
               title="Partager"
             >
               <Share2 className="w-4 h-4" />
