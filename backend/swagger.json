@@ -1,0 +1,216 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Documentation - Archiv",
+    "version": "1.0.0",
+    "description": "Documentation de l'API pour le projet Archiv (Authentification et Projets)"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Serveur de développement local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "auth_token"
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "Inscription d'un nouvel utilisateur",
+        "tags": ["Authentification"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "test@example.com" },
+                  "password": { "type": "string", "example": "Password123!" },
+                  "name": { "type": "string", "example": "Thomas" },
+                  "role": { "type": "string", "example": "Etudiant" },
+                  "currentSchool": { "type": "string", "example": "Beaux-Arts" },
+                  "behanceLink": { "type": "string", "example": "https://behance.net/..." },
+                  "instaLink": { "type": "string", "example": "https://instagram.com/..." },
+                  "personalLink": { "type": "string", "example": "https://..." },
+                  "profilePicture": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Inscription réussie (Renvoie un cookie de session)" },
+          "400": { "description": "Erreur de validation ou email déjà existant" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Connexion utilisateur",
+        "tags": ["Authentification"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "test@example.com" },
+                  "password": { "type": "string", "example": "Password123!" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Connexion réussie (Renvoie un cookie de session)" },
+          "401": { "description": "Identifiants invalides" }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Déconnexion",
+        "tags": ["Authentification"],
+        "responses": {
+          "200": { "description": "Déconnexion réussie (Supprime le cookie)" }
+        }
+      }
+    },
+    "/api/projects": {
+      "get": {
+        "summary": "Récupérer les projets avec pagination et filtres",
+        "tags": ["Projets"],
+        "parameters": [
+          { "in": "query", "name": "page", "schema": { "type": "integer" }, "description": "Numéro de page" },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" }, "description": "Nombre par page" },
+          { "in": "query", "name": "type", "schema": { "type": "string" }, "description": "Filtre par type (Portfolio/Mémoire)" },
+          { "in": "query", "name": "domain", "schema": { "type": "string" }, "description": "Filtre par domaine" },
+          { "in": "query", "name": "school", "schema": { "type": "string" }, "description": "Filtre par école" }
+        ],
+        "responses": {
+          "200": { "description": "Liste paginée des projets récupérée avec succès" }
+        }
+      },
+      "post": {
+        "summary": "Créer un nouveau projet",
+        "tags": ["Projets"],
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "type": { "type": "string", "enum": ["Portfolio", "Mémoire"] },
+                  "school": { "type": "string" },
+                  "year": { "type": "integer" },
+                  "domain": { "type": "string" },
+                  "pdf": { "type": "string", "format": "binary", "description": "Fichier PDF (5 Mo max)" },
+                  "cover": { "type": "string", "format": "binary", "description": "Image de couverture (Optionnel)" }
+                },
+                "required": ["title", "type", "school", "year", "domain", "pdf"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Projet créé avec succès" },
+          "400": { "description": "Erreur de validation des champs ou fichier trop lourd" },
+          "401": { "description": "Non autorisé" }
+        }
+      }
+    },
+    "/api/projects/{id}": {
+      "put": {
+        "summary": "Modifier un projet",
+        "tags": ["Projets"],
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "pdf": { "type": "string", "format": "binary" },
+                  "cover": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Projet mis à jour" },
+          "403": { "description": "Non autorisé à modifier ce projet" }
+        }
+      },
+      "delete": {
+        "summary": "Supprimer un projet",
+        "tags": ["Projets"],
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Projet supprimé" },
+          "403": { "description": "Non autorisé à supprimer ce projet" }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "summary": "Récupérer son profil complet",
+        "tags": ["Profil"],
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Profil retourné avec succès" },
+          "401": { "description": "Non autorisé" }
+        }
+      },
+      "put": {
+        "summary": "Mettre à jour son profil",
+        "tags": ["Profil"],
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "role": { "type": "string" },
+                  "currentSchool": { "type": "string" },
+                  "behanceLink": { "type": "string" },
+                  "instaLink": { "type": "string" },
+                  "personalLink": { "type": "string" },
+                  "profilePicture": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Profil mis à jour" }
+        }
+      }
+    }
+  }
+}
