@@ -12,6 +12,7 @@ export function ProjectDetailView({ item, onClose }) {
 
   const totalPages = item?.pdfPages || 12;
   const pagesDir = item?.pagesDir || (isPortrait ? '/pdf/portrait_pages' : '/pdf/landscape_pages');
+  const pdfUrl = item?.pdfUrl || (isPortrait ? '/pdf/Book.pdf' : '/pdf/Book-2.pdf');
 
   const scrollContainerRef = useRef(null);
   const pageRefs = useRef([]);
