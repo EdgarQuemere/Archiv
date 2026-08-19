@@ -235,7 +235,7 @@ export function ProjectDetailView({ item, onClose }) {
         {/* Document Reader View Area (Supports Vertical & Horizontal Scrolling / Panning) */}
         <div
           ref={scrollContainerRef}
-          className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] flex flex-col items-center py-12 px-8 space-y-8 scroll-smooth"
+          className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] flex flex-col items-center py-12 px-8 space-y-8"
         >
           {spreads.map((pages, spreadIdx) => {
             return (
