@@ -229,7 +229,7 @@ export function InfiniteCanvas({
   }, [items, colWidth]);
 
   // MASONRY PUZZLE INFINITE CANVAS (ZERO HOLES, UNFINISHED CONTINUOUS STACK)
-  // MAX RANDOM NON-REPETITIVE INFINITE MASONRY CANVAS
+  // IN LARGE MODE (canvasGap >= 400): CLEAN ALIGNED STRUCTURED GRID MATRIX
   const visibleTiles = useMemo(() => {
     if (!itemsWithMetrics || itemsWithMetrics.length === 0) return [];
 
@@ -238,13 +238,58 @@ export function InfiniteCanvas({
     const worldTop = 0 - camera.y;
     const worldBottom = viewportSize.height - camera.y;
 
-    const pitchX = colWidth + canvasGap;
-
-    const minCol = Math.floor(worldLeft / pitchX) - 2;
-    const maxCol = Math.ceil(worldRight / pitchX) + 2;
-
     const tiles = [];
     const N = itemsWithMetrics.length;
+
+    // Mode Large (canvasGap >= 400): Clean aligned structured grid matrix (no column Y-offsets, no random shuffling)
+    if (canvasGap >= 400) {
+      const maxRowHeight = 420;
+      const pitchX = colWidth + canvasGap;
+      const pitchY = maxRowHeight + canvasGap;
+
+      const minCol = Math.floor(worldLeft / pitchX) - 2;
+      const maxCol = Math.ceil(worldRight / pitchX) + 2;
+      const minRow = Math.floor(worldTop / pitchY) - 2;
+      const maxRow = Math.ceil(worldBottom / pitchY) + 2;
+
+      for (let c = minCol; c <= maxCol; c++) {
+        for (let r = minRow; r <= maxRow; r++) {
+          const modCol = ((c % N) + N) % N;
+          const modRow = ((r % N) + N) % N;
+          const hashIndex = (modCol + modRow * 5 + Math.abs(c * 3)) % N;
+          const baseItem = itemsWithMetrics[hashIndex];
+
+          if (baseItem) {
+            const cellOffsetY = Math.round((maxRowHeight - baseItem.scaledHeight) / 2);
+            const x = c * pitchX;
+            const y = r * pitchY + cellOffsetY;
+            const uniqueKey = `grid_c${c}_r${r}_i${baseItem.id}`;
+
+            tiles.push({
+              position: {
+                col: c,
+                row: r,
+                x,
+                y,
+                width: colWidth,
+                height: baseItem.scaledHeight
+              },
+              item: {
+                ...baseItem,
+                uniqueKey
+              }
+            });
+          }
+        }
+      }
+
+      return tiles;
+    }
+
+    // Modes Serré & Moyen (canvasGap < 400): Continuous staggered masonry stack
+    const pitchX = colWidth + canvasGap;
+    const minCol = Math.floor(worldLeft / pitchX) - 2;
+    const maxCol = Math.ceil(worldRight / pitchX) + 2;
 
     // Total average height of 1 full set of items with gaps
     const avgCycleHeight = itemsWithMetrics.reduce((sum, it) => sum + it.scaledHeight + canvasGap, 0);
