@@ -191,14 +191,6 @@ export function ProjectDetailView({ item, onClose }) {
                 <p className="text-xs font-mono text-slate-400 mt-1">
                   {item.school} — {item.year} • {item.field || item.type}
                 </p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="px-2 py-0.5 text-[10px] font-mono font-semibold uppercase bg-white/10 text-slate-300 rounded-none">
-                    Format {isPortrait ? 'Portrait' : 'Paysage'}
-                  </span>
-                  <span className="px-2 py-0.5 text-[10px] font-mono font-semibold uppercase bg-white/10 text-slate-300 rounded-none">
-                    {viewMode === 'double' ? 'Double Page' : 'Page Simple'}
-                  </span>
-                </div>
               </div>
               <button
                 onClick={() => setShowInfo(false)}
