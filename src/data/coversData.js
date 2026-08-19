@@ -17,6 +17,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Une recherche approfondie sur les structures narratives contemporaines et l'influence des réseaux autoroutiers sur la conception visuelle du XXe siècle. Ce mémoire étudie la matérialité, la typographie, la création numérique et l experimentation visuelle.",
     readTime: "24 min read",
     pages: 142
@@ -39,6 +40,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Étude des flux de production imprimés versus numériques. Comment la matérialité de la reliure réinvente l'expérience de lecture à l'ère des écrans. Une analyse sur la matérialité, la typographie, le design numérique et l experimentation imprimée.",
     readTime: "30 min read",
     pages: 188
@@ -61,6 +63,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Ce mémoire analyse l'autonomie créative des outils algorithmiques et leur impact sur le statut d'auteur dans les arts visuels contemporains. Recherche sur l archéologie, le dispositif mécanique et l approche algorithmique du design.",
     readTime: "18 min read",
     pages: 110
@@ -83,6 +86,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Une cartographie visuelle des micro-icônes et symboles de bureau qui ont façonné le langage visuel des premiers ordinateurs personnels. Analyse centrée sur l archéologie, le dispositif graphique et le calcul algorithmique.",
     readTime: "15 min read",
     pages: 96
@@ -105,6 +109,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Analyse du travail de Deborah Sussman pour les JO de 1984 : comment une identité visuelle éphémère a transformé l'espace urbain de Los Angeles. Exploration axée sur la matérialité, la typographie et l experimentation dans l espace urbain.",
     readTime: "35 min read",
     pages: 210
@@ -127,6 +132,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Exploration graphique des créatures bioluminescentes et des monstres abstraits à travers des sérigraphies en encres néon sur fond sombre.",
     readTime: "12 min read",
     pages: 80
@@ -149,6 +155,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Étude des caractères typographiques traditionnels africains, leur réappropriation contemporaine et la transmission des récits oraux par le signe. Une étude de l archéologie des médias et du dispositif numérique.",
     readTime: "28 min read",
     pages: 175
@@ -171,6 +178,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Quand les formes rigides fondent : étude de la déconstruction des jeux de réflexion et de la défaillance des systèmes d'ordre géométrique. Analyse de l espace urbain et de l architecture contemporaine.",
     readTime: "22 min read",
     pages: 130
@@ -193,6 +201,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Expérimentations autour des limites de la lisibilité, du choc visuel des caractères découpés et de l'héritage du punk dans le design suisse contemporain.",
     readTime: "16 min read",
     pages: 104
@@ -215,6 +224,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Analyse comparative de 30 ans d'affiches présentées au Festival international du graphisme de Chaumont et leur impact sur les tendances graphiques. Cartographie des réseaux et analyse de l espace virtuel.",
     readTime: "32 min read",
     pages: 195
@@ -237,6 +247,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Ce mémoire interroge les pratiques collaboratives entre les graphistes et les labels de musique électronique indépendants.",
     readTime: "26 min read",
     pages: 160
@@ -259,6 +270,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Comment dépasser la couverture et les tranches physiques d'un ouvrage grâce aux interactions mobiles et à la réalité augmentée. Réflexion sur l espace scénographique et l architecture éphémère.",
     readTime: "20 min read",
     pages: 125
@@ -281,6 +293,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Recherche sur l'esthétique du glitch, de l'artefact vidéo et de la défaillance des algorithmes de compression.",
     readTime: "22 min read",
     pages: 135
@@ -303,6 +316,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Conception de polices de caractères paramétriques inspirées des réseaux de mycélium et de la croissance cellulaire. Une cartographie rétrospective des médias interactifs.",
     readTime: "27 min read",
     pages: 165
@@ -325,6 +339,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Une traversée visuelle des espaces 3D non-euclidiens et des nouvelles conventions de navigation spatiale.",
     readTime: "19 min read",
     pages: 115
@@ -347,6 +362,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Enquête sur la conservation des imprimés populaires et l'usure de la matière comme témoignage historique.",
     readTime: "31 min read",
     pages: 198
@@ -369,6 +385,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Étude des dispositifs haptiques sensibles aux micro-variations bio-électriques des plantes d'intérieur.",
     readTime: "25 min read",
     pages: 152
@@ -391,6 +408,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Parallèle entre les temps forts de la notation musicale jazz et les ruptures de rythme dans la typographie helvétique.",
     readTime: "17 min read",
     pages: 108
@@ -413,6 +431,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Analyse sociologique de la typographie vernaculaire et des graffitis comme outils d'appropriation du territoire urbain.",
     readTime: "29 min read",
     pages: 184
@@ -435,6 +454,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Expérimentations imprimées combinant encres photoluminescentes et algorithmes de bruit Perlin.",
     readTime: "14 min read",
     pages: 88
@@ -457,6 +477,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Une étude de la culture des forums, des GIFs animés et des premiers réseaux sociaux comme patrimoine artistique.",
     readTime: "23 min read",
     pages: 140
@@ -479,6 +500,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Principes de pliage japonais appliqués à la conception de pavillons temporaires et d'abris nomades.",
     readTime: "26 min read",
     pages: 168
@@ -501,6 +523,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Transposition visuelle de fréquences sonores et de vinyles de musique concrète en éditions imprimées.",
     readTime: "16 min read",
     pages: 102
@@ -523,6 +546,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Variable fonts déformées en temps réel selon le ton et l'intensité acoustique du lecteur.",
     readTime: "24 min read",
     pages: 148
@@ -545,6 +569,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Enquête sur l'éco-conception éditoriale et l'utilisation de résidus organiques pour fabriquer des supports d'impression circulaires.",
     readTime: "30 min read",
     pages: 182
@@ -567,6 +592,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Système d'orientation visuelle intégrant la lumière naturelle et la typographie monumentale dans les gares.",
     readTime: "21 min read",
     pages: 132
@@ -589,6 +615,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Comment les mèmes internet et l'esthétique du collage numérique réinventent l'affiche de manifestation contemporaine.",
     readTime: "28 min read",
     pages: 176
@@ -611,6 +638,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Scénographie d'objets domestiques détournés comme accessoires d'une pièce de théâtre absurde.",
     readTime: "18 min read",
     pages: 112
@@ -633,6 +661,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Exploration des modèles de langage chaotiques programmés pour composer des recueils de poésie visuelle.",
     readTime: "22 min read",
     pages: 138
@@ -655,6 +684,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Recherche sur les idéogrammes sacrés d'Afrique de l'Ouest et leur transposition dans l'édition moderne.",
     readTime: "27 min read",
     pages: 170
@@ -677,6 +707,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Création de pinceaux virtuels réagissant à la pression et à la vitesse du stylet pour une peinture numérique organique.",
     readTime: "15 min read",
     pages: 94
@@ -699,6 +730,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Analyse des micro-éditions riso artisanales et de leur rôle d'émancipation politique dans le graphisme indépendant.",
     readTime: "25 min read",
     pages: 156
@@ -721,6 +753,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book.pdf",
     pagesDir: "/pdf/portrait_pages",
     pdfPages: 12,
+    pdfSize: '1.2 Mo',
     abstract: "Étude des langages graphiques de jeu vidéo d'anticipation et de la diégèse des éléments d'interface.",
     readTime: "18 min read",
     pages: 118
@@ -743,6 +776,7 @@ export const COVERS_DATA = [
     pdfUrl: "/pdf/Book-2.pdf",
     pagesDir: "/pdf/landscape_pages",
     pdfPages: 12,
+    pdfSize: '12.0 Mo',
     abstract: "Le concept esthétique japonais du Ma (l'espace intermédiaire) transposé à la mise en page d'art contemporain.",
     readTime: "21 min read",
     pages: 134

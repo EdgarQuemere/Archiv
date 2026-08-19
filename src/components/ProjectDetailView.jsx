@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Columns, Square } from 'lucide-react';
+import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Columns, Square, Download } from 'lucide-react';
 
 export function ProjectDetailView({ item, onClose }) {
   const [showInfo, setShowInfo] = useState(true);
@@ -209,6 +209,21 @@ export function ProjectDetailView({ item, onClose }) {
                 </p>
               </div>
             )}
+
+            {/* Download PDF Button with File Size */}
+            <div className="mt-4 pt-3 border-t border-white/20">
+              <a
+                href={pdfUrl}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full h-11 bg-[#EEEEEE] hover:bg-white text-[#111111] text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-none transition-colors cursor-pointer border-0 shadow-lg"
+                title={`Télécharger le fichier PDF (${item.pdfSize || (isPortrait ? '1.2 Mo' : '12.0 Mo')})`}
+              >
+                <Download className="w-4 h-4 stroke-[2.5]" />
+                <span>Télécharger PDF ({item.pdfSize || (isPortrait ? '1.2 Mo' : '12.0 Mo')})</span>
+              </a>
+            </div>
           </div>
         )}
 

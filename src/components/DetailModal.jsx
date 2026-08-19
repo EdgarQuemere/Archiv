@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, BookOpen, Share2, Heart } from 'lucide-react';
+import { X, BookOpen, Share2, Heart, Download } from 'lucide-react';
 import gsap from 'gsap';
 
 export function DetailModal({ item, onClose }) {
@@ -108,14 +108,26 @@ export function DetailModal({ item, onClose }) {
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-4 border-t-2 border-[#111111] flex items-center gap-3">
+          <div className="pt-4 border-t-2 border-[#111111] flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setPdfSimulated(true)}
-              className="flex-1 bg-[#111111] hover:opacity-90 text-[#EEEEEE] font-semibold py-2.5 px-4 rounded-none text-xs flex items-center justify-center gap-2 transition-colors"
+              className="flex-1 bg-[#111111] hover:opacity-90 text-[#EEEEEE] font-semibold py-2.5 px-3 sm:px-4 rounded-none text-xs flex items-center justify-center gap-2 transition-colors"
             >
               <BookOpen className="w-4 h-4" />
-              <span>{pdfSimulated ? 'Ouverture PDF...' : 'Consulter le mémoire PDF'}</span>
+              <span>{pdfSimulated ? 'Ouverture PDF...' : 'Consulter le PDF'}</span>
             </button>
+
+            <a
+              href={item.pdfUrl || (item?.orientation === 'landscape' ? '/pdf/Book-2.pdf' : '/pdf/Book.pdf')}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2.5 bg-[#EEEEEE] hover:bg-[#dddddd] text-[#111111] font-mono font-bold text-xs rounded-none border-2 border-[#111111] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              title={`Télécharger le PDF (${item.pdfSize || (item?.orientation === 'landscape' ? '12.0 Mo' : '1.2 Mo')})`}
+            >
+              <Download className="w-4 h-4 stroke-[2]" />
+              <span className="hidden sm:inline">{item.pdfSize || (item?.orientation === 'landscape' ? '12.0 Mo' : '1.2 Mo')}</span>
+            </a>
 
             <button
               onClick={() => setLiked(!liked)}
