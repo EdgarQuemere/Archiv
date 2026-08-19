@@ -5,7 +5,7 @@ import { NetworkGraphCanvas } from './components/NetworkGraphCanvas';
 import { ListView } from './components/ListView';
 import { Navbar } from './components/Navbar';
 import { FilterDrawer } from './components/FilterDrawer';
-import { DetailModal } from './components/DetailModal';
+import { ProjectDetailView } from './components/ProjectDetailView';
 import { SubmitModal } from './components/SubmitModal';
 import { COVERS_DATA } from './data/coversData';
 
@@ -164,11 +164,13 @@ export function App() {
         totalResults={filteredCovers.length}
       />
 
-      {/* Detail Lightbox Modal */}
-      <DetailModal
-        item={selectedCard}
-        onClose={() => setSelectedCard(null)}
-      />
+      {/* Full-screen Project View with PDF Reader */}
+      {selectedCard && (
+        <ProjectDetailView
+          item={selectedCard}
+          onClose={() => setSelectedCard(null)}
+        />
+      )}
 
       {/* Submit Cover Modal */}
       <SubmitModal
