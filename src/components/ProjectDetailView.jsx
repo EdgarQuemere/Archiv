@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Columns, Square } from 'lucide-react';
 
 export function ProjectDetailView({ item, onClose }) {
@@ -30,7 +30,7 @@ export function ProjectDetailView({ item, onClose }) {
     if (!el) return;
 
     const handleScroll = () => {
-      if (isNavigatingRef.current) return; // Prevent overwriting during smooth scroll animation
+      if (isNavigatingRef.current) return; // Prevent overwriting during smooth scroll or zoom adjustment
 
       const viewportCenter = el.scrollTop + el.clientHeight / 2;
       let closestPage = 1;
@@ -55,15 +55,24 @@ export function ProjectDetailView({ item, onClose }) {
     return () => el.removeEventListener('scroll', handleScroll);
   }, [totalPages]);
 
-  // Maintain scroll focus on currentPage when zoomLevel or viewMode changes
-  useEffect(() => {
+  // Synchronously lock scroll focus on currentPage when zoomLevel or viewMode changes
+  useLayoutEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
     const targetRef = pageRefs.current[currentPage - 1];
-    if (targetRef && targetRef.current && scrollContainerRef.current) {
-      targetRef.current.scrollIntoView({ behavior: 'auto', block: 'center' });
+    const container = scrollContainerRef.current;
+    if (targetRef && targetRef.current && container) {
+      isNavigatingRef.current = true;
+      const targetElem = targetRef.current;
+      const newScrollTop = targetElem.offsetTop + (targetElem.clientHeight / 2) - (container.clientHeight / 2);
+      container.scrollTop = Math.max(0, newScrollTop);
+
+      if (navTimerRef.current) clearTimeout(navTimerRef.current);
+      navTimerRef.current = setTimeout(() => {
+        isNavigatingRef.current = false;
+      }, 250);
     }
   }, [zoomLevel, viewMode]);
 
@@ -219,13 +228,13 @@ export function ProjectDetailView({ item, onClose }) {
             return (
               <div
                 key={spreadIdx}
-                className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0 transition-all duration-200 ease-out`}
+                className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0`}
               >
                 {pages.map((pageNum) => (
                   <div
                     key={pageNum}
                     ref={pageRefs.current[pageNum - 1]}
-                    className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0 transition-all duration-200 ease-out`}
+                    className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0`}
                     style={{
                       width: viewMode === 'double'
                         ? (isPortrait ? `${zoomLevel * 6.5}px` : `${zoomLevel * 8.5}px`)
