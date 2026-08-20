@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Upload, CheckCircle2, Sparkles } from 'lucide-react';
 import gsap from 'gsap';
+import { pdfjs } from 'react-pdf';
 import { SCHOOLS_LIST } from '../data/coversData';
 import api from '../api/axios'; // Import de l'instance axios avec credentials
+
+// Configure worker using CDN to avoid Vite MIME type issues
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCover }) {
   const [formData, setFormData] = useState({
@@ -23,6 +27,8 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState(null);
+  const [extractingCover, setExtractingCover] = useState(false);
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
 
@@ -49,6 +55,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       }
       setUploadProgress(0);
       setFiles({ pdf: null, cover: null });
+      setCoverPreviewUrl(null);
       setError('');
       gsap.timeline()
         .fromTo(
@@ -81,8 +88,45 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
   if (!isOpen) return null;
 
+  const extractCoverFromPDF = async (pdfFile) => {
+    setExtractingCover(true);
+    try {
+      const arrayBuffer = await pdfFile.arrayBuffer();
+      const pdf = await pdfjs.getDocument(arrayBuffer).promise;
+      const page = await pdf.getPage(1);
+      
+      const scale = 1.5;
+      const viewport = page.getViewport({ scale });
+      
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      
+      await page.render({ canvasContext: context, viewport }).promise;
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const coverFile = new File([blob], "auto-cover.jpg", { type: "image/jpeg" });
+          setFiles(prev => ({ ...prev, cover: coverFile }));
+          setCoverPreviewUrl(URL.createObjectURL(blob));
+        }
+        setExtractingCover(false);
+      }, 'image/jpeg', 0.85);
+    } catch (error) {
+      console.error("Erreur d'extraction de la couverture :", error);
+      setExtractingCover(false);
+    }
+  };
+
   const handleFileChange = (e) => {
-    setFiles({ ...files, [e.target.name]: e.target.files[0] });
+    const file = e.target.files[0];
+    if (e.target.name === 'pdf' && file) {
+      setFiles(prev => ({ ...prev, pdf: file }));
+      extractCoverFromPDF(file);
+    } else {
+      setFiles(prev => ({ ...prev, [e.target.name]: file }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -319,16 +363,26 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
               <div>
                 <label className="text-xs font-semibold text-[#111111] block mb-1">
-                  Image de Couverture
+                  Aperçu de la Couverture
                 </label>
-                <input
-                  type="file"
-                  name="cover"
-                  accept="image/png, image/jpeg, image/webp"
-                  onChange={handleFileChange}
-                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-2 py-1 text-[10px] focus:outline-none file:mr-2 file:py-1 file:px-2 file:border-0 file:text-[10px] file:bg-[#111111] file:text-white cursor-pointer"
-                />
-                {editData && <div className="text-[9px] text-slate-500 mt-1">Laissez vide pour conserver l'image actuelle.</div>}
+                <div className="w-full h-24 bg-slate-200 border-2 border-[#111111] flex flex-col items-center justify-center overflow-hidden relative">
+                  {extractingCover ? (
+                    <div className="flex flex-col items-center text-slate-500">
+                      <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mb-1" />
+                      <span className="text-[9px] font-semibold">Génération...</span>
+                    </div>
+                  ) : coverPreviewUrl || (editData && editData.coverUrl) ? (
+                    <img 
+                      src={coverPreviewUrl || editData.coverUrl} 
+                      alt="Aperçu couverture" 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <span className="text-[10px] text-slate-500 font-semibold px-4 text-center">
+                      Sélectionnez un PDF pour générer la couverture.
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
