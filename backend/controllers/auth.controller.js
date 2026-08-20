@@ -152,17 +152,17 @@ exports.omniscientAuth = async (req, res) => {
       first_name = decoded.firstName;
       last_name = decoded.lastName;
     } else {
-      const tokenResponse = await axios.post(`http://127.0.0.1:3001/oauth/token`, {
+      const tokenResponse = await axios.post(`https://omniscientdesign.fr/oauth/token`, {
         client_id: process.env.OMNISCIENT_CLIENT_ID,
         client_secret: process.env.OMNISCIENT_CLIENT_SECRET,
         code,
         grant_type: "authorization_code",
-        redirect_uri: "http://localhost:3006/auth/omniscient/callback"
+        redirect_uri: req.body.redirectUri || "http://localhost:3006/auth/omniscient/callback"
       });
       
       const accessToken = tokenResponse.data.access_token;
       
-      const profileResponse = await axios.get(`http://127.0.0.1:3001/api/me`, {
+      const profileResponse = await axios.get(`https://omniscientdesign.fr/api/me`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
       
