@@ -8,7 +8,7 @@ import { SCHOOLS_LIST } from '../../data/coversData';
 
 export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
   const { register, googleAuth, omniscientAuth } = useContext(AuthContext);
-  
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,12 +21,12 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
     instaLink: '',
     personalLink: ''
   });
-  
+
   const [step, setStep] = useState(1);
   const [googleToken, setGoogleToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
 
@@ -43,21 +43,21 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
         setFormData(prev => ({ ...prev, ...data }));
         setStep(2);
       } else {
-        setFormData({ 
-        firstName: '', 
-        lastName: '', 
-        email: '', 
-        password: '', 
-        confirmPassword: '', 
-        currentSchool: SCHOOLS_LIST[1] || '', 
-        role: 'Etudiant',
-        behanceLink: '',
-        instaLink: '',
-        personalLink: ''
-      });
-      setError('');
-      setStep(1);
-      setGoogleToken(null);
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          currentSchool: SCHOOLS_LIST[1] || '',
+          role: 'Etudiant',
+          behanceLink: '',
+          instaLink: '',
+          personalLink: ''
+        });
+        setError('');
+        setStep(1);
+        setGoogleToken(null);
       }
       gsap.timeline()
         .fromTo(backdropRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
@@ -83,7 +83,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
   if (!isOpen) return null;
 
-  
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setLoading(true);
@@ -112,12 +112,12 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
     }
   };
 
-  
+
   const handleOmniscientLogin = () => {
-    const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.com';
+    const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.fr';
     const redirectUri = `${window.location.origin}/auth/omniscient/callback`;
     const clientId = import.meta.env.VITE_OMNISCIENT_CLIENT_ID;
-    
+
     if (clientId) {
       window.location.href = `${omniUrl}/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
     }
@@ -125,7 +125,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (step === 1) {
       if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.password.trim() || !formData.confirmPassword.trim()) {
         setError('Veuillez remplir tous les champs obligatoires.');
@@ -142,7 +142,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
     setLoading(true);
     setError('');
-    
+
     try {
       const omniToken = localStorage.getItem('omni_token');
       if (omniToken) {
@@ -170,7 +170,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 font-sans text-[#111111]">
       <div ref={backdropRef} className="fixed inset-0 bg-[#111111]/70 backdrop-blur-sm" onClick={handleClose} />
-      
+
       <div ref={dialogRef} className="relative bg-[#EEEEEE] rounded-none shadow-2xl max-w-md w-full z-10 border-2 border-[#111111] p-6 sm:p-8 transform-gpu">
         <button onClick={handleClose} className="absolute top-4 right-4 text-[#111111] hover:opacity-60 p-1.5 rounded-none">
           <X className="w-5 h-5" />
@@ -188,7 +188,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
           {step === 1 && (
             <div className="mb-4">
-              
+
               <button
                 type="button"
                 onClick={handleOmniscientLogin}
@@ -262,12 +262,12 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                   </select>
                 </div>
               </div>
-              
+
               <div>
                 <label className="text-xs font-semibold block mb-1">Lien Behance (Optionnel)</label>
                 <input type="url" name="behanceLink" value={formData.behanceLink} onChange={handleChange} placeholder="https://behance.net/..." className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
               </div>
-              
+
               <div>
                 <label className="text-xs font-semibold block mb-1">Lien Instagram (Optionnel)</label>
                 <input type="url" name="instaLink" value={formData.instaLink} onChange={handleChange} placeholder="https://instagram.com/..." className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />

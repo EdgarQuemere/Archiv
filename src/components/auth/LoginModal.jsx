@@ -9,7 +9,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
 
@@ -41,7 +41,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
 
   if (!isOpen) return null;
 
-  
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setLoading(true);
@@ -64,12 +64,12 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
     }
   };
 
-  
+
   const handleOmniscientLogin = () => {
-    const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.com';
+    const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.fr';
     const redirectUri = `${window.location.origin}/auth/omniscient/callback`;
     const clientId = import.meta.env.VITE_OMNISCIENT_CLIENT_ID;
-    
+
     if (clientId) {
       window.location.href = `${omniUrl}/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
     }
@@ -79,7 +79,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
+
     try {
       await login(formData.email, formData.password);
       if (onSuccess) onSuccess();
@@ -98,7 +98,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 font-sans text-[#111111]">
       <div ref={backdropRef} className="fixed inset-0 bg-[#111111]/70 backdrop-blur-sm" onClick={handleClose} />
-      
+
       <div ref={dialogRef} className="relative bg-[#EEEEEE] rounded-none shadow-2xl max-w-sm w-full z-10 border-2 border-[#111111] p-6 sm:p-8 transform-gpu">
         <button onClick={handleClose} className="absolute top-4 right-4 text-[#111111] hover:opacity-60 p-1.5 rounded-none">
           <X className="w-5 h-5" />
@@ -115,7 +115,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
 
 
           <div className="mb-4">
-            
+
             <button
               type="button"
               onClick={handleOmniscientLogin}
