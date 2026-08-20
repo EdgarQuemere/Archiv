@@ -204,7 +204,6 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                 useOneTap
                 theme="filled_black"
                 shape="rectangular"
-                width="100%"
               />
               <div className="flex items-center my-4">
                 <div className="flex-grow border-t-2 border-[#111111]"></div>
