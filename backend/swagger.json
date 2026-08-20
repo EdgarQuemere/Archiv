@@ -210,6 +210,15 @@
         "responses": {
           "200": { "description": "Profil mis à jour" }
         }
+      },
+      "delete": {
+        "summary": "Supprimer son compte",
+        "tags": ["Profil"],
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Compte supprimé avec succès" },
+          "500": { "description": "Erreur lors de la suppression du compte" }
+        }
       }
     }
   }
