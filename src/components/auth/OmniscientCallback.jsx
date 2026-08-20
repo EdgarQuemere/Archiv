@@ -15,7 +15,8 @@ export function OmniscientCallback() {
     const code = params.get('code');
     
     if (code) {
-      omniscientAuth(code)
+      const redirectUri = `${window.location.origin}/auth/omniscient/callback`;
+      omniscientAuth(code, { redirectUri })
         .then(() => {
           window.location.href = '/';
         })
