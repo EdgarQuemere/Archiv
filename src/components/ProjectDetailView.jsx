@@ -4,8 +4,8 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Use CDN for the worker to avoid Vite .mjs MIME type issues in production
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Use local worker to avoid cross-origin issues and Vite .mjs MIME type issues
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
 
 export function ProjectDetailView({ item, onClose }) {
   const [showInfo, setShowInfo] = useState(true);

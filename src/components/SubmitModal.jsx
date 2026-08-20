@@ -5,8 +5,8 @@ import { pdfjs } from 'react-pdf';
 import { SCHOOLS_LIST } from '../data/coversData';
 import api from '../api/axios'; // Import de l'instance axios avec credentials
 
-// Configure worker using CDN to avoid Vite MIME type issues
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Configure worker using local copy to avoid cross-origin and Vite MIME type issues
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
 
 export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCover }) {
   const [formData, setFormData] = useState({
