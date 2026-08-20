@@ -114,7 +114,13 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
   
   const handleOmniscientLogin = () => {
-    window.location.href = `${import.meta.env.VITE_OMNISCIENT_CLIENT_ID ? 'http://localhost:3001/oauth/authorize?client_id=' + import.meta.env.VITE_OMNISCIENT_CLIENT_ID + '&redirect_uri=http://localhost:3006/auth/omniscient/callback&response_type=code' : '#'}`;
+    const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.com';
+    const redirectUri = `${window.location.origin}/auth/omniscient/callback`;
+    const clientId = import.meta.env.VITE_OMNISCIENT_CLIENT_ID;
+    
+    if (clientId) {
+      window.location.href = `${omniUrl}/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+    }
   };
 
   const handleSubmit = async (e) => {
