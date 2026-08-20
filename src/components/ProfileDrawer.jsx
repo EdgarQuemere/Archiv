@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, LogOut, Edit2, Trash2, User } from 'lucide-react';
 import gsap from 'gsap';
 import api from '../api/axios';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 export function ProfileDrawer({
   isOpen,
@@ -12,6 +14,7 @@ export function ProfileDrawer({
   onEditProject,
   onDeleteProject
 }) {
+  const { deleteAccount } = useContext(AuthContext);
   const backdropRef = useRef(null);
   const panelRef = useRef(null);
   
@@ -55,6 +58,18 @@ export function ProfileDrawer({
   const handleLogout = async () => {
     await logout();
     handleClose();
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Es-tu sûr de vouloir supprimer définitivement ton compte et tous tes projets associés ? Cette action est irréversible.")) {
+      try {
+        await deleteAccount();
+        handleClose();
+      } catch (err) {
+        console.error("Erreur lors de la suppression du compte:", err);
+        alert("Impossible de supprimer le compte.");
+      }
+    }
   };
 
   const handleDelete = async (id) => {
@@ -179,13 +194,20 @@ export function ProfileDrawer({
           </div>
 
           {/* Drawer Footer */}
-          <div className="p-4 bg-[#EEEEEE] border-t-2 border-[#111111]">
+          <div className="p-4 bg-[#EEEEEE] border-t-2 border-[#111111] space-y-3">
             <button
               onClick={handleLogout}
-              className="w-full py-2.5 border-2 border-red-600 text-red-600 bg-white hover:bg-red-50 rounded-none text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+              className="w-full py-2.5 border-2 border-slate-400 text-slate-700 bg-white hover:bg-slate-50 rounded-none text-xs font-bold flex items-center justify-center gap-2 transition-colors"
             >
               <LogOut className="w-4 h-4" />
               <span>Se déconnecter</span>
+            </button>
+            <button
+              onClick={handleDeleteAccount}
+              className="w-full py-2.5 border-2 border-red-600 text-red-600 bg-white hover:bg-red-50 rounded-none text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Supprimer mon compte</span>
             </button>
           </div>
 
