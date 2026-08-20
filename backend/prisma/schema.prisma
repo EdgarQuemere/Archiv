@@ -10,7 +10,7 @@ model User {
   id             String   @id @default(uuid())
   email          String   @unique
   password       String
-  name           String?  // Nom Prénom
+  firstName      String?  // Prénom\n  lastName       String?  // Nom
   role           String?  // Etudiant / Enseignant / Autre
   currentSchool  String?  // École actuelle
   behanceLink    String?

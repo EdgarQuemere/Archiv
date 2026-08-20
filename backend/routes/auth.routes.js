@@ -16,7 +16,8 @@ router.post('/register', [
     .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères')
     .matches(/[A-Z]/).withMessage('Le mot de passe doit contenir au moins une majuscule')
     .matches(/[0-9]/).withMessage('Le mot de passe doit contenir au moins un chiffre'),
-  body('name').optional().trim().escape()
+  body('firstName').notEmpty().withMessage('Le prénom est requis').trim().escape(),
+  body('lastName').notEmpty().withMessage('Le nom est requis').trim().escape()
 ], authController.register);
 
 router.post('/login', loginLimiter, [

@@ -101,7 +101,7 @@ exports.getProjects = async (req, res) => {
         userId: true,
         createdAt: true,
         author: {
-          select: { name: true, profilePicture: true }
+          select: { firstName: true, lastName: true, profilePicture: true }
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -199,7 +199,7 @@ exports.getProjectById = async (req, res) => {
       where: { id },
       include: {
         author: {
-          select: { name: true, profilePicture: true }
+          select: { firstName: true, lastName: true, profilePicture: true }
         }
       }
     });

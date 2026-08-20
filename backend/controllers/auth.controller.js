@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
 
   try {
     const { 
-      email, password, name, role, currentSchool, 
+      email, password, firstName, lastName, role, currentSchool, 
       behanceLink, instaLink, personalLink, profilePicture 
     } = req.body;
 
@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
 
     const user = await prisma.user.create({
       data: {
-        email, password: hashedPassword, name, role, currentSchool,
+        email, password: hashedPassword, firstName, lastName, role, currentSchool,
         behanceLink, instaLink, personalLink, profilePicture
       },
     });
@@ -39,7 +39,7 @@ exports.register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, name: user.name } });
+    res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -74,7 +74,7 @@ exports.login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, name: user.name } });
+    res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur interne du serveur' });
