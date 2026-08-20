@@ -108,6 +108,12 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       
+      // Les PDF ont souvent un fond transparent. Lors de la conversion en JPEG,
+      // la transparence devient noire, ce qui masque les dessins/textes noirs.
+      // Il faut donc remplir le canvas de blanc d'abord.
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      
       await page.render({ canvasContext: context, viewport }).promise;
       
       canvas.toBlob((blob) => {
