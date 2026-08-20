@@ -5,8 +5,9 @@ import { pdfjs } from 'react-pdf';
 import { SCHOOLS_LIST } from '../data/coversData';
 import api from '../api/axios'; // Import de l'instance axios avec credentials
 
-// Configure worker using local copy to avoid cross-origin and Vite MIME type issues
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
+// Configuration de Vite pour react-pdf (pdfjs v4 utilise des modules ES pour le worker)
+const workerUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url);
+pdfjs.GlobalWorkerOptions.workerPort = new Worker(workerUrl, { type: 'module' });
 
 export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCover }) {
   const [formData, setFormData] = useState({
@@ -97,6 +98,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
         cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
         cMapPacked: true,
         standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+        wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
       }).promise;
       const page = await pdf.getPage(1);
       

@@ -4,8 +4,16 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Use local worker to avoid cross-origin issues and Vite .mjs MIME type issues
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
+// Configuration de Vite pour react-pdf (pdfjs v4 utilise des modules ES pour le worker)
+const workerUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url);
+pdfjs.GlobalWorkerOptions.workerPort = new Worker(workerUrl, { type: 'module' });
+
+const pdfOptions = {
+  cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
+  cMapPacked: true,
+  standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+  wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
+};
 
 export function ProjectDetailView({ item, onClose }) {
   const [showInfo, setShowInfo] = useState(true);
@@ -246,11 +254,7 @@ export function ProjectDetailView({ item, onClose }) {
         {/* Document Reader View Area (Supports Vertical & Horizontal Scrolling / Panning) */}
         <Document
           file={item.pdfUrl}
-          options={{
-            cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
-            cMapPacked: true,
-            standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
-          }}
+          options={pdfOptions}
           onLoadSuccess={({ numPages }) => {
             setNumPages(numPages);
             console.log("PDF chargé avec succès, nombre de pages:", numPages);
