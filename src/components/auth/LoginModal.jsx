@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { X, LogIn } from 'lucide-react';
 import gsap from 'gsap';
 import { AuthContext } from '../../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
-  const { login } = useContext(AuthContext);
+  const { login, googleAuth } = useContext(AuthContext);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,6 +40,34 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
   };
 
   if (!isOpen) return null;
+
+  
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      setError('');
+      await googleAuth(credentialResponse.credential);
+      if (onSuccess) onSuccess();
+      handleClose();
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.requireMoreInfo) {
+        // Envoie vers l'inscription si compte n'existe pas
+        onClose();
+        onOpenRegister();
+      } else if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Une erreur est survenue avec Google.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+  const handleOmniscientLogin = () => {
+    window.location.href = `${import.meta.env.VITE_OMNISCIENT_CLIENT_ID ? 'http://localhost:3001/oauth/authorize?client_id=' + import.meta.env.VITE_OMNISCIENT_CLIENT_ID + '&redirect_uri=http://localhost:3006/auth/omniscient/callback&response_type=code' : '#'}`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,7 +105,34 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
           </div>
           <p className="text-xs text-slate-600 mb-4">Accédez à votre compte pour publier un projet.</p>
 
-          {error && <div className="p-3 bg-red-100 border border-red-400 text-red-700 text-xs font-semibold">{error}</div>}
+          {error && <div className="p-3 bg-red-100 border border-red-400 text-red-700 text-xs font-semibold mb-4">{error}</div>}
+
+
+          <div className="mb-4">
+            
+            <button
+              type="button"
+              onClick={handleOmniscientLogin}
+              className="w-full px-5 py-2.5 mb-3 bg-[#202020] text-white rounded-none text-xs font-semibold hover:opacity-90 flex items-center justify-center gap-2"
+            >
+              <img src="/omniscient_logo_white.svg" alt="Omniscient Design" className="h-4" />
+              <span>Continuer avec Omniscient Design</span>
+            </button>
+
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("La connexion avec Google a échoué.")}
+              useOneTap
+              theme="filled_black"
+              shape="rectangular"
+              width="100%"
+            />
+            <div className="flex items-center my-4">
+              <div className="flex-grow border-t-2 border-[#111111]"></div>
+              <span className="px-3 text-xs font-semibold text-[#111111]">OU AVEC EMAIL</span>
+              <div className="flex-grow border-t-2 border-[#111111]"></div>
+            </div>
+          </div>
 
           <div>
             <label className="text-xs font-semibold block mb-1">Email *</label>

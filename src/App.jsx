@@ -10,6 +10,7 @@ import { ProjectDetailView } from './components/ProjectDetailView';
 import { SubmitModal } from './components/SubmitModal';
 import { LoginModal } from './components/auth/LoginModal';
 import { RegisterModal } from './components/auth/RegisterModal';
+import { OmniscientCallback } from './components/auth/OmniscientCallback';
 import { AuthContext } from './context/AuthContext';
 import axios from './api/axios';
 
@@ -51,6 +52,12 @@ export function App() {
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+
+  useEffect(() => {
+    if (window.location.search.includes('complete_profile=true')) {
+      setIsRegisterOpen(true);
+    }
+  }, []);
   const [selectedCard, setSelectedCard] = useState(null);
   const [editProjectData, setEditProjectData] = useState(null); // Used to pass data to SubmitModal for editing
 
@@ -132,7 +139,7 @@ export function App() {
           const formattedProjects = response.data.projects.map(p => ({
             id: p.id,
             title: p.title,
-            author: p.author ? p.author.name : 'Unknown',
+            author: p.author ? `${p.author.firstName || ''} ${p.author.lastName || ''}`.trim() : 'Unknown',
             authorProfilePicture: p.author ? p.author.profilePicture : null,
             school: p.school,
             year: p.year.toString(),
@@ -238,7 +245,7 @@ export function App() {
         const formatted = {
           id: p.id,
           title: p.title,
-          author: p.author ? p.author.name : 'Unknown',
+          author: p.author ? `${p.author.firstName || ''} ${p.author.lastName || ''}`.trim() : 'Unknown',
           authorProfilePicture: p.author ? p.author.profilePicture : null,
           school: p.school,
           year: p.year.toString(),
@@ -284,6 +291,11 @@ export function App() {
   const handleAddCover = (newCover) => {
     setCovers((prev) => [newCover, ...prev]);
   };
+
+  // Handle OAuth Callbacks simply by checking path
+  if (window.location.pathname === '/auth/omniscient/callback') {
+    return <OmniscientCallback />;
+  }
 
   return (
     <div className="w-screen h-screen overflow-hidden relative font-sans select-none bg-[#EEEEEE] text-[#111111]">

@@ -92,7 +92,7 @@ export function ProfileDrawer({
               <div>
                 <h2 className="text-base font-bold tracking-tight">Espace Personnel</h2>
                 <p className="text-xs text-slate-300 font-mono">
-                  Connecté en tant que {user.name}
+                  Connecté en tant que {user.firstName} {user.lastName}
                 </p>
               </div>
             </div>
@@ -110,7 +110,7 @@ export function ProfileDrawer({
             {/* User Info Block */}
             <div className="p-4 border-2 border-[#111111] bg-white">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Profil</div>
-              <div className="text-sm font-semibold mb-1">{user.name}</div>
+              <div className="text-sm font-semibold mb-1">{user.firstName} {user.lastName}</div>
               <div className="text-xs text-slate-700">{user.email}</div>
               <div className="text-xs text-slate-700 mt-1">{user.role} • {user.currentSchool}</div>
             </div>

@@ -40,8 +40,25 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const googleAuth = async (token, additionalData = {}) => {
+    const response = await api.post('/auth/google', { token, ...additionalData });
+    if (response.data.user) {
+      setUser(response.data.user);
+    }
+    return response.data;
+  };
+
+  
+  const omniscientAuth = async (code, additionalData = {}) => {
+    const response = await api.post('/auth/omniscient', { code, ...additionalData });
+    if (response.data.user) {
+      setUser(response.data.user);
+    }
+    return response.data;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, setUser }}>
+    <AuthContext.Provider value={{ user, login, register, logout, googleAuth, omniscientAuth, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

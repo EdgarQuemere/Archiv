@@ -1,0 +1,2 @@
+  firstName      String?  // Prénom
+  lastName       String?  // Nom
