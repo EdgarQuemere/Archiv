@@ -12,7 +12,7 @@ app.set('trust proxy', 1);
 // --- MIDDLEWARES GLOBAUX ---
 app.use(helmet());
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:3006', 'https://archiv.omniscientproject.com'],
+  origin: ['http://localhost:5173', 'http://localhost:3006', 'https://artchiv.fr', 'https://www.artchiv.fr'],
   credentials: true,
 };
 app.use(cors(corsOptions));

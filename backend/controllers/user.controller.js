@@ -7,7 +7,7 @@ exports.getProfile = async (req, res) => {
       select: {
         id: true,
         email: true,
-        name: true,
+        firstName: true, lastName: true,
         role: true,
         currentSchool: true,
         behanceLink: true,
@@ -46,7 +46,7 @@ exports.updateProfile = async (req, res) => {
       select: { // On ne renvoie pas le mot de passe
         id: true,
         email: true,
-        name: true,
+        firstName: true, lastName: true,
         role: true,
         currentSchool: true,
         behanceLink: true,

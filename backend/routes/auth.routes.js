@@ -27,4 +27,7 @@ router.post('/login', loginLimiter, [
 
 router.post('/logout', authController.logout);
 
+router.post('/google', [ body('token').notEmpty() ], authController.googleAuth);
+router.post('/omniscient', [ body('code').notEmpty() ], authController.omniscientAuth);
+
 module.exports = router;
