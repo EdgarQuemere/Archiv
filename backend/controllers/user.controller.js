@@ -62,3 +62,29 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ error: 'Erreur lors de la mise à jour du profil.' });
   }
 };
+
+exports.deleteAccount = async (req, res) => {
+  try {
+    // Supprimer d'abord les projets pour éviter les erreurs de clés étrangères
+    await prisma.project.deleteMany({
+      where: { userId: req.userId }
+    });
+
+    // Supprimer l'utilisateur
+    await prisma.user.delete({
+      where: { id: req.userId }
+    });
+
+    // Déconnecter l'utilisateur en supprimant le cookie
+    res.clearCookie("auth_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+    });
+
+    res.json({ message: 'Compte supprimé avec succès' });
+  } catch (error) {
+    console.error("Delete Account Error:", error);
+    res.status(500).json({ error: 'Erreur lors de la suppression du compte.' });
+  }
+};

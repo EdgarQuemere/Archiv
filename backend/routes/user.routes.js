@@ -9,4 +9,6 @@ router.get('/me', requireAuth, userController.getProfile);
 // Permet de modifier le profil, en incluant un upload d'image optionnel (champ 'profilePicture')
 router.put('/me', requireAuth, upload.single('profilePicture'), userController.updateProfile);
 
+router.delete('/me', requireAuth, userController.deleteAccount);
+
 module.exports = router;
