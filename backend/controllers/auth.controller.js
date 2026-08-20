@@ -37,8 +37,8 @@ exports.register = async (req, res) => {
 
     res.cookie('auth_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -72,8 +72,8 @@ exports.login = async (req, res) => {
 
     res.cookie('auth_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -104,7 +104,7 @@ exports.googleAuth = async (req, res) => {
 
     if (user) {
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-      res.cookie('auth_token', jwtToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+      res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
       return res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
     }
 
@@ -131,7 +131,7 @@ exports.googleAuth = async (req, res) => {
     });
 
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('auth_token', jwtToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
     res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
   } catch (error) {
     console.error(error);
@@ -175,7 +175,7 @@ exports.omniscientAuth = async (req, res) => {
 
     if (user) {
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-      res.cookie("auth_token", jwtToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 7 * 24 * 60 * 60 * 1000 });
+      res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
       return res.json({ message: "Connexion réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
     }
 
@@ -208,7 +208,7 @@ exports.omniscientAuth = async (req, res) => {
     });
 
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    res.cookie("auth_token", jwtToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
     res.status(201).json({ message: "Inscription réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
   } catch (error) {
     console.error("Erreur Omniscient Auth:", error.response ? error.response.data : error.message);
