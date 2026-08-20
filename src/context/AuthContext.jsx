@@ -57,8 +57,13 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
+  const deleteAccount = async () => {
+    await api.delete('/users/me');
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, googleAuth, omniscientAuth, loading, setUser }}>
+    <AuthContext.Provider value={{ user, login, register, logout, googleAuth, omniscientAuth, deleteAccount, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -251,6 +251,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                     <option value="Etudiant">Étudiant(e)</option>
                     <option value="Enseignant">Enseignant(e)</option>
                     <option value="Alumni">Alumni</option>
+                    <option value="Autre">Autre</option>
                   </select>
                 </div>
                 <div>
