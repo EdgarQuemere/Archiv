@@ -4,9 +4,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Configuration de Vite pour react-pdf (pdfjs v4 utilise des modules ES pour le worker)
-const workerUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerPort = new Worker(workerUrl, { type: 'module' });
+pdfjs.GlobalWorkerOptions.workerPort = new Worker('/pdf.worker.js', { type: 'module' });
 
 const pdfOptions = {
   cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,

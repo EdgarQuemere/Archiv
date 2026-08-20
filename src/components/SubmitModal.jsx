@@ -5,9 +5,9 @@ import { pdfjs } from 'react-pdf';
 import { SCHOOLS_LIST } from '../data/coversData';
 import api from '../api/axios'; // Import de l'instance axios avec credentials
 
-// Configuration de Vite pour react-pdf (pdfjs v4 utilise des modules ES pour le worker)
-const workerUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerPort = new Worker(workerUrl, { type: 'module' });
+// Configuration du worker avec un fichier local (.js) pour éviter l'erreur MIME .mjs sur Coolify
+// et avec type: 'module' car pdfjs v4 utilise des modules ES.
+pdfjs.GlobalWorkerOptions.workerPort = new Worker('/pdf.worker.js', { type: 'module' });
 
 export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCover }) {
   const [formData, setFormData] = useState({
