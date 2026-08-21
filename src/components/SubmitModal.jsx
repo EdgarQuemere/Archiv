@@ -228,7 +228,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto font-sans text-[#111111]">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 overflow-y-auto font-sans text-[#111111]">
       <div
         ref={backdropRef}
         className="fixed inset-0 bg-[#111111]/70 backdrop-blur-sm transition-opacity"

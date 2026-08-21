@@ -134,7 +134,7 @@ export function ProfileDrawer({
   if (!isOpen || !user) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
+    <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
       <div className="flex h-full w-full">
         
         {/* LEFT COLUMN - USER INFO */}
@@ -143,11 +143,11 @@ export function ProfileDrawer({
           {/* Top pseudo-navbar */}
           <div className="flex gap-4 items-center">
             <img src="/Artchiv-logo.webp" alt="Artchiv" className="h-10 sm:h-12 w-auto object-contain cursor-pointer" />
-            <button className="bg-transparent text-[#111111] px-3 py-2 border-2 border-[#111111] flex items-center justify-center">
-              <Info className="w-4 h-4" />
+            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] flex items-center justify-center shrink-0 shadow-sm">
+              <Info className="w-4 h-4 stroke-[2.25]" />
             </button>
-            <button className="bg-[#111111] text-[#EEEEEE] px-3 py-2 border-2 border-[#111111] flex items-center justify-center">
-              <User className="w-4 h-4" />
+            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#111111] border-[1.5px] border-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm">
+              <User className="w-4 h-4 stroke-[2.25]" />
             </button>
           </div>
 

@@ -8,6 +8,7 @@ export function Navbar({
   isFilterOpen,
   onOpenSubmit,
   onOpenInfo,
+  isInfoOpen,
   onOpenLogin,
   onOpenProfile,
   isProfileOpen,
@@ -31,9 +32,13 @@ export function Navbar({
 
         {/* Info Button (i) */}
         <button
-          onClick={onOpenInfo || onOpenSubmit}
-          title="Informations / Publier un projet"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm"
+          onClick={onOpenInfo}
+          title="Informations"
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${
+            isInfoOpen
+              ? 'bg-[#111111] text-[#EEEEEE]'
+              : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+          }`}
         >
           <Info className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -85,7 +90,7 @@ export function Navbar({
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
             }`}
           >
-            <LayoutGrid className="w-4 h-4 stroke-[2.5]" />
+            <LayoutGrid className="w-4 h-4 stroke-[2.25]" />
           </button>
 
           <div className="w-[1.5px] h-full bg-[#111111]" />
@@ -117,7 +122,7 @@ export function Navbar({
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
             }`}
           >
-            <List className="w-4 h-4 stroke-[2.5]" />
+            <List className="w-4 h-4 stroke-[2.25]" />
           </button>
         </div>
 

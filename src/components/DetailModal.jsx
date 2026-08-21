@@ -125,7 +125,7 @@ export function DetailModal({ item, onClose }) {
               className="p-2.5 bg-[#EEEEEE] hover:bg-[#dddddd] text-[#111111] font-mono font-bold text-xs rounded-none border-2 border-[#111111] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               title={`Télécharger le PDF (${item.pdfSize || (item?.orientation === 'landscape' ? '12.0 Mo' : '1.2 Mo')})`}
             >
-              <Download className="w-4 h-4 stroke-[2]" />
+              <Download className="w-4 h-4 stroke-[2.25]" />
               <span className="hidden sm:inline">{item.pdfSize || (item?.orientation === 'landscape' ? '12.0 Mo' : '1.2 Mo')}</span>
             </a>
 

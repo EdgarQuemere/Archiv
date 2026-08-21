@@ -6,6 +6,7 @@ import { ListView } from './components/ListView';
 import { Navbar } from './components/Navbar';
 import { FilterDrawer } from './components/FilterDrawer';
 import { ProfileDrawer } from './components/ProfileDrawer';
+import { InfoModal } from './components/InfoModal';
 import { ProjectDetailView } from './components/ProjectDetailView';
 import { SubmitModal } from './components/SubmitModal';
 import { LoginModal } from './components/auth/LoginModal';
@@ -51,6 +52,7 @@ export function App() {
   // Modals & Drawers state
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -323,6 +325,8 @@ export function App() {
         setActiveView={setActiveView}
         onOpenFilter={() => setIsFilterOpen(prev => !prev)}
         isFilterOpen={isFilterOpen}
+        onOpenInfo={() => setIsInfoOpen(prev => !prev)}
+        isInfoOpen={isInfoOpen}
         onOpenSubmit={() => {
           if (user) {
             setEditProjectData(null); // Ensure it's not in edit mode
@@ -386,8 +390,20 @@ export function App() {
         <ProjectDetailView
           item={selectedCard}
           onClose={() => setSelectedCard(null)}
+          onOpenProfile={() => setIsProfileOpen(true)}
+          onOpenLogin={() => setIsLoginOpen(true)}
+          onOpenInfo={() => setIsInfoOpen(true)}
         />
       )}
+
+      {/* Info Modal */}
+      <InfoModal
+        isOpen={isInfoOpen}
+        onClose={() => setIsInfoOpen(false)}
+        user={user}
+        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenLogin={() => setIsLoginOpen(true)}
+      />
 
       {/* Profile Drawer */}
       <ProfileDrawer

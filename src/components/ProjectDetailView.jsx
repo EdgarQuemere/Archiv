@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useContext } from 'react';
-import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Columns, Square, Download, Bookmark } from 'lucide-react';
+import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Info, User, Columns, Download, Bookmark } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -15,7 +15,26 @@ const pdfOptions = {
   wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
 };
 
-export function ProjectDetailView({ item, onClose }) {
+// User provided SVGs
+const PageSingleSVG = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 256 256">
+    <path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z"></path>
+  </svg>
+);
+
+const DownloadSVG = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 256 256">
+    <path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path>
+  </svg>
+);
+
+const BookmarkSVG = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 256 256">
+    <path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z"></path>
+  </svg>
+);
+
+export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, onOpenInfo }) {
   const { user, setUser } = useContext(AuthContext);
   const [showInfo, setShowInfo] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -35,7 +54,6 @@ export function ProjectDetailView({ item, onClose }) {
         }));
       } else {
         await api.post(`/projects/${item.id}/save`);
-        // Refresh or optimistically add (optimistic for now)
         setUser(prev => ({
           ...prev,
           savedProjects: [...(prev.savedProjects || []), { projectId: item.id, project: item }]
@@ -49,10 +67,9 @@ export function ProjectDetailView({ item, onClose }) {
     }
   };
 
-  // Initial zoom: 48% for portrait so full page fits comfortably inside viewport height, 80% for landscape
   const [zoomLevel, setZoomLevel] = useState(isPortrait ? 48 : 80);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState('single'); // 'single' (1 page) or 'double' (2 pages side-by-side)
+  const [viewMode, setViewMode] = useState('single'); // 'single' or 'double'
   const [numPages, setNumPages] = useState(0);
 
   const scrollContainerRef = useRef(null);
@@ -63,18 +80,16 @@ export function ProjectDetailView({ item, onClose }) {
 
   const focalRatioRef = useRef(0.5);
 
-  // Initialize refs for scroll target tracking dynamically
   if (pageRefs.current.length !== numPages) {
     pageRefs.current = Array(numPages).fill(0).map((_, i) => pageRefs.current[i] || React.createRef());
   }
 
-  // Scroll listener to update page indicator and track exact focalRatio dynamically
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
     const handleScroll = () => {
-      if (isNavigatingRef.current) return; // Prevent overwriting during smooth scroll or zoom adjustment
+      if (isNavigatingRef.current) return;
 
       const viewportCenter = el.scrollTop + el.clientHeight / 2;
       let closestPage = 1;
@@ -94,7 +109,6 @@ export function ProjectDetailView({ item, onClose }) {
 
       setCurrentPage(closestPage);
 
-      // Track exact focal ratio of current viewport center relative to active page
       const activeElem = pageRefs.current[closestPage - 1]?.current;
       if (activeElem && activeElem.clientHeight > 0) {
         focalRatioRef.current = (viewportCenter - activeElem.offsetTop) / activeElem.clientHeight;
@@ -105,7 +119,6 @@ export function ProjectDetailView({ item, onClose }) {
     return () => el.removeEventListener('scroll', handleScroll);
   }, [numPages]);
 
-  // Synchronously lock zoom focus on exact focal spot when zoomLevel or viewMode changes
   useLayoutEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -130,12 +143,11 @@ export function ProjectDetailView({ item, onClose }) {
     }
   }, [zoomLevel, viewMode]);
 
-  // Page Navigation Handlers
   const scrollToPage = (pageIndex) => {
     const targetRef = pageRefs.current[pageIndex - 1];
     if (targetRef && targetRef.current && scrollContainerRef.current) {
       isNavigatingRef.current = true;
-      focalRatioRef.current = 0.5; // Reset focal ratio to center for fresh page navigation
+      focalRatioRef.current = 0.5;
       setCurrentPage(pageIndex);
       targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
@@ -162,7 +174,6 @@ export function ProjectDetailView({ item, onClose }) {
     }
   };
 
-  // Zoom Handlers
   const handleZoomIn = () => {
     setZoomLevel((z) => Math.min(220, z + 15));
   };
@@ -171,7 +182,6 @@ export function ProjectDetailView({ item, onClose }) {
     setZoomLevel((z) => Math.max(25, z - 15));
   };
 
-  // Group pages for Double Page View Mode (spreads: [1], [2, 3], [4, 5]...)
   const getSpreads = () => {
     if (viewMode === 'single') {
       return Array.from({ length: numPages }, (_, i) => [i + 1]);
@@ -189,135 +199,143 @@ export function ProjectDetailView({ item, onClose }) {
 
   const spreads = getSpreads();
 
-  // Helper for page counter display text
-  const getPageCounterText = () => {
-    if (viewMode === 'double' && currentPage > 1) {
-      const firstPage = currentPage % 2 === 0 ? currentPage : currentPage - 1;
-      const secondPage = Math.min(numPages, firstPage + 1);
-      return `${firstPage}-${secondPage} sur ${numPages}`;
-    }
-    return `${currentPage} sur ${numPages}`;
-  };
-
   if (!item) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden select-none animate-in fade-in duration-200">
 
-      {/* Top Floating Close Button (DA: Solid #111111 Block, NO stroke) */}
-      <div className="fixed top-6 right-6 z-50 pointer-events-auto">
-        <button
+      {/* TOP LEFT NAVBAR (Logo, Info, User) */}
+      <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2.5 sm:gap-3 pointer-events-auto">
+        <img
+          src="/Artchiv-logo.webp"
+          alt="Artchiv"
+          className="h-10 sm:h-12 w-auto object-contain cursor-pointer mr-0.5"
           onClick={onClose}
-          title="Fermer"
-          className="w-12 h-12 bg-[#111111] text-[#EEEEEE] flex items-center justify-center rounded-none hover:opacity-80 transition-opacity cursor-pointer border-0 shadow-2xl"
+        />
+        <button
+          onClick={() => onOpenInfo && onOpenInfo()}
+          title="Informations"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <X className="w-5 h-5 stroke-[2.5]" />
+          <Info className="w-4 h-4 stroke-[2.25]" />
+        </button>
+        <button
+          onClick={() => {
+            if (user) {
+              onOpenProfile?.();
+            } else {
+              onOpenLogin?.();
+            }
+          }}
+          title={user ? user.name || 'Profil' : 'Se connecter'}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+        >
+          <User className="w-4 h-4 stroke-[2.25]" />
         </button>
       </div>
 
-      {/* Main Container Area */}
+      {/* TOP RIGHT CLOSE BUTTON */}
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-auto">
+        <button
+          onClick={onClose}
+          title="Fermer"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+        >
+          <X className="w-4 h-4 stroke-[2.25]" />
+        </button>
+      </div>
+
+      {/* MAIN CONTAINER AREA */}
       <div className="relative flex-1 w-full h-full overflow-hidden flex bg-[#EEEEEE]">
 
-        {/* Left Floating Info Overlay Card (Solid #111111 Card, NO stroke) */}
-        {showInfo && (
-          <div className="fixed top-6 left-6 z-40 w-80 sm:w-96 bg-[#111111] p-6 text-[#EEEEEE] rounded-none shadow-2xl animate-in fade-in slide-in-from-left-4 duration-200 pointer-events-auto border-0">
-            {/* Card Header & Close */}
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div>
-                <h2 className="text-base font-bold leading-tight text-[#EEEEEE]">
-                  {item.title}
-                </h2>
-                <p className="text-sm font-medium text-slate-300 mt-1 flex items-center gap-2">
-                  par {item.author}
-                  {item.isOmniscient && (
-                    <img src="/logo-od.svg" alt="Omniscient Design" className="h-4 w-auto object-contain" title="Membre de la communauté Omniscient Design" />
-                  )}
+        {/* BOTTOM LEFT PROJECT INFORMATION PANEL */}
+        <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 max-w-xs sm:max-w-md pointer-events-auto font-sans text-[#111111]">
+          {showInfo && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 mb-4">
+              <h1 className="text-xl sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
+                {item.title}
+              </h1>
+
+              <p className="text-sm font-semibold mb-1 text-[#111111]">
+                par <span className="underline cursor-pointer hover:opacity-80">{item.author}</span>
+              </p>
+
+              <p className="text-xs font-semibold text-[#111111]/80 mb-3">
+                {item.school} — {item.year} — {item.type || item.field}
+              </p>
+
+              {(item.description || item.abstract) && (
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed max-w-sm">
+                  {item.description || item.abstract}
                 </p>
-                <p className="text-xs font-mono text-slate-400 mt-1">
-                  {item.school} — {item.year} • {item.field || item.type}
-                </p>
-              </div>
-              <button
-                onClick={() => setShowInfo(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-none transition-opacity shrink-0 cursor-pointer"
-                title="Masquer les infos"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              )}
             </div>
+          )}
 
-            {/* Abstract Text */}
-            {item.abstract && (
-              <div className="pt-3 border-t border-white/20">
-                <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                  {item.abstract}
-                </p>
-              </div>
-            )}
-
-            {/* Actions (Download & Save) */}
-            <div className="mt-4 pt-3 border-t border-white/20 flex gap-2">
-              <a
-                href={item.pdfUrl}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 h-11 bg-[#EEEEEE] hover:bg-white text-[#111111] text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-none transition-colors cursor-pointer border-0 shadow-lg"
-                title={`Télécharger le fichier PDF (${item.pdfSize})`}
-              >
-                <Download className="w-4 h-4 stroke-[2.5]" />
-                <span>Télécharger le PDF ({item.pdfSize})</span>
-              </a>
-              <button
-                onClick={toggleSave}
-                disabled={isSaving}
-                className={`w-11 h-11 flex items-center justify-center transition-colors cursor-pointer border-0 shadow-lg ${
-                  isSaved 
-                    ? 'bg-[#111111] text-[#EEEEEE] border-2 border-[#EEEEEE] hover:bg-slate-800' 
-                    : 'bg-[#EEEEEE] text-[#111111] hover:bg-white'
-                } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
-                title={isSaved ? "Retirer des enregistrements" : "Enregistrer ce projet"}
-              >
-                <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current stroke-[2]' : 'stroke-[2.5]'}`} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Toggle Info Button (if hidden) */}
-        {!showInfo && (
-          <div className="fixed top-6 left-6 z-40 pointer-events-auto">
+          {/* Action Buttons Row */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Toggle Info Button (< / >) */}
             <button
-              onClick={() => setShowInfo(true)}
-              className="h-12 px-5 bg-[#111111] text-[#EEEEEE] text-xs font-mono font-bold flex items-center justify-center rounded-none hover:opacity-80 transition-opacity cursor-pointer border-0 shadow-2xl"
+              onClick={() => setShowInfo((prev) => !prev)}
+              title={showInfo ? 'Masquer les informations' : 'Afficher les informations'}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
             >
-              <span>Infos</span>
+              {showInfo ? (
+                <ChevronLeft className="w-4 h-4 stroke-[2.25]" />
+              ) : (
+                <ChevronRight className="w-4 h-4 stroke-[2.25]" />
+              )}
+            </button>
+
+            {/* Download Button */}
+            <a
+              href={item.pdfUrl}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-9 sm:h-10 px-4 sm:px-5 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
+              title={`Télécharger le PDF (${item.pdfSize || '12.0 mo'})`}
+            >
+              <span>Télécharger ({item.pdfSize || '12.0 mo'})</span>
+              <Download className="w-4 h-4 stroke-[2.25]" />
+            </a>
+
+            {/* Bookmark / Save Button */}
+            <button
+              onClick={toggleSave}
+              disabled={isSaving}
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0 ${
+                isSaved
+                  ? 'bg-[#111111] text-[#EEEEEE]'
+                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={isSaved ? "Retirer des enregistrements" : "Enregistrer"}
+            >
+              <Bookmark className={`w-4 h-4 stroke-[2.25] ${isSaved ? 'fill-current' : ''}`} />
             </button>
           </div>
-        )}
+        </div>
 
-        {/* Document Reader View Area (Supports Vertical & Horizontal Scrolling / Panning) */}
+        {/* DOCUMENT READER VIEW AREA */}
         <Document
           file={item.pdfUrl}
           options={pdfOptions}
           onLoadSuccess={({ numPages }) => {
             setNumPages(numPages);
-            console.log("PDF chargé avec succès, nombre de pages:", numPages);
           }}
           onLoadError={(error) => {
             console.error("Erreur de chargement du PDF:", error);
-            alert("Erreur de chargement du PDF. Regarde la console (F12). C'est probablement un problème de CORS avec MinIO.");
           }}
           className="w-full h-full overflow-hidden"
           loading={
             <div className="flex items-center justify-center h-full w-full bg-[#EEEEEE]">
-              <span className="text-black font-mono text-sm font-bold">Chargement du PDF...</span>
+              <span className="text-[#111111] font-mono text-sm font-bold">Chargement du PDF...</span>
             </div>
           }
         >
           <div
             ref={scrollContainerRef}
-            className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] flex flex-col items-center py-12 px-8 space-y-8"
+            className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] flex flex-col items-center py-16 px-8 space-y-8"
           >
             {spreads.map((pages, spreadIdx) => {
               return (
@@ -351,80 +369,86 @@ export function ProjectDetailView({ item, onClose }) {
           </div>
         </Document>
 
-        {/* Bottom Floating Control Bar (Centered on mobile, Right-aligned on desktop) */}
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50 flex items-center pointer-events-auto font-sans max-w-[95vw] sm:max-w-none">
-          <div className="h-10 sm:h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0 shadow-2xl">
-
-            {/* View Mode Toggle: 1 Page vs 2 Pages */}
+        {/* BOTTOM RIGHT HUD CONTROLS BAR */}
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 sm:gap-3 pointer-events-auto font-sans">
+          
+          {/* Segment 1: View Mode (Single Page vs Double Page Spread) */}
+          <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
             <button
-              onClick={() => setViewMode((m) => (m === 'single' ? 'double' : 'single'))}
-              title={viewMode === 'single' ? 'Passer en affichage Double Page' : 'Passer en affichage Page Simple'}
-              className="h-full px-2.5 sm:px-3.5 flex items-center gap-1.5 sm:gap-2 bg-[#111111] text-[#EEEEEE] text-[11px] sm:text-xs font-mono font-bold hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0 shrink-0"
+              onClick={() => setViewMode('single')}
+              title="Page Simple"
+              className={`w-9 sm:w-10 h-full flex items-center justify-center transition-colors cursor-pointer ${
+                viewMode === 'single'
+                  ? 'bg-[#111111] text-[#EEEEEE]'
+                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              }`}
             >
-              {viewMode === 'single' ? (
-                <>
-                  <Columns className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
-                  <span className="hidden sm:inline">2 Pages</span>
-                </>
-              ) : (
-                <>
-                  <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
-                  <span className="hidden sm:inline">1 Page</span>
-                </>
-              )}
+              <PageSingleSVG />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            {/* Zoom Out (-) */}
+            <button
+              onClick={() => setViewMode('double')}
+              title="Double Page"
+              className={`w-9 sm:w-10 h-full flex items-center justify-center transition-colors cursor-pointer ${
+                viewMode === 'double'
+                  ? 'bg-[#111111] text-[#EEEEEE]'
+                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              }`}
+            >
+              <Columns className="w-4 h-4 stroke-[2.25]" />
+            </button>
+          </div>
+
+          {/* Segment 2: Zoom Controls (- / +) */}
+          <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
             <button
               onClick={handleZoomOut}
               title="Dézoomer (-)"
-              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+              <ZoomOut className="w-4 h-4 stroke-[2.25]" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            {/* Zoom In (+) */}
             <button
               onClick={handleZoomIn}
               title="Zoomer (+)"
-              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+              <ZoomIn className="w-4 h-4 stroke-[2.25]" />
             </button>
+          </div>
 
-            <div className="w-[1.5px] h-full bg-[#111111]" />
-
-            {/* Page Up (↑) */}
+          {/* Segment 3: Page Navigation (^ / v) & Counter (1 sur 12) */}
+          <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
             <button
               onClick={handlePrevPage}
               title="Page précédente"
-              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+              <ChevronUp className="w-4 h-4 stroke-[2.25]" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            {/* Page Down (↓) */}
             <button
               onClick={handleNextPage}
               title="Page suivante"
-              className="w-9 sm:w-12 h-full flex items-center justify-center bg-[#111111] text-[#EEEEEE] hover:opacity-85 transition-opacity rounded-none cursor-pointer border-0"
+              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+              <ChevronDown className="w-4 h-4 stroke-[2.25]" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            {/* Page Counter Display */}
-            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#EEEEEE] text-[#111111] text-[11px] sm:text-xs font-mono font-bold select-none min-w-[85px] sm:min-w-[105px] border-0">
-              {getPageCounterText()}
+            <div className="h-full px-3.5 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs font-mono font-bold select-none min-w-[70px]">
+              {currentPage} sur {numPages || 1}
             </div>
           </div>
+
         </div>
 
       </div>

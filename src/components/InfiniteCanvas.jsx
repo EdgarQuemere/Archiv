@@ -492,7 +492,7 @@ export function InfiniteCanvas({
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
             }`}
           >
-            <Grid className="w-3.5 h-3.5 stroke-[2.25]" />
+            <Grid className="w-4 h-4 stroke-[2.25]" />
             <span>Serré</span>
           </button>
 

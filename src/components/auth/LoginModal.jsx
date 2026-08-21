@@ -96,7 +96,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 font-sans text-[#111111]">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 font-sans text-[#111111]">
       <div ref={backdropRef} className="fixed inset-0 bg-[#111111]/70 backdrop-blur-sm" onClick={handleClose} />
 
       <div ref={dialogRef} className="relative bg-[#EEEEEE] rounded-none shadow-2xl max-w-sm w-full z-10 border-2 border-[#111111] p-6 sm:p-8 transform-gpu">

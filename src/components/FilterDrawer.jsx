@@ -115,7 +115,7 @@ export function FilterDrawer({
               onClick={handleClose}
               className="w-8 h-8 rounded-full border border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] flex items-center justify-center text-[#111111] transition-colors"
             >
-              <X className="w-4 h-4 stroke-[2]" />
+              <X className="w-4 h-4 stroke-[2.25]" />
             </button>
           </div>
 
