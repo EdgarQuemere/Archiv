@@ -466,13 +466,6 @@ export function InfiniteCanvas({
                   }}
                   className="w-full h-full object-cover block select-none"
                 />
-
-                {/* Title Overlay on Hover */}
-                {isHovered && (
-                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-[#111111] text-[#EEEEEE] px-4 py-2 text-xs font-mono whitespace-nowrap shadow-xl z-[100] pointer-events-none border-2 border-[#111111]">
-                    {item.title.length > 35 ? item.title.substring(0, 35) + '...' : item.title}
-                  </div>
-                )}
               </div>
             </div>
           );
@@ -482,11 +475,11 @@ export function InfiniteCanvas({
       {/* BOTTOM CONTROL BAR (SPACING GAP TOGGLE - Centered on mobile, Right-aligned on desktop) */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50 flex items-center gap-3 pointer-events-auto font-sans max-w-[95vw] sm:max-w-none">
         {/* Segmented Cover Spacing Selector (0px, 96px, 300px) */}
-        <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-none">
+        <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
           <button
             onClick={() => setCanvasGap(0)}
             title="Espacement 0px (Serré)"
-            className={`h-full px-3.5 sm:px-5 flex items-center gap-1.5 text-xs font-mono font-bold transition-colors cursor-pointer ${
+            className={`h-full px-4.5 sm:px-6 flex items-center gap-2 text-sm sm:text-base font-medium transition-colors cursor-pointer ${
               canvasGap === 0
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -501,7 +494,7 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(96)}
             title="Espacement 96px (Moyen)"
-            className={`h-full px-3.5 sm:px-5 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer ${
+            className={`h-full px-4.5 sm:px-6 flex items-center text-sm sm:text-base font-medium transition-colors cursor-pointer ${
               canvasGap === 96
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -515,7 +508,7 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(300)}
             title="Espacement 300px (Large)"
-            className={`h-full px-3.5 sm:px-5 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer ${
+            className={`h-full px-4.5 sm:px-6 flex items-center text-sm sm:text-base font-medium transition-colors cursor-pointer ${
               canvasGap >= 280
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'

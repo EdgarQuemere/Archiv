@@ -346,8 +346,20 @@ export function App() {
       />
 
       {/* Main Viewport Content */}
-      <main ref={mainContainerRef} className="w-full h-full transform-gpu">
-        {activeView === 'canvas' ? (
+      <main ref={mainContainerRef} className="w-full h-full transform-gpu relative">
+        {filteredCovers.length === 0 ? (
+          <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-[#EEEEEE] text-[#111111] font-sans">
+            <img
+              src="/sad-spongebob.webp"
+              alt="Aucun résultat"
+              className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md select-none pointer-events-none"
+            />
+            <h3 className="text-xl font-bold text-[#111111] mb-1">Aucun résultat trouvé</h3>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-sm">
+              Essayez de modifier vos critères de recherche<br />ou réinitialisez les filtres.
+            </p>
+          </div>
+        ) : activeView === 'canvas' ? (
           <InfiniteCanvas
             items={filteredCovers}
             camera={camera}

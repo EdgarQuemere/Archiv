@@ -17,36 +17,36 @@
 .bg-graph-grid {
   background-color: #EEEEEE;
   background-image: 
-    linear-gradient(to right, rgba(160, 170, 185, 0.4) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(160, 170, 185, 0.4) 1px, transparent 1px);
+    linear-gradient(to right, rgba(17, 17, 17, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 17, 17, 0.08) 1px, transparent 1px);
 }
 
 /* High quality book elevation shadows matching reference image */
 .book-shadow {
   box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 10px 25px -3px rgba(0, 0, 0, 0.15),
-    0 20px 30px -10px rgba(0, 0, 0, 0.08);
+    0 4px 6px -1px rgba(17, 17, 17, 0.05),
+    0 10px 25px -3px rgba(17, 17, 17, 0.15),
+    0 20px 30px -10px rgba(17, 17, 17, 0.08);
 }
 
 .book-shadow-hover {
   box-shadow: 
-    0 20px 35px -5px rgba(0, 0, 0, 0.22),
-    0 30px 50px -12px rgba(27, 0, 238, 0.25),
+    0 20px 35px -5px rgba(17, 17, 17, 0.22),
+    0 30px 50px -12px rgba(17, 17, 17, 0.25),
     0 0 0 1px rgba(238, 238, 238, 0.6) inset;
 }
 
-/* Electric blue UI buttons matching reference screenshot */
+/* Solid UI Buttons strictly matching #111111 and #EEEEEE */
 .btn-electric-blue {
-  background-color: #1b00ee;
+  background-color: #111111;
   color: #EEEEEE;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-electric-blue:hover {
-  background-color: #1400ba;
+  background-color: #000000;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(27, 0, 238, 0.35);
+  box-shadow: 0 4px 14px rgba(17, 17, 17, 0.35);
 }
 
 .btn-electric-blue:active {
@@ -64,10 +64,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(160, 175, 200, 0.5);
+  background: rgba(17, 17, 17, 0.3);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 115, 145, 0.8);
+  background: rgba(17, 17, 17, 0.6);
 }

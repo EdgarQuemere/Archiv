@@ -23,7 +23,7 @@ export function CoverCard({ item, position, onClick }) {
       <div className="w-full h-full relative overflow-visible bg-transparent transform-gpu pointer-events-none transition-transform duration-300 ease-out group-hover:scale-110">
         {/* Skeleton Loader */}
         {!loaded && (
-          <div className="absolute inset-0 bg-[#e0e0e0] animate-pulse flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 bg-[#EEEEEE] animate-pulse flex items-center justify-center pointer-events-none">
             <BookOpen className="w-8 h-8 text-[#111111] opacity-40" />
           </div>
         )}

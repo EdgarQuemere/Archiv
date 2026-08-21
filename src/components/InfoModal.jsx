@@ -26,18 +26,18 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
     <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans overflow-hidden select-none animate-in fade-in duration-200 h-screen w-screen">
       
       {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
-      <div className="fixed top-6 left-6 z-50 flex items-center gap-2.5 sm:gap-3 pointer-events-auto">
+      <div className="fixed top-6 left-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto">
         <img
           src="/Artchiv-logo.webp"
           alt="Artchiv"
-          className="h-10 sm:h-12 w-auto object-contain cursor-pointer mr-0.5"
+          className="h-12 sm:h-15 w-auto object-contain cursor-pointer mr-0.5"
           onClick={onClose}
         />
         {/* Info Button - Active Solid Black */}
         <button
           onClick={onClose}
           title="Fermer la page information"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#111111] border-[1.5px] border-[#111111] text-[#EEEEEE] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#111111] border-[1.5px] border-[#111111] text-[#EEEEEE] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
           <Info className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -51,7 +51,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             }
           }}
           title={user ? user.name || 'Profil' : 'Se connecter'}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
           <User className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -62,7 +62,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         <button
           onClick={onClose}
           title="Fermer"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
         >
           <X className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -110,17 +110,17 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             </button>
 
             {/* LOGOS PARTENAIRES */}
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-3.5 pt-2">
               <img
                 src="/page_info/Logo_Omniscient_project_gauche.png"
                 alt="Omniscient Project"
-                className="h-6 sm:h-7 w-auto object-contain"
+                className="h-8 sm:h-9 w-auto object-contain"
               />
-              <span className="text-xs font-light text-[#111111]">✕</span>
+              <span className="text-sm sm:text-base font-light text-[#111111]">✕</span>
               <img
                 src="/page_info/logo_the_blacklilcat_droite.png"
                 alt="The Blacklilcat"
-                className="h-6 sm:h-7 w-auto object-contain"
+                className="h-8 sm:h-9 w-auto object-contain"
               />
             </div>
           </div>

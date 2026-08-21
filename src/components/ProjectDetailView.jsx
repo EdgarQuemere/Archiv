@@ -203,19 +203,19 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
   return (
     <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden select-none animate-in fade-in duration-200">
-
+      
       {/* TOP LEFT NAVBAR (Logo, Info, User) */}
-      <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2.5 sm:gap-3 pointer-events-auto">
+      <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto">
         <img
           src="/Artchiv-logo.webp"
           alt="Artchiv"
-          className="h-10 sm:h-12 w-auto object-contain cursor-pointer mr-0.5"
+          className="h-12 sm:h-15 w-auto object-contain cursor-pointer mr-0.5"
           onClick={onClose}
         />
         <button
           onClick={() => onOpenInfo && onOpenInfo()}
           title="Informations"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
           <Info className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -228,7 +228,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             }
           }}
           title={user ? user.name || 'Profil' : 'Se connecter'}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
           <User className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -238,8 +238,8 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-auto">
         <button
           onClick={onClose}
-          title="Fermer"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+          title="Fermer la vue produit"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
         >
           <X className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -278,7 +278,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setShowInfo((prev) => !prev)}
               title={showInfo ? 'Masquer les informations' : 'Afficher les informations'}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
             >
               {showInfo ? (
                 <ChevronLeft className="w-4 h-4 stroke-[2.25]" />
@@ -293,7 +293,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               download
               target="_blank"
               rel="noopener noreferrer"
-              className="h-9 sm:h-10 px-4 sm:px-5 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
+              className="h-10 sm:h-11 px-5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-sm sm:text-base font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
               title={`Télécharger le PDF (${item.pdfSize || '12.0 mo'})`}
             >
               <span>Télécharger ({item.pdfSize || '12.0 mo'})</span>
@@ -304,7 +304,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={toggleSave}
               disabled={isSaving}
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0 ${
+              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0 ${
                 isSaved
                   ? 'bg-[#111111] text-[#EEEEEE]'
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -369,15 +369,15 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           </div>
         </Document>
 
-        {/* BOTTOM RIGHT HUD CONTROLS BAR */}
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 sm:gap-3 pointer-events-auto font-sans">
+        {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR (3 Segmented Pill Containers) */}
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto font-sans">
           
-          {/* Segment 1: View Mode (Single Page vs Double Page Spread) */}
-          <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+          {/* Segment 1: View Mode Switcher (Single / Double) */}
+          <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
             <button
               onClick={() => setViewMode('single')}
               title="Page Simple"
-              className={`w-9 sm:w-10 h-full flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-10 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
                 viewMode === 'single'
                   ? 'bg-[#111111] text-[#EEEEEE]'
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -391,7 +391,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setViewMode('double')}
               title="Double Page"
-              className={`w-9 sm:w-10 h-full flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-10 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
                 viewMode === 'double'
                   ? 'bg-[#111111] text-[#EEEEEE]'
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -402,11 +402,11 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           </div>
 
           {/* Segment 2: Zoom Controls (- / +) */}
-          <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+          <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
             <button
               onClick={handleZoomOut}
               title="Dézoomer (-)"
-              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ZoomOut className="w-4 h-4 stroke-[2.25]" />
             </button>
@@ -416,18 +416,18 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handleZoomIn}
               title="Zoomer (+)"
-              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ZoomIn className="w-4 h-4 stroke-[2.25]" />
             </button>
           </div>
 
           {/* Segment 3: Page Navigation (^ / v) & Counter (1 sur 12) */}
-          <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+          <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
             <button
               onClick={handlePrevPage}
               title="Page précédente"
-              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ChevronUp className="w-4 h-4 stroke-[2.25]" />
             </button>
@@ -437,22 +437,19 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handleNextPage}
               title="Page suivante"
-              className="w-9 sm:w-10 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ChevronDown className="w-4 h-4 stroke-[2.25]" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            <div className="h-full px-3.5 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs font-mono font-bold select-none min-w-[70px]">
+            <div className="h-full px-4 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-sm sm:text-base font-medium select-none min-w-[80px]">
               {currentPage} sur {numPages || 1}
             </div>
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }

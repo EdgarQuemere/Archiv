@@ -127,7 +127,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       const dist = Math.abs(itemCenter - viewportCenter);
 
       const normalizedDist = Math.min(dist / maxRange, 1.0);
-      
+
       // Scale (1.10 at center, 0.85 when far) and opacity (1.0 at center, 0.50 when far)
       const scale = 0.85 + 0.25 * Math.cos(normalizedDist * (Math.PI / 2));
       const opacity = 0.50 + 0.50 * Math.cos(normalizedDist * (Math.PI / 2));
@@ -305,10 +305,14 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
   if (!items || items.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-[#EEEEEE] text-[#111111]">
-        <BookOpen className="w-12 h-12 text-[#111111] mb-3 opacity-60 animate-bounce" />
-        <h3 className="text-lg font-bold text-[#111111]">Aucun résultat trouvé</h3>
-        <p className="text-xs text-slate-600 max-w-sm mt-1">
-          Essayez de modifier vos critères de recherche ou réinitialisez les filtres.
+        <img
+          src="/sad-spongebob.webp"
+          alt="Aucun résultat"
+          className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md select-none pointer-events-none"
+        />
+        <h3 className="text-xl font-bold text-[#111111] mb-1">Aucun résultat trouvé</h3>
+        <p className="text-xs sm:text-sm text-slate-600 max-w-sm">
+          Essayez de modifier vos critères de recherche<br />ou réinitialisez les filtres.
         </p>
       </div>
     );
@@ -365,7 +369,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             <h3 className="text-xl font-bold leading-tight mb-1">
               {currentInfoItem.title}
             </h3>
-            
+
             <p className="text-sm font-medium mb-2">
               par {currentInfoItem.author}
             </p>
@@ -382,7 +386,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
             <button
               onClick={() => onCardClick(currentInfoItem)}
-              className="inline-flex items-center gap-2 h-9 sm:h-10 px-5 sm:px-6 bg-[#EEEEEE] border-[1.5px] border-[#111111] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-sm font-medium rounded-full transition-colors mt-2 shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 h-10 sm:h-11 px-6 sm:px-8 bg-[#EEEEEE] border-[1.5px] border-[#111111] hover:bg-[#E2E2E2] text-[#111111] text-sm sm:text-base font-medium rounded-full transition-colors mt-2 shadow-sm cursor-pointer"
             >
               <span>Consulter</span>
               <ExternalLink className="w-4 h-4 stroke-[2.25]" />

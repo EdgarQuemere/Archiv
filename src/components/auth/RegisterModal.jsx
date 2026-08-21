@@ -83,7 +83,6 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
   if (!isOpen) return null;
 
-
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setLoading(true);
@@ -111,7 +110,6 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
       setLoading(false);
     }
   };
-
 
   const handleOmniscientLogin = () => {
     const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.fr';
@@ -169,46 +167,71 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 font-sans text-[#111111]">
-      <div ref={backdropRef} className="fixed inset-0 bg-[#111111]/70 backdrop-blur-sm" onClick={handleClose} />
+      {/* Backdrop */}
+      <div
+        ref={backdropRef}
+        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs"
+        onClick={handleClose}
+      />
 
-      <div ref={dialogRef} className="relative bg-[#EEEEEE] rounded-none shadow-2xl max-w-md w-full z-10 border-2 border-[#111111] p-6 sm:p-8 transform-gpu">
-        <button onClick={handleClose} className="absolute top-4 right-4 text-[#111111] hover:opacity-60 p-1.5 rounded-none">
-          <X className="w-5 h-5" />
+      {/* Modal Card */}
+      <div
+        ref={dialogRef}
+        className="relative bg-[#EEEEEE] rounded-[10px] shadow-2xl max-w-md w-full z-10 border-[1.5px] border-[#111111] p-6 sm:p-8 transform-gpu"
+      >
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          title="Fermer"
+          className="absolute top-4 right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+        >
+          <X className="w-4 h-4 stroke-[2.25]" />
         </button>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <UserPlus className="w-5 h-5 text-[#111111]" />
-            <h2 className="text-lg font-bold text-[#111111]">S'inscrire {step === 2 && "(Profil)"}</h2>
+          {/* Header */}
+          <div className="flex items-center gap-2.5 mb-1">
+            <UserPlus className="w-5 h-5 stroke-[2.25] text-[#111111]" />
+            <h2 className="text-xl font-bold text-[#111111]">
+              S'inscrire {step === 2 && "(Profil)"}
+            </h2>
           </div>
-          <p className="text-xs text-slate-600 mb-4">Créez votre compte pour commencer à publier.</p>
+          <p className="text-xs sm:text-sm text-slate-600 mb-4">
+            Créez votre compte pour commencer à publier.
+          </p>
 
-          {error && <div className="p-3 bg-red-100 border border-red-400 text-red-700 text-xs font-semibold mb-4">{error}</div>}
-
+          {error && (
+            <div className="p-3 bg-red-100 border-[1.5px] border-red-400 text-red-700 text-xs font-medium rounded-full text-center mb-3">
+              {error}
+            </div>
+          )}
 
           {step === 1 && (
-            <div className="mb-4">
-
+            <div className="mb-4 space-y-3">
               <button
                 type="button"
                 onClick={handleOmniscientLogin}
-                className="w-full px-5 py-2.5 mb-3 bg-[#202020] text-white rounded-none text-xs font-semibold hover:opacity-90 flex items-center justify-center gap-2"
+                className="w-full h-[40px] bg-[#111111] text-[#EEEEEE] rounded-[4px] border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-3 transition-colors cursor-pointer shadow-sm"
               >
-                <img src="/omniscient_logo_white.svg" alt="Omniscient Design" className="h-4" />
+                <img src="/omniscient_logo_white.svg" alt="Omniscient Design" className="h-4 w-auto object-contain" />
                 <span>Continuer avec Omniscient Design</span>
               </button>
 
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setError("La connexion avec Google a échoué.")}
-                useOneTap
-                theme="filled_black"
-                shape="rectangular"
-              />
+              <div className="w-full flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError("La connexion avec Google a échoué.")}
+                  useOneTap
+                  theme="filled_black"
+                  shape="rectangular"
+                  width="320"
+                />
+              </div>
+
               <div className="flex items-center my-4">
-                <div className="flex-grow border-t-2 border-[#111111]"></div>
-                <span className="px-3 text-xs font-semibold text-[#111111]">OU AVEC EMAIL</span>
-                <div className="flex-grow border-t-2 border-[#111111]"></div>
+                <div className="flex-grow border-t-[1.5px] border-[#111111]"></div>
+                <span className="px-3 text-xs font-bold text-[#111111] tracking-wider">OU AVEC EMAIL</span>
+                <div className="flex-grow border-t-[1.5px] border-[#111111]"></div>
               </div>
             </div>
           )}
@@ -217,36 +240,78 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
             <>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold block mb-1">Prénom *</label>
-                  <input required type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
+                  <label className="text-xs sm:text-sm font-medium block mb-1">Prénom *</label>
+                  <input
+                    required
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                  />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold block mb-1">Nom *</label>
-                  <input required type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
+                  <label className="text-xs sm:text-sm font-medium block mb-1">Nom *</label>
+                  <input
+                    required
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                  />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold block mb-1">Email *</label>
-                <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
+                <label className="text-xs sm:text-sm font-medium block mb-1">Email *</label>
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                />
               </div>
 
               <div>
-                <label className="text-xs font-semibold block mb-1">Mot de passe *</label>
-                <input required type="password" name="password" minLength="6" value={formData.password} onChange={handleChange} className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
+                <label className="text-xs sm:text-sm font-medium block mb-1">Mot de passe *</label>
+                <input
+                  required
+                  type="password"
+                  name="password"
+                  minLength="6"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                />
               </div>
 
               <div>
-                <label className="text-xs font-semibold block mb-1">Confirmer *</label>
-                <input required type="password" name="confirmPassword" minLength="6" value={formData.confirmPassword} onChange={handleChange} className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
+                <label className="text-xs sm:text-sm font-medium block mb-1">Confirmer *</label>
+                <input
+                  required
+                  type="password"
+                  name="confirmPassword"
+                  minLength="6"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                />
               </div>
             </>
           ) : (
             <>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold block mb-1">Rôle *</label>
-                  <select name="role" value={formData.role} onChange={handleChange} className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none">
+                  <label className="text-xs sm:text-sm font-medium block mb-1">Rôle *</label>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                  >
                     <option value="Etudiant">Étudiant(e)</option>
                     <option value="Enseignant">Enseignant(e)</option>
                     <option value="Alumni">Alumni</option>
@@ -254,8 +319,13 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold block mb-1">École *</label>
-                  <select name="currentSchool" value={formData.currentSchool} onChange={handleChange} className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none">
+                  <label className="text-xs sm:text-sm font-medium block mb-1">École *</label>
+                  <select
+                    name="currentSchool"
+                    value={formData.currentSchool}
+                    onChange={handleChange}
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                  >
                     {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
                       <option key={sch} value={sch}>{sch}</option>
                     ))}
@@ -264,23 +334,50 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
               </div>
 
               <div>
-                <label className="text-xs font-semibold block mb-1">Lien Behance (Optionnel)</label>
-                <input type="url" name="behanceLink" value={formData.behanceLink} onChange={handleChange} placeholder="https://behance.net/..." className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
+                <label className="text-xs sm:text-sm font-medium block mb-1">Lien Behance (Optionnel)</label>
+                <input
+                  type="url"
+                  name="behanceLink"
+                  value={formData.behanceLink}
+                  onChange={handleChange}
+                  placeholder="https://behance.net/..."
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                />
               </div>
 
               <div>
-                <label className="text-xs font-semibold block mb-1">Lien Instagram (Optionnel)</label>
-                <input type="url" name="instaLink" value={formData.instaLink} onChange={handleChange} placeholder="https://instagram.com/..." className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none" />
+                <label className="text-xs sm:text-sm font-medium block mb-1">Lien Instagram (Optionnel)</label>
+                <input
+                  type="url"
+                  name="instaLink"
+                  value={formData.instaLink}
+                  onChange={handleChange}
+                  placeholder="https://instagram.com/..."
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                />
               </div>
             </>
           )}
 
-          <div className="pt-3 border-t-2 border-[#111111] flex flex-col gap-3 mt-4">
-            <button type="submit" disabled={loading} className="w-full px-5 py-2.5 bg-[#111111] text-[#EEEEEE] rounded-none text-xs font-semibold hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-50">
-              {loading ? <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
+          {/* Submit Action */}
+          <div className="pt-3 border-t-[1.5px] border-[#111111] flex flex-col gap-2.5 mt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-10 sm:h-11 px-5 bg-[#111111] text-[#EEEEEE] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm disabled:opacity-50"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              ) : (
+                <UserPlus className="w-4 h-4 stroke-[2.25]" />
+              )}
               <span>{step === 1 ? 'Suivant' : (loading ? 'Création...' : 'Créer un compte')}</span>
             </button>
-            <button type="button" onClick={handleSwitchToLogin} className="w-full text-xs text-[#111111] font-semibold underline hover:text-slate-600">
+            <button
+              type="button"
+              onClick={handleSwitchToLogin}
+              className="w-full text-xs sm:text-sm text-[#111111] font-medium underline hover:opacity-75 transition-opacity py-1 cursor-pointer"
+            >
               Déjà un compte ? Se connecter
             </button>
           </div>
@@ -289,3 +386,5 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
     </div>
   );
 }
+
+export default RegisterModal;
