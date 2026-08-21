@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, RotateCcw, Filter, Check } from 'lucide-react';
 import gsap from 'gsap';
-import { SCHOOLS_LIST, TYPES_LIST, FIELDS_LIST } from '../data/coversData';
+import { SCHOOLS_LIST, TYPES_LIST } from '../data/coversData';
+import api from '../api/axios';
 
 export function FilterDrawer({
   isOpen,
@@ -16,6 +17,13 @@ export function FilterDrawer({
 }) {
   const backdropRef = useRef(null);
   const panelRef = useRef(null);
+  const [allDomains, setAllDomains] = useState([]);
+
+  useEffect(() => {
+    api.get('/domains')
+      .then(res => setAllDomains(res.data.map(d => d.name)))
+      .catch(err => console.error('Erreur de chargement des domaines', err));
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -140,7 +148,7 @@ export function FilterDrawer({
                 onChange={(e) => setFilters((prev) => ({ ...prev, field: e.target.value }))}
                 className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
               >
-                {(dynamicFields.length > 0 ? dynamicFields : FIELDS_LIST).map((field) => (
+                {(dynamicFields.length > 0 ? dynamicFields : ['Tous les domaines', ...allDomains]).map((field) => (
                   <option key={field} value={field}>
                     {field}
                   </option>

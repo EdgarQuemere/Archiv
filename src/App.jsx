@@ -11,8 +11,10 @@ import { SubmitModal } from './components/SubmitModal';
 import { LoginModal } from './components/auth/LoginModal';
 import { RegisterModal } from './components/auth/RegisterModal';
 import { OmniscientCallback } from './components/auth/OmniscientCallback';
+import AdminDashboard from './components/admin/AdminDashboard';
 import { AuthContext } from './context/AuthContext';
 import axios from './api/axios';
+import { Toaster } from 'sonner';
 
 // Fisher-Yates Shuffle algorithm for randomizing memory covers
 function shuffleArray(array) {
@@ -95,7 +97,7 @@ export function App() {
               school: p.school,
               year: p.year.toString(),
               type: p.type,
-              field: p.domain,
+              field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
               description: p.description,
               coverUrl: p.coverUrl,
               imageUrl: p.coverUrl,
@@ -141,10 +143,11 @@ export function App() {
             title: p.title,
             author: p.author ? `${p.author.firstName || ''} ${p.author.lastName || ''}`.trim() : 'Unknown',
             authorProfilePicture: p.author ? p.author.profilePicture : null,
+            isOmniscient: p.author ? p.author.isOmniscient : false,
             school: p.school,
             year: p.year.toString(),
             type: p.type,
-            field: p.domain,
+            field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
             // Excluded heavy fields from list: description, pdfUrl, pdfSize
             coverUrl: p.coverUrl,
             imageUrl: p.coverUrl,
@@ -154,8 +157,13 @@ export function App() {
           }));
           
           setCovers(prev => {
+            // Deduplicate by ID to prevent duplicate keys in Strict Mode
+            const prevIds = new Set(prev.map(p => p.id));
+            const uniqueNew = formattedProjects.filter(p => !prevIds.has(p.id));
+            if (uniqueNew.length === 0) return prev;
+            
             // Append new projects and shuffle the whole set to blend them in seamlessly
-            const newSet = [...prev, ...formattedProjects];
+            const newSet = [...prev, ...uniqueNew];
             return shuffleArray(newSet);
           });
 
@@ -250,7 +258,7 @@ export function App() {
           school: p.school,
           year: p.year.toString(),
           type: p.type,
-          field: p.domain,
+          field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
           description: p.description,
           coverUrl: p.coverUrl,
           imageUrl: p.coverUrl,
@@ -295,6 +303,10 @@ export function App() {
   // Handle OAuth Callbacks simply by checking path
   if (window.location.pathname === '/auth/omniscient/callback') {
     return <OmniscientCallback />;
+  }
+
+  if (window.location.pathname === '/admin') {
+    return <AdminDashboard />;
   }
 
   return (
@@ -415,6 +427,7 @@ export function App() {
         onSuccess={() => setIsSubmitOpen(true)} // Open submit right after register
       />
 
+      <Toaster position="bottom-center" />
     </div>
   );
 }

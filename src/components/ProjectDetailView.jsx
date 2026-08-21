@@ -1,5 +1,7 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Columns, Square, Download } from 'lucide-react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useContext } from 'react';
+import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Columns, Square, Download, Bookmark } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
+import api from '../api/axios';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -14,8 +16,38 @@ const pdfOptions = {
 };
 
 export function ProjectDetailView({ item, onClose }) {
+  const { user, setUser } = useContext(AuthContext);
   const [showInfo, setShowInfo] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const isPortrait = item?.orientation === 'portrait' || (item?.aspectRatio && item?.aspectRatio > 1.1);
+  
+  const isSaved = user?.savedProjects?.some(sp => sp.projectId === item?.id);
+
+  const toggleSave = async () => {
+    if (!user) return alert("Vous devez être connecté pour enregistrer un projet.");
+    try {
+      setIsSaving(true);
+      if (isSaved) {
+        await api.delete(`/projects/${item.id}/save`);
+        setUser(prev => ({
+          ...prev,
+          savedProjects: prev.savedProjects.filter(sp => sp.projectId !== item.id)
+        }));
+      } else {
+        await api.post(`/projects/${item.id}/save`);
+        // Refresh or optimistically add (optimistic for now)
+        setUser(prev => ({
+          ...prev,
+          savedProjects: [...(prev.savedProjects || []), { projectId: item.id, project: item }]
+        }));
+      }
+    } catch (err) {
+      console.error("Erreur lors de l'enregistrement", err);
+      alert("Impossible de modifier l'enregistrement.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Initial zoom: 48% for portrait so full page fits comfortably inside viewport height, 80% for landscape
   const [zoomLevel, setZoomLevel] = useState(isPortrait ? 48 : 80);
@@ -195,8 +227,11 @@ export function ProjectDetailView({ item, onClose }) {
                 <h2 className="text-base font-bold leading-tight text-[#EEEEEE]">
                   {item.title}
                 </h2>
-                <p className="text-sm font-medium text-slate-300 mt-1">
+                <p className="text-sm font-medium text-slate-300 mt-1 flex items-center gap-2">
                   par {item.author}
+                  {item.isOmniscient && (
+                    <img src="/logo-od.svg" alt="Omniscient Design" className="h-4 w-auto object-contain" title="Membre de la communauté Omniscient Design" />
+                  )}
                 </p>
                 <p className="text-xs font-mono text-slate-400 mt-1">
                   {item.school} — {item.year} • {item.field || item.type}
@@ -220,19 +255,31 @@ export function ProjectDetailView({ item, onClose }) {
               </div>
             )}
 
-            {/* Download PDF Button */}
-            <div className="mt-4 pt-3 border-t border-white/20">
+            {/* Actions (Download & Save) */}
+            <div className="mt-4 pt-3 border-t border-white/20 flex gap-2">
               <a
                 href={item.pdfUrl}
                 download
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-11 bg-[#EEEEEE] hover:bg-white text-[#111111] text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-none transition-colors cursor-pointer border-0 shadow-lg"
+                className="flex-1 h-11 bg-[#EEEEEE] hover:bg-white text-[#111111] text-xs font-mono font-bold flex items-center justify-center gap-2 rounded-none transition-colors cursor-pointer border-0 shadow-lg"
                 title={`Télécharger le fichier PDF (${item.pdfSize})`}
               >
                 <Download className="w-4 h-4 stroke-[2.5]" />
                 <span>Télécharger le PDF ({item.pdfSize})</span>
               </a>
+              <button
+                onClick={toggleSave}
+                disabled={isSaving}
+                className={`w-11 h-11 flex items-center justify-center transition-colors cursor-pointer border-0 shadow-lg ${
+                  isSaved 
+                    ? 'bg-[#111111] text-[#EEEEEE] border-2 border-[#EEEEEE] hover:bg-slate-800' 
+                    : 'bg-[#EEEEEE] text-[#111111] hover:bg-white'
+                } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                title={isSaved ? "Retirer des enregistrements" : "Enregistrer ce projet"}
+              >
+                <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current stroke-[2]' : 'stroke-[2.5]'}`} />
+              </button>
             </div>
           </div>
         )}

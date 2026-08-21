@@ -30,6 +30,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   const [submitted, setSubmitted] = useState(false);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState(null);
   const [extractingCover, setExtractingCover] = useState(false);
+  const [domains, setDomains] = useState([]);
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
 
@@ -58,6 +59,14 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       setFiles({ pdf: null, cover: null });
       setCoverPreviewUrl(null);
       setError('');
+      setSubmitted(false);
+      
+      api.get('/domains').then((res) => {
+        setDomains(res.data.map((d) => d.name));
+      }).catch((err) => {
+        console.error('Erreur', err);
+      });
+
       gsap.timeline()
         .fromTo(
           backdropRef.current,
@@ -298,14 +307,19 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 <label className="text-xs font-semibold text-[#111111] block mb-1">
                   Domaine *
                 </label>
-                <input
+                <select
                   required
-                  type="text"
-                  placeholder="ex: Design Graphique"
                   value={formData.domain}
                   onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
                   className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
-                />
+                >
+                  <option value="" disabled>Sélectionner un domaine</option>
+                  {domains.map((dom) => (
+                    <option key={dom} value={dom}>
+                      {dom}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
