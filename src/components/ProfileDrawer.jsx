@@ -472,8 +472,8 @@ export function ProfileDrawer({
               ) : (
                 userProjects.map((project) => (
                   <div key={project.id} className="flex flex-col sm:flex-row gap-8 items-end">
-                    {/* Cover Thumbnail */}
-                    <div className="w-48 sm:w-56 shrink-0 shadow-sm border-[1.5px] border-[#111111] bg-slate-200 overflow-hidden">
+                    {/* Cover Thumbnail (No stroke/border) */}
+                    <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
                       {project.coverUrl ? (
                         <img 
                           src={project.coverUrl} 
@@ -547,9 +547,9 @@ export function ProfileDrawer({
               ) : (
                 savedProjects.map((project) => (
                   <div key={project.id} className="flex flex-col sm:flex-row gap-8 items-end">
-                    <div className="w-48 sm:w-56 shrink-0 shadow-sm border-[1.5px] border-[#111111] bg-slate-200 overflow-hidden">
+                    <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
                       {project.coverUrl ? (
-                        <img src={project.coverUrl} alt={project.title} className="w-full h-full object-cover" />
+                        <img src={project.coverUrl} alt={project.title} className="w-full h-auto object-contain block" />
                       ) : (
                         <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
                       )}
