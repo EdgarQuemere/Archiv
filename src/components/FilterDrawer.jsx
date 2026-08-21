@@ -101,7 +101,7 @@ export function FilterDrawer({
       />
 
       {/* Filter Modal / Card Popover */}
-      <div className="relative z-50 w-full sm:w-[492px] max-w-[calc(100vw-2rem)] pointer-events-auto mt-16 sm:mt-18 self-start">
+      <div className="relative z-50 w-full sm:w-[590px] max-w-[calc(100vw-2rem)] pointer-events-auto mt-16 sm:mt-18 self-start">
         <div
           ref={panelRef}
           className="bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[10px] p-6 sm:p-7 shadow-2xl text-[#111111] space-y-6 max-h-[82vh] overflow-y-auto"
