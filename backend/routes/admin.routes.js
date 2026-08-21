@@ -7,6 +7,7 @@ router.use(requireAdmin); // Protect all routes in this file
 
 router.get('/stats', adminController.getStats);
 router.get('/users', adminController.getUsers);
+router.patch('/users/:id/ban', adminController.toggleBanUser);
 router.delete('/users/:id', adminController.deleteUser);
 router.get('/projects', adminController.getProjects);
 router.delete('/projects/:id', adminController.deleteProject);

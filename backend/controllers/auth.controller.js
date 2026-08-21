@@ -5,6 +5,7 @@ const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy');
 const prisma = require('../config/db');
+const nodemailer = require('nodemailer');
 
 exports.register = async (req, res) => {
   const errors = validationResult(req);
@@ -26,23 +27,43 @@ exports.register = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    const crypto = require('crypto');
+    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+    const emailVerificationExpires = new Date(Date.now() + 24 * 3600000); // 24 hours
+
     const user = await prisma.user.create({
       data: {
         email, password: hashedPassword, firstName, lastName, role, currentSchool,
-        behanceLink, instaLink, personalLink, profilePicture
+        behanceLink, instaLink, personalLink, profilePicture,
+        emailVerificationToken, emailVerificationExpires
       },
     });
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-    res.cookie('auth_token', token, {
-      httpOnly: true,
+    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email/${emailVerificationToken}`;
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'ssl0.ovh.net',
+      port: process.env.SMTP_PORT || 465,
       secure: true,
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
     });
 
-    res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
+    const mailOptions = {
+      from: `"Artchiv" <${process.env.SMTP_USER}>`,
+      to: user.email,
+      subject: 'Vérification de votre adresse email Artchiv',
+      html: `<p>Bonjour ${user.firstName},</p>
+             <p>Merci de vous être inscrit sur Artchiv ! Veuillez cliquer sur le lien ci-dessous pour vérifier votre adresse email :</p>
+             <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+             <p>Ce lien est valide pendant 24 heures.</p>
+             <p>L'équipe Artchiv</p>`
+    };
+
+    transporter.sendMail(mailOptions).catch(err => console.error("Erreur d'envoi d'email de vérification:", err));
+
+    res.status(201).json({ message: 'Inscription réussie. Veuillez vérifier votre adresse email pour pouvoir vous connecter.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -61,6 +82,14 @@ exports.login = async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(401).json({ error: 'Identifiants invalides' });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ error: 'Votre compte a été banni. Contactez l\'administrateur.' });
+    }
+
+    if (!user.isEmailVerified) {
+      return res.status(403).json({ error: 'Veuillez vérifier votre adresse email avant de vous connecter.' });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -103,6 +132,9 @@ exports.googleAuth = async (req, res) => {
     let user = await prisma.user.findUnique({ where: { email } });
 
     if (user) {
+      if (user.isBanned) {
+        return res.status(403).json({ error: 'Votre compte a été banni. Contactez l\'administrateur.' });
+      }
       if (!user.isOmniscient) {
         user = await prisma.user.update({ where: { email }, data: { isOmniscient: true } });
       }
@@ -129,7 +161,8 @@ exports.googleAuth = async (req, res) => {
         behanceLink,
         instaLink,
         personalLink,
-        profilePicture: picture || null
+        profilePicture: picture || null,
+        isEmailVerified: true
       },
     });
 
@@ -177,6 +210,9 @@ exports.omniscientAuth = async (req, res) => {
     let user = await prisma.user.findUnique({ where: { email } });
 
     if (user) {
+      if (user.isBanned) {
+        return res.status(403).json({ error: 'Votre compte a été banni. Contactez l\'administrateur.' });
+      }
       if (!user.isOmniscient) {
         user = await prisma.user.update({ where: { email }, data: { isOmniscient: true } });
       }
@@ -210,7 +246,8 @@ exports.omniscientAuth = async (req, res) => {
         behanceLink,
         instaLink,
         personalLink,
-        isOmniscient: true
+        isOmniscient: true,
+        isEmailVerified: true
       },
     });
 
@@ -220,5 +257,139 @@ exports.omniscientAuth = async (req, res) => {
   } catch (error) {
     console.error("Erreur Omniscient Auth:", error.response ? error.response.data : error.message);
     res.status(500).json({ error: "Erreur lors de l'authentification avec Omniscient" });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { email } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      // Return 200 even if user is not found to prevent email enumeration
+      return res.status(200).json({ message: "Si l'email existe, un lien de réinitialisation a été envoyé." });
+    }
+
+    // Generate token
+    const crypto = require('crypto');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordToken: resetToken,
+        resetPasswordExpires
+      }
+    });
+
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+    
+    // Configuration nodemailer
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'ssl0.ovh.net',
+      port: process.env.SMTP_PORT || 465,
+      secure: true, // true pour le port 465
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"Artchiv" <${process.env.SMTP_USER}>`,
+      to: user.email,
+      subject: 'Réinitialisation de votre mot de passe Artchiv',
+      html: `<p>Bonjour,</p>
+             <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le lien ci-dessous pour créer un nouveau mot de passe :</p>
+             <p><a href="${resetUrl}">${resetUrl}</a></p>
+             <p>Ce lien est valide pendant 1 heure.</p>
+             <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.</p>
+             <p>L'équipe Artchiv'</p>`
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`[DEV] Email de réinitialisation envoyé à ${email}`);
+
+    res.status(200).json({ message: "Si l'email existe, un lien de réinitialisation a été envoyé." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur lors de la demande de réinitialisation de mot de passe" });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        resetPasswordToken: token,
+        resetPasswordExpires: { gt: new Date() } // Ensures token is not expired
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Le lien de réinitialisation est invalide ou a expiré." });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null
+      }
+    });
+
+    res.status(200).json({ message: "Votre mot de passe a été réinitialisé avec succès." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur lors de la réinitialisation du mot de passe" });
+  }
+};
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        emailVerificationToken: token,
+        emailVerificationExpires: { gt: new Date() } // not expired
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Le lien de vérification est invalide ou a expiré." });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isEmailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationExpires: null
+      }
+    });
+
+    res.status(200).json({ message: "Votre adresse email a été vérifiée avec succès. Vous pouvez maintenant vous connecter." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur lors de la vérification de l'email" });
   }
 };

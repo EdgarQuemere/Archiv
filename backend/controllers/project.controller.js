@@ -47,6 +47,7 @@ exports.createProject = async (req, res) => {
     const pdfSizeRaw = req.files['pdf'][0].size;
     const pdfSize = (pdfSizeRaw / (1024 * 1024)).toFixed(1) + ' Mo';
     const coverUrl = req.files['cover'] ? req.files['cover'][0].location : null;
+    const isDownloadAllowed = req.body.allowDownload === 'true' || req.body.allowDownload === true;
 
     const project = await prisma.project.create({
       data: {
@@ -59,6 +60,7 @@ exports.createProject = async (req, res) => {
         pdfUrl,
         pdfSize,
         coverUrl,
+        allowDownload: isDownloadAllowed,
         userId: req.userId 
       }
     });
@@ -138,6 +140,9 @@ exports.updateProject = async (req, res) => {
 
     let updateData = { title, description, type, school, domain };
     if (year) updateData.year = parseInt(year);
+    if (req.body.allowDownload !== undefined) {
+      updateData.allowDownload = req.body.allowDownload === 'true' || req.body.allowDownload === true;
+    }
 
     if (req.files && req.files['pdf']) {
       await deleteFile(project.pdfUrl);
@@ -269,5 +274,30 @@ exports.unsaveProject = async (req, res) => {
   } catch (error) {
     console.error("Unsave Project Error:", error);
     res.status(500).json({ error: 'Erreur lors du retrait du projet.' });
+  }
+};
+
+exports.downloadProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const project = await prisma.project.findUnique({ where: { id } });
+    if (!project) {
+      return res.status(404).json({ error: 'Projet introuvable.' });
+    }
+
+    if (!project.allowDownload) {
+      return res.status(403).json({ error: 'L\'auteur n\'a pas autorisé le téléchargement de ce projet.' });
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id },
+      data: { downloadsCount: { increment: 1 } }
+    });
+
+    res.json({ pdfUrl: project.pdfUrl, downloadsCount: updatedProject.downloadsCount });
+  } catch (error) {
+    console.error("Download Project Error:", error);
+    res.status(500).json({ error: 'Erreur lors de la demande de téléchargement.' });
   }
 };

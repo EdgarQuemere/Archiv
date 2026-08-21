@@ -141,6 +141,114 @@
         }
       }
     },
+    "/api/auth/forgot-password": {
+      "post": {
+        "summary": "Demande de réinitialisation de mot de passe",
+        "tags": [
+          "Authentification"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "test@example.com"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Si l'email existe, un lien de réinitialisation a été envoyé."
+          },
+          "400": {
+            "description": "Erreur de validation"
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password/{token}": {
+      "post": {
+        "summary": "Réinitialisation du mot de passe",
+        "tags": [
+          "Authentification"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Jeton de réinitialisation reçu par email"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "NouveauPass123!"
+                  }
+                },
+                "required": [
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Votre mot de passe a été réinitialisé avec succès."
+          },
+          "400": {
+            "description": "Le lien de réinitialisation est invalide ou a expiré."
+          }
+        }
+      }
+    },
+    "/api/auth/verify-email/{token}": {
+      "post": {
+        "summary": "Vérification de l'adresse email",
+        "tags": [
+          "Authentification"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Jeton de vérification reçu par email"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email vérifié avec succès."
+          },
+          "400": {
+            "description": "Jeton invalide ou expiré."
+          }
+        }
+      }
+    },
     "/api/projects": {
       "get": {
         "summary": "Récupérer les projets avec pagination et filtres",
@@ -243,6 +351,10 @@
                     "type": "string",
                     "format": "binary",
                     "description": "Image de couverture (Optionnel)"
+                  },
+                  "allowDownload": {
+                    "type": "boolean",
+                    "description": "Autoriser le téléchargement du projet"
                   }
                 },
                 "required": [
@@ -444,6 +556,137 @@
         }
       }
     },
+    "/api/users/me/password": {
+      "put": {
+        "summary": "Changer son mot de passe",
+        "tags": [
+          "Profil"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "oldPassword",
+                  "newPassword"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mot de passe mis à jour"
+          }
+        }
+      }
+    },
+    "/api/users/me/saved-projects": {
+      "get": {
+        "summary": "Voir ses projets sauvegardés (favoris)",
+        "tags": [
+          "Profil"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          { "in": "query", "name": "page", "schema": { "type": "integer" }, "description": "Numéro de la page" },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" }, "description": "Nombre d'éléments par page" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des projets favoris retournée"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Voir le profil public d'un utilisateur",
+        "tags": [
+          "Profil"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID de l'utilisateur"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profil public retourné"
+          }
+        }
+      }
+    },
+    "/api/projects/{id}/download": {
+      "post": {
+        "summary": "Télécharger un projet",
+        "description": "Incrémente le compteur de téléchargements et renvoie l'URL du fichier PDF si l'auteur a autorisé le téléchargement.",
+        "tags": [
+          "Projets"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "URL du fichier retournée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pdfUrl": {
+                      "type": "string"
+                    },
+                    "downloadsCount": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Le téléchargement n'est pas autorisé"
+          },
+          "404": {
+            "description": "Projet introuvable"
+          }
+        }
+      }
+    },
     "/api/projects/{id}/save": {
       "post": {
         "summary": "Enregistrer un projet (Favori)",
@@ -504,6 +747,79 @@
           "400": {
             "description": "Projet non enregistré"
           }
+        }
+      }
+    },
+    "/api/admin/stats": {
+      "get": {
+        "summary": "Obtenir les statistiques (Admin)",
+        "tags": ["Admin"],
+        "security": [{"cookieAuth": []}],
+        "responses": {
+          "200": { "description": "Statistiques retournées" }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "summary": "Lister les utilisateurs (Admin)",
+        "tags": ["Admin"],
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          { "in": "query", "name": "page", "schema": { "type": "integer" }, "description": "Numéro de la page" },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" }, "description": "Nombre d'éléments par page" }
+        ],
+        "responses": {
+          "200": { "description": "Liste des utilisateurs" }
+        }
+      }
+    },
+    "/api/admin/users/{id}/ban": {
+      "patch": {
+        "summary": "Bannir / Débannir un utilisateur (Admin)",
+        "tags": ["Admin"],
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Statut de bannissement mis à jour" }
+        }
+      }
+    },
+    "/api/admin/users/{id}": {
+      "delete": {
+        "summary": "Supprimer un utilisateur (Admin)",
+        "tags": ["Admin"],
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Utilisateur supprimé" }
+        }
+      }
+    },
+    "/api/admin/projects": {
+      "get": {
+        "summary": "Lister tous les projets (Admin)",
+        "tags": ["Admin"],
+        "security": [{"cookieAuth": []}],
+        "responses": {
+          "200": { "description": "Liste des projets" }
+        }
+      }
+    },
+    "/api/admin/projects/{id}": {
+      "delete": {
+        "summary": "Supprimer un projet (Admin)",
+        "tags": ["Admin"],
+        "security": [{"cookieAuth": []}],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Projet supprimé" }
         }
       }
     }

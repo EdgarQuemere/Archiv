@@ -20,10 +20,16 @@ model User {
   profilePicture String?
   projects       Project[] // Relation: Un utilisateur peut avoir plusieurs projets (créés)
   savedProjects  SavedProject[] // Relation: Projets enregistrés par l'utilisateur
-  isOmniscient   Boolean  @default(false)
-  isAdmin        Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  isOmniscient         Boolean   @default(false)
+  isAdmin              Boolean   @default(false)
+  isBanned             Boolean   @default(false)
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  isEmailVerified      Boolean   @default(false)
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model Project {
@@ -38,6 +44,9 @@ model Project {
   pdfUrl      String   // Lien vers le PDF uploadé
   pdfSize     String?  // Poids du PDF en Mo (ex: "1.2 Mo")
   coverUrl    String?  // Lien vers la couverture (optionnel)
+  
+  allowDownload  Boolean @default(false)
+  downloadsCount Int     @default(0)
   
   // Relation avec l'utilisateur (Auteur)
   userId      String

@@ -13,11 +13,25 @@ exports.getStats = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     const users = await prisma.user.findMany({
       include: { _count: { select: { projects: true } } },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit
     });
-    res.json(users);
+    
+    const total = await prisma.user.count();
+
+    res.json({
+      users,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      totalUsers: total
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -48,6 +62,26 @@ exports.deleteProject = async (req, res) => {
   try {
     await prisma.project.delete({ where: { id: req.params.id } });
     res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.toggleBanUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { isBanned: !user.isBanned }
+    });
+    
+    res.json({ 
+      message: updatedUser.isBanned ? 'Utilisateur banni avec succès' : 'Utilisateur débanni avec succès', 
+      isBanned: updatedUser.isBanned 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

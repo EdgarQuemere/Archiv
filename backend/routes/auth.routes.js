@@ -10,7 +10,19 @@ const loginLimiter = rateLimit({
   message: { error: 'Too many login attempts from this IP, please try again after 15 minutes' }
 });
 
-router.post('/register', [
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 5,
+  message: { error: 'Trop de tentatives d\'inscription depuis cette adresse IP, veuillez réessayer dans 1 heure.' }
+});
+
+const emailLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 5,
+  message: { error: 'Trop de demandes liées aux emails depuis cette adresse IP, veuillez réessayer dans 1 heure.' }
+});
+
+router.post('/register', registerLimiter, [
   body('email').isEmail().withMessage('Veuillez fournir un email valide').normalizeEmail(),
   body('password')
     .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères')
@@ -27,7 +39,20 @@ router.post('/login', loginLimiter, [
 
 router.post('/logout', authController.logout);
 
-router.post('/google', [ body('token').notEmpty() ], authController.googleAuth);
-router.post('/omniscient', [ body('code').notEmpty() ], authController.omniscientAuth);
+router.post('/google', [body('token').notEmpty()], authController.googleAuth);
+router.post('/omniscient', [body('code').notEmpty()], authController.omniscientAuth);
+
+router.post('/forgot-password', emailLimiter, [
+  body('email').isEmail().normalizeEmail().withMessage('Veuillez fournir un email valide')
+], authController.forgotPassword);
+
+router.post('/reset-password/:token', emailLimiter, [
+  body('password')
+    .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères')
+    .matches(/[A-Z]/).withMessage('Le mot de passe doit contenir au moins une majuscule')
+    .matches(/[0-9]/).withMessage('Le mot de passe doit contenir au moins un chiffre')
+], authController.resetPassword);
+
+router.post('/verify-email/:token', emailLimiter, authController.verifyEmail);
 
 module.exports = router;
