@@ -1,6 +1,12 @@
 import React from 'react';
 import { Search, X, List, LayoutGrid, Info, User } from 'lucide-react';
 
+const IconUserProfile = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
+  </svg>
+);
+
 export function Navbar({
   activeView,
   setActiveView,
@@ -43,17 +49,17 @@ export function Navbar({
           <Info className="w-4 h-4 stroke-[2.25]" />
         </button>
 
-        {/* User Profile Button (👤) - White by default, black when profile is open */}
+        {/* User Profile Button (👤) - Exact stroke-based SVG matching Info icon */}
         <button
-          onClick={user ? onOpenProfile : onOpenLogin}
-          title={user ? user.name || 'Profil' : 'Se connecter'}
+          onClick={onOpenProfile}
+          title={user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Mon Profil'}
           className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${
             isProfileOpen
               ? 'bg-[#111111] text-[#EEEEEE]'
               : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
           }`}
         >
-          <User className="w-4 h-4 stroke-[2.25]" />
+          <IconUserProfile className="w-4 h-4" />
         </button>
       </div>
 
