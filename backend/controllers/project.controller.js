@@ -101,7 +101,7 @@ exports.getProjects = async (req, res) => {
         userId: true,
         createdAt: true,
         author: {
-          select: { firstName: true, lastName: true, profilePicture: true }
+          select: { firstName: true, lastName: true, profilePicture: true, isOmniscient: true }
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -199,7 +199,7 @@ exports.getProjectById = async (req, res) => {
       where: { id },
       include: {
         author: {
-          select: { firstName: true, lastName: true, profilePicture: true }
+          select: { firstName: true, lastName: true, profilePicture: true, isOmniscient: true }
         }
       }
     });
@@ -212,5 +212,62 @@ exports.getProjectById = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur lors de la récupération du projet' });
+  }
+};
+
+exports.saveProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const project = await prisma.project.findUnique({ where: { id } });
+    if (!project) return res.status(404).json({ error: 'Projet introuvable.' });
+
+    const existing = await prisma.savedProject.findUnique({
+      where: {
+        userId_projectId: { userId, projectId: id }
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: 'Projet déjà enregistré.' });
+    }
+
+    await prisma.savedProject.create({
+      data: { userId, projectId: id }
+    });
+
+    res.json({ message: 'Projet enregistré avec succès' });
+  } catch (error) {
+    console.error("Save Project Error:", error);
+    res.status(500).json({ error: 'Erreur lors de l\'enregistrement du projet.' });
+  }
+};
+
+exports.unsaveProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const existing = await prisma.savedProject.findUnique({
+      where: {
+        userId_projectId: { userId, projectId: id }
+      }
+    });
+
+    if (!existing) {
+      return res.status(400).json({ error: 'Projet non enregistré.' });
+    }
+
+    await prisma.savedProject.delete({
+      where: {
+        userId_projectId: { userId, projectId: id }
+      }
+    });
+
+    res.json({ message: 'Projet retiré des enregistrements avec succès' });
+  } catch (error) {
+    console.error("Unsave Project Error:", error);
+    res.status(500).json({ error: 'Erreur lors du retrait du projet.' });
   }
 };

@@ -14,8 +14,11 @@ exports.getProfile = async (req, res) => {
         instaLink: true,
         personalLink: true,
         profilePicture: true,
+        isOmniscient: true,
+        isAdmin: true,
         createdAt: true,
-        projects: true
+        projects: true,
+        savedProjects: { include: { project: { include: { domain: true, author: { select: { firstName: true, lastName: true, profilePicture: true } } } } } }
       }
     });
 
@@ -53,6 +56,8 @@ exports.updateProfile = async (req, res) => {
         instaLink: true,
         personalLink: true,
         profilePicture: true,
+        isOmniscient: true,
+        isAdmin: true,
       }
     });
 

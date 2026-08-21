@@ -16,6 +16,10 @@ router.put('/:id', requireAuth, upload.fields([
 
 router.delete('/:id', requireAuth, projectController.deleteProject);
 
+// Saved projects routes
+router.post('/:id/save', requireAuth, projectController.saveProject);
+router.delete('/:id/save', requireAuth, projectController.unsaveProject);
+
 router.get('/', projectController.getProjects);
 
 router.get('/:id', projectController.getProjectById);

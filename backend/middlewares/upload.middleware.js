@@ -58,8 +58,9 @@ const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
+      const folder = file.fieldname === 'profilePicture' ? 'avatars/' : 'projects/';
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
+      cb(null, folder + uniqueSuffix + path.extname(file.originalname));
     }
   }),
   limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB max limit

@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -77,7 +77,7 @@ exports.login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -103,9 +103,12 @@ exports.googleAuth = async (req, res) => {
     let user = await prisma.user.findUnique({ where: { email } });
 
     if (user) {
+      if (!user.isOmniscient) {
+        user = await prisma.user.update({ where: { email }, data: { isOmniscient: true } });
+      }
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
       res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
-      return res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+      return res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
     }
 
     if (!role || !currentSchool) {
@@ -132,7 +135,7 @@ exports.googleAuth = async (req, res) => {
 
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
-    res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erreur lors de l'authentification Google" });
@@ -152,7 +155,7 @@ exports.omniscientAuth = async (req, res) => {
       first_name = decoded.firstName;
       last_name = decoded.lastName;
     } else {
-      const tokenResponse = await axios.post(`https://omniscientdesign.fr/oauth/token`, {
+      const tokenResponse = await axios.post(`${process.env.OMNISCIENT_URL}/oauth/token`, {
         client_id: process.env.OMNISCIENT_CLIENT_ID,
         client_secret: process.env.OMNISCIENT_CLIENT_SECRET,
         code,
@@ -162,7 +165,7 @@ exports.omniscientAuth = async (req, res) => {
       
       const accessToken = tokenResponse.data.access_token;
       
-      const profileResponse = await axios.get(`https://omniscientdesign.fr/api/me`, {
+      const profileResponse = await axios.get(`${process.env.OMNISCIENT_URL}/api/me`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
       
@@ -174,9 +177,12 @@ exports.omniscientAuth = async (req, res) => {
     let user = await prisma.user.findUnique({ where: { email } });
 
     if (user) {
+      if (!user.isOmniscient) {
+        user = await prisma.user.update({ where: { email }, data: { isOmniscient: true } });
+      }
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
       res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
-      return res.json({ message: "Connexion réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+      return res.json({ message: "Connexion réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
     }
 
     if (!role || !currentSchool) {
@@ -203,13 +209,14 @@ exports.omniscientAuth = async (req, res) => {
         currentSchool,
         behanceLink,
         instaLink,
-        personalLink
+        personalLink,
+        isOmniscient: true
       },
     });
 
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
-    res.status(201).json({ message: "Inscription réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    res.status(201).json({ message: "Inscription réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isAdmin: user.isAdmin } });
   } catch (error) {
     console.error("Erreur Omniscient Auth:", error.response ? error.response.data : error.message);
     res.status(500).json({ error: "Erreur lors de l'authentification avec Omniscient" });

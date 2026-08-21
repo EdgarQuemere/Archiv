@@ -7,6 +7,8 @@ const path = require('path');
 
 // Initialisation de l'application
 const app = express();
+
+
 app.set('trust proxy', 1);
 
 // --- MIDDLEWARES GLOBAUX ---
@@ -26,7 +28,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // --- IMPORT DES ROUTES & SWAGGER ---
 const authRoutes = require('./routes/auth.routes');
 const projectRoutes = require('./routes/project.routes');
+const domainRoutes = require('./routes/domain.routes');
 const userRoutes = require('./routes/user.routes');
+const adminRoutes = require('./routes/admin.routes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
@@ -34,7 +38,9 @@ const swaggerDocument = require('./swagger.json');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/domains', domainRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 
 // --- LANCEMENT DU SERVEUR ---
