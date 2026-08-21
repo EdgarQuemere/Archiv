@@ -18,8 +18,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        sans: ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['Satoshi', 'JetBrains Mono', 'monospace'],
         serif: ['Instrument Serif', 'Georgia', 'serif']
       }
     },

@@ -482,17 +482,17 @@ export function InfiniteCanvas({
       {/* BOTTOM CONTROL BAR (SPACING GAP TOGGLE - Centered on mobile, Right-aligned on desktop) */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50 flex items-center gap-3 pointer-events-auto font-sans max-w-[95vw] sm:max-w-none">
         {/* Segmented Cover Spacing Selector (0px, 96px, 300px) */}
-        <div className="h-10 sm:h-12 border-2 border-[#111111] bg-[#EEEEEE] flex items-center rounded-none overflow-hidden p-0 shadow-xl">
+        <div className="h-9 sm:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-none">
           <button
             onClick={() => setCanvasGap(0)}
             title="Espacement 0px (Serré)"
-            className={`h-full px-2.5 sm:px-4 flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
+            className={`h-full px-3.5 sm:px-5 flex items-center gap-1.5 text-xs font-mono font-bold transition-colors cursor-pointer ${
               canvasGap === 0
                 ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
             }`}
           >
-            <Grid className="w-3.5 h-3.5" />
+            <Grid className="w-3.5 h-3.5 stroke-[2.25]" />
             <span>Serré</span>
           </button>
 
@@ -501,10 +501,10 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(96)}
             title="Espacement 96px (Moyen)"
-            className={`h-full px-2.5 sm:px-4 flex items-center text-[11px] sm:text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
+            className={`h-full px-3.5 sm:px-5 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer ${
               canvasGap === 96
                 ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
             }`}
           >
             <span>Moyen</span>
@@ -515,10 +515,10 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(300)}
             title="Espacement 300px (Large)"
-            className={`h-full px-2.5 sm:px-4 flex items-center text-[11px] sm:text-xs font-mono font-bold transition-colors cursor-pointer rounded-none ${
+            className={`h-full px-3.5 sm:px-5 flex items-center text-xs font-mono font-bold transition-colors cursor-pointer ${
               canvasGap >= 280
                 ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
             }`}
           >
             <span>Large</span>

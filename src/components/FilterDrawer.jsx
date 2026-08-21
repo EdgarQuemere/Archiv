@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, RotateCcw, Filter, Check } from 'lucide-react';
+import { X, RotateCcw, Search, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
-import { SCHOOLS_LIST, TYPES_LIST } from '../data/coversData';
 import api from '../api/axios';
 
 export function FilterDrawer({
@@ -13,16 +12,31 @@ export function FilterDrawer({
   totalResults,
   dynamicSchools = [],
   dynamicFields = [],
-  dynamicYears = []
+  dynamicYears = [],
+  dynamicTypes = []
 }) {
   const backdropRef = useRef(null);
   const panelRef = useRef(null);
+  const schoolSearchContainerRef = useRef(null);
   const [allDomains, setAllDomains] = useState([]);
+  const [schoolSearch, setSchoolSearch] = useState('');
+  const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
 
   useEffect(() => {
     api.get('/domains')
       .then(res => setAllDomains(res.data.map(d => d.name)))
       .catch(err => console.error('Erreur de chargement des domaines', err));
+  }, []);
+
+  // Close school dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (schoolSearchContainerRef.current && !schoolSearchContainerRef.current.contains(e.target)) {
+        setShowSchoolDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -31,13 +45,13 @@ export function FilterDrawer({
         .fromTo(
           backdropRef.current,
           { opacity: 0 },
-          { opacity: 1, duration: 0.3, ease: 'power2.out' }
+          { opacity: 1, duration: 0.25, ease: 'power2.out' }
         )
         .fromTo(
           panelRef.current,
-          { x: '-100%' },
-          { x: '0%', duration: 0.4, ease: 'power3.out' },
-          '-=0.2'
+          { opacity: 0, y: -20, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'back.out(1.2)' },
+          '-=0.15'
         );
     }
   }, [isOpen]);
@@ -49,8 +63,8 @@ export function FilterDrawer({
           onClose();
         }
       })
-      .to(panelRef.current, { x: '-100%', duration: 0.3, ease: 'power2.in' })
-      .to(backdropRef.current, { opacity: 0, duration: 0.2 }, '-=0.15');
+      .to(panelRef.current, { opacity: 0, y: -15, scale: 0.96, duration: 0.2, ease: 'power2.in' })
+      .to(backdropRef.current, { opacity: 0, duration: 0.15 }, '-=0.1');
     } else {
       onClose();
     }
@@ -58,152 +72,213 @@ export function FilterDrawer({
 
   if (!isOpen) return null;
 
+  // Filter available types dynamically from DB/covers
+  const availableTypes = dynamicTypes.length > 0 ? dynamicTypes : ['Tous', 'Mémoire', 'Portfolio'];
+
+  // Filter available schools dynamically from DB/covers
+  const availableSchools = dynamicSchools.length > 0 ? dynamicSchools : ['Toutes les écoles'];
+  const filteredSchools = availableSchools.filter(school =>
+    school === 'Toutes les écoles' || school.toLowerCase().includes(schoolSearch.toLowerCase())
+  );
+
+  // Filter available fields dynamically from DB/covers
+  const availableFields = dynamicFields.length > 0 
+    ? dynamicFields 
+    : ['Tous les domaines', ...allDomains];
+
+  // Filter available years dynamically from DB/covers
+  const availableYears = dynamicYears.length > 0 
+    ? dynamicYears 
+    : ['Toutes', '2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018'];
+
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden font-sans">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 overflow-hidden font-sans flex justify-end p-4 sm:p-6 pointer-events-none">
+      {/* Backdrop Overlay */}
       <div
         ref={backdropRef}
-        className="absolute inset-0 bg-[#111111]/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/20 backdrop-blur-xs transition-opacity pointer-events-auto"
         onClick={handleClose}
       />
 
-      {/* Drawer Panel */}
-      <div className="absolute inset-y-0 left-0 max-w-full flex pl-0">
+      {/* Filter Modal / Card Popover */}
+      <div className="relative z-50 w-full sm:w-[492px] max-w-[calc(100vw-2rem)] pointer-events-auto mt-16 sm:mt-18 self-start">
         <div
           ref={panelRef}
-          className="w-screen max-w-md bg-[#EEEEEE] shadow-2xl flex flex-col h-full border-r-2 border-[#111111] transform-gpu rounded-none text-[#111111]"
+          className="bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[10px] p-6 sm:p-7 shadow-2xl text-[#111111] space-y-6 max-h-[82vh] overflow-y-auto"
         >
-          {/* Drawer Header */}
-          <div className="px-6 py-5 bg-[#111111] text-[#EEEEEE] flex items-center justify-between rounded-none">
-            <div className="flex items-center gap-2.5">
-              <Filter className="w-5 h-5 text-[#EEEEEE]" />
-              <div>
-                <h2 className="text-base font-bold tracking-tight">Filtres d'exploration</h2>
-                <p className="text-xs text-slate-300 font-mono">
-                  {totalResults} couverture{totalResults > 1 ? 's' : ''} disponible{totalResults > 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
+          {/* Header Count */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-base sm:text-lg font-bold text-[#111111] tracking-tight">
+              {totalResults} document{totalResults > 1 ? 's' : ''} consultable{totalResults > 1 ? 's' : ''}
+            </h2>
             <button
               onClick={handleClose}
-              className="p-1.5 rounded-none text-[#EEEEEE] hover:opacity-75 transition-opacity"
+              className="w-8 h-8 rounded-full border border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] flex items-center justify-center text-[#111111] transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 stroke-[2]" />
             </button>
           </div>
 
-          {/* Drawer Content */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Section 1: Type de documents */}
+          <div>
+            <label className="text-sm font-medium text-[#111111] block mb-3">
+              Type de documents
+            </label>
+            <div className="flex flex-wrap gap-2.5">
+              {availableTypes.map((type) => {
+                const isActive = filters.type === type;
+                return (
+                  <button
+                    key={type}
+                    onClick={() => setFilters((prev) => ({ ...prev, type }))}
+                    className={`px-5 py-2.5 text-sm font-medium rounded-full border-[1.5px] border-[#111111] transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-[#111111] text-[#EEEEEE]'
+                        : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-            {/* Type Filter */}
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#111111] block mb-2.5">
-                Type de document
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {TYPES_LIST.map((type) => {
-                  const isActive = filters.type === type;
-                  return (
-                    <button
-                      key={type}
-                      onClick={() => setFilters((prev) => ({ ...prev, type }))}
-                      className={`px-3 py-2 text-xs font-semibold rounded-none border-2 border-[#111111] text-center transition-all ${
-                        isActive
-                          ? 'bg-[#111111] text-[#EEEEEE]'
-                          : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  );
-                })}
+          {/* Section 2: Écoles */}
+          <div className="relative" ref={schoolSearchContainerRef}>
+            <label className="text-sm font-medium text-[#111111] block mb-3">
+              Écoles
+            </label>
+            <div className="relative flex items-center">
+              <div className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 py-2.5 flex items-center shadow-xs">
+                <Search className="w-4 h-4 text-[#111111] opacity-75 shrink-0 mr-2.5 stroke-[2.25]" />
+                <input
+                  type="text"
+                  value={schoolSearch || (filters.school !== 'Toutes les écoles' ? filters.school : '')}
+                  onChange={(e) => {
+                    setSchoolSearch(e.target.value);
+                    setShowSchoolDropdown(true);
+                    if (!e.target.value) {
+                      setFilters(prev => ({ ...prev, school: 'Toutes les écoles' }));
+                    }
+                  }}
+                  onFocus={() => setShowSchoolDropdown(true)}
+                  placeholder="Recherché une école"
+                  className="w-full bg-transparent text-sm text-[#111111] font-normal focus:outline-none placeholder:text-slate-500"
+                />
+                {filters.school !== 'Toutes les écoles' && (
+                  <button
+                    onClick={() => {
+                      setFilters(prev => ({ ...prev, school: 'Toutes les écoles' }));
+                      setSchoolSearch('');
+                    }}
+                    className="text-[#111111] hover:opacity-60 shrink-0 ml-1"
+                  >
+                    <X className="w-3.5 h-3.5 stroke-[2.25]" />
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* School Filter */}
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#111111] block mb-2.5">
-                École / Université
-              </label>
-              <select
-                value={filters.school}
-                onChange={(e) => setFilters((prev) => ({ ...prev, school: e.target.value }))}
-                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
-              >
-                {(dynamicSchools.length > 0 ? dynamicSchools : SCHOOLS_LIST).map((school) => (
-                  <option key={school} value={school}>
-                    {school}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* School Dropdown Suggestions */}
+            {showSchoolDropdown && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-2xl p-2 shadow-xl z-20 max-h-48 overflow-y-auto">
+                <button
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, school: 'Toutes les écoles' }));
+                    setSchoolSearch('');
+                    setShowSchoolDropdown(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                    filters.school === 'Toutes les écoles' ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
+                  }`}
+                >
+                  Toutes les écoles
+                </button>
+                {filteredSchools
+                  .filter(s => s !== 'Toutes les écoles')
+                  .map(school => (
+                    <button
+                      key={school}
+                      onClick={() => {
+                        setFilters(prev => ({ ...prev, school }));
+                        setSchoolSearch(school);
+                        setShowSchoolDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                        filters.school === school ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
+                      }`}
+                    >
+                      {school}
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
 
-            {/* Field Filter */}
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#111111] block mb-2.5">
-                Domaine de recherche
-              </label>
+          {/* Section 3: Domaines */}
+          <div>
+            <label className="text-sm font-medium text-[#111111] block mb-3">
+              Domaines
+            </label>
+            <div className="relative flex items-center">
               <select
                 value={filters.field}
                 onChange={(e) => setFilters((prev) => ({ ...prev, field: e.target.value }))}
-                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2.5 text-xs text-[#111111] font-medium focus:outline-none"
+                className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-5 py-2.5 text-sm text-[#111111] font-normal appearance-none focus:outline-none cursor-pointer pr-10 shadow-xs"
               >
-                {(dynamicFields.length > 0 ? dynamicFields : ['Tous les domaines', ...allDomains]).map((field) => (
+                {availableFields.map((field) => (
                   <option key={field} value={field}>
-                    {field}
+                    {field === 'Tous les domaines' ? 'Tout les domaines' : field}
                   </option>
                 ))}
               </select>
+              <ChevronDown className="w-4 h-4 text-[#111111] opacity-80 stroke-[2.25] absolute right-4 pointer-events-none" />
             </div>
-
-            {/* Year Selection */}
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#111111] block mb-2.5">
-                Année de publication
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {(dynamicYears.length > 0 ? dynamicYears : ['Toutes', '2025', '2024', '2023', '2021']).map((yr) => {
-                  const isActive = filters.year === yr;
-                  return (
-                    <button
-                      key={yr}
-                      onClick={() => setFilters((prev) => ({ ...prev, year: yr }))}
-                      className={`px-3 py-1.5 text-xs font-mono rounded-none border-2 border-[#111111] transition-all ${
-                        isActive
-                          ? 'bg-[#111111] text-[#EEEEEE] font-bold'
-                          : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
-                      }`}
-                    >
-                      {yr}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
           </div>
 
-          {/* Drawer Footer */}
-          <div className="p-4 bg-[#EEEEEE] border-t-2 border-[#111111] flex items-center gap-3">
+          {/* Section 4: Années */}
+          <div>
+            <label className="text-sm font-medium text-[#111111] block mb-3">
+              Années
+            </label>
+            <div className="flex flex-wrap gap-2.5">
+              {availableYears.map((yr) => {
+                const isActive = filters.year === yr;
+                return (
+                  <button
+                    key={yr}
+                    onClick={() => setFilters((prev) => ({ ...prev, year: yr }))}
+                    className={`px-4 py-2 text-sm font-medium rounded-full border-[1.5px] border-[#111111] transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-[#111111] text-[#EEEEEE]'
+                        : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                    }`}
+                  >
+                    {yr}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Footer Reset Action */}
+          <div className="pt-2">
             <button
-              onClick={resetFilters}
-              className="flex-1 py-2.5 border-2 border-[#111111] text-[#111111] bg-[#EEEEEE] hover:bg-[#dddddd] rounded-none text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+              onClick={() => {
+                resetFilters();
+                setSchoolSearch('');
+              }}
+              className="px-5 py-2.5 border-[1.5px] border-[#111111] text-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-sm font-medium inline-flex items-center gap-2 transition-colors cursor-pointer shadow-xs"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4 stroke-[2.25]" />
               <span>Réinitialiser</span>
             </button>
-
-            <button
-              onClick={handleClose}
-              className="flex-1 py-2.5 bg-[#111111] text-[#EEEEEE] hover:opacity-90 rounded-none text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
-            >
-              <Check className="w-3.5 h-3.5" />
-              <span>Appliquer</span>
-            </button>
           </div>
-
         </div>
       </div>
     </div>
   );
 }
+
+export default FilterDrawer;

@@ -141,10 +141,8 @@ export function ProfileDrawer({
         <div className="w-1/2 h-full flex flex-col justify-between border-r-2 border-[#111111] p-12">
           
           {/* Top pseudo-navbar */}
-          <div className="flex gap-4">
-            <button className="bg-[#111111] text-[#EEEEEE] text-xs font-bold px-4 py-2 border-2 border-[#111111]">
-              Archiv'
-            </button>
+          <div className="flex gap-4 items-center">
+            <img src="/Artchiv-logo.webp" alt="Artchiv" className="h-10 sm:h-12 w-auto object-contain cursor-pointer" />
             <button className="bg-transparent text-[#111111] px-3 py-2 border-2 border-[#111111] flex items-center justify-center">
               <Info className="w-4 h-4" />
             </button>

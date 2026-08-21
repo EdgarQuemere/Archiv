@@ -382,10 +382,10 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
             <button
               onClick={() => onCardClick(currentInfoItem)}
-              className="inline-flex items-center gap-2 h-8 px-4 bg-[#111111] hover:opacity-90 text-[#EEEEEE] text-xs font-semibold transition-colors mt-2"
+              className="inline-flex items-center gap-2 h-9 sm:h-10 px-5 sm:px-6 bg-[#EEEEEE] border-[1.5px] border-[#111111] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-sm font-medium rounded-full transition-colors mt-2 shadow-sm cursor-pointer"
             >
               <span>Consulter</span>
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-4 h-4 stroke-[2.25]" />
             </button>
           </div>
         </div>

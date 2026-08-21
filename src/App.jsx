@@ -295,6 +295,11 @@ export function App() {
     return ['Toutes', ...Array.from(years).sort((a, b) => b.localeCompare(a))];
   }, [covers]);
 
+  const dynamicTypes = useMemo(() => {
+    const types = new Set(covers.map(c => c.type).filter(Boolean));
+    return ['Tous', ...Array.from(types).sort()];
+  }, [covers]);
+
   // Handle adding new cover submission
   const handleAddCover = (newCover) => {
     setCovers((prev) => [newCover, ...prev]);
@@ -316,7 +321,8 @@ export function App() {
       <Navbar
         activeView={activeView}
         setActiveView={setActiveView}
-        onOpenFilter={() => setIsFilterOpen(true)}
+        onOpenFilter={() => setIsFilterOpen(prev => !prev)}
+        isFilterOpen={isFilterOpen}
         onOpenSubmit={() => {
           if (user) {
             setEditProjectData(null); // Ensure it's not in edit mode
@@ -327,6 +333,7 @@ export function App() {
         }}
         onOpenLogin={() => setIsLoginOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
+        isProfileOpen={isProfileOpen}
         user={user}
         logout={logout}
         activeFilterCount={activeFilterCount}
@@ -371,6 +378,7 @@ export function App() {
         dynamicSchools={dynamicSchools}
         dynamicFields={dynamicFields}
         dynamicYears={dynamicYears}
+        dynamicTypes={dynamicTypes}
       />
 
       {/* Full-screen Project View with PDF Reader */}
