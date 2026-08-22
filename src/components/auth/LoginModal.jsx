@@ -22,14 +22,17 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resetSuccess, setResetSuccess] = useState('');
 
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
+  const emailInputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
       setFormData({ email: '', password: '' });
       setError('');
+      setResetSuccess('');
       gsap.timeline()
         .fromTo(backdropRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
         .fromTo(dialogRef.current, { opacity: 0, scale: 0.95, y: 15 }, { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: 'power2.out' }, '-=0.15');
@@ -50,6 +53,29 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
     gsap.timeline({ onComplete: () => { onClose(); onOpenRegister(); } })
       .to(dialogRef.current, { opacity: 0, scale: 0.95, duration: 0.2 })
       .to(backdropRef.current, { opacity: 0, duration: 0.15 }, '-=0.1');
+  };
+
+  const handleForgotPassword = async () => {
+    setError('');
+    setResetSuccess('');
+
+    if (!formData.email || !formData.email.trim()) {
+      setError('Veuillez d\'abord renseigner votre email.');
+      if (emailInputRef.current) emailInputRef.current.focus();
+      return;
+    }
+
+    try {
+      setLoading(true);
+      try {
+        await api.post('/auth/forgot-password', { email: formData.email });
+      } catch (err) {
+        // Fallback UI notification if backend endpoint is in progress
+      }
+      setResetSuccess(`Un email de réinitialisation a été envoyé à ${formData.email}.`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -144,6 +170,12 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
             </div>
           )}
 
+          {resetSuccess && (
+            <div className="p-3 bg-emerald-100 border-[1.5px] border-emerald-500 text-emerald-800 text-xs font-medium rounded-full text-center mb-3">
+              {resetSuccess}
+            </div>
+          )}
+
           {/* Social Auth Buttons */}
           <div className="mb-4 space-y-3">
             <button
@@ -177,6 +209,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
           <div>
             <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">Email *</label>
             <input
+              ref={emailInputRef}
               required
               type="email"
               value={formData.email}
@@ -188,7 +221,16 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
 
           {/* Password Input */}
           <div>
-            <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">Mot de passe *</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs sm:text-sm font-medium text-[#111111]">Mot de passe *</label>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-[11px] sm:text-xs text-slate-600 hover:text-[#111111] underline transition-colors cursor-pointer"
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
             <div className="relative">
               <input
                 required

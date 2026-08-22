@@ -169,7 +169,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           {/* Olwen Planchenault */}
           <div className="flex flex-col items-start w-[30%]">
             <img
-              src="/page_info/Photo_Olwen.webp"
+              src="/page_info/photo_olwen.webp"
               alt="Olwen Planchenault"
               className="w-full aspect-square object-cover rounded-[10px] grayscale border-0 shadow-sm"
             />
@@ -215,8 +215,8 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             />
             <span className="text-sm font-light text-[#111111]">✕</span>
             <img
-              src="/page_info/logo_the_blacklilcat_droite.png"
-              alt="The Blacklilcat"
+              src="/page_info/logo_olwen_droite.png"
+              alt="Olwen"
               className="h-8 w-auto object-contain"
             />
           </div>
@@ -270,8 +270,8 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             />
             <span className="text-base font-light text-[#111111]">✕</span>
             <img
-              src="/page_info/logo_the_blacklilcat_droite.png"
-              alt="The Blacklilcat"
+              src="/page_info/logo_olwen_droite.png"
+              alt="Olwen"
               className="h-9 w-auto object-contain"
             />
           </div>
@@ -347,7 +347,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         {/* Olwen Planchenault */}
         <div className="flex flex-col items-start">
           <img
-            src="/page_info/Photo_Olwen.webp"
+            src="/page_info/photo_olwen.webp"
             alt="Olwen Planchenault"
             className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
           />
