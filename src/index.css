@@ -71,3 +71,31 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(17, 17, 17, 0.6);
 }
+
+/* Sonner Toast Artchiv Design System (DA) Overrides */
+[data-sonner-toast] {
+  background-color: #EEEEEE !important;
+  color: #111111 !important;
+  border: 1.5px solid #111111 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.12) !important;
+  font-family: 'Satoshi', 'Inter', -apple-system, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  padding: 14px 20px !important;
+}
+
+[data-sonner-toast] [data-title] {
+  color: #111111 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+[data-sonner-toast] [data-icon] {
+  color: #111111 !important;
+}
+
+[data-sonner-toast] [data-icon] svg {
+  fill: #111111 !important;
+  color: #EEEEEE !important;
+}

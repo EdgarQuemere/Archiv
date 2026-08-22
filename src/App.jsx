@@ -6,6 +6,7 @@ import { ListView } from './components/ListView';
 import { Navbar } from './components/Navbar';
 import { FilterDrawer } from './components/FilterDrawer';
 import { ProfileDrawer } from './components/ProfileDrawer';
+import { PublicProfileDrawer } from './components/PublicProfileDrawer';
 import { InfoModal } from './components/InfoModal';
 import { ProjectDetailView } from './components/ProjectDetailView';
 import { SubmitModal } from './components/SubmitModal';
@@ -56,6 +57,8 @@ export function App() {
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isPublicProfileOpen, setIsPublicProfileOpen] = useState(false);
+  const [publicProfileAuthor, setPublicProfileAuthor] = useState(null);
 
   useEffect(() => {
     if (window.location.search.includes('complete_profile=true')) {
@@ -379,6 +382,10 @@ export function App() {
             focusedCoverId={focusedCoverId}
             onActiveCoverChange={(id) => setFocusedCoverId(id)}
             onCardClick={handleCardClick}
+            onOpenPublicProfile={(authorName) => {
+              setPublicProfileAuthor(authorName);
+              setIsPublicProfileOpen(true);
+            }}
           />
         )}
       </main>
@@ -405,6 +412,10 @@ export function App() {
           onOpenProfile={() => setIsProfileOpen(true)}
           onOpenLogin={() => setIsLoginOpen(true)}
           onOpenInfo={() => setIsInfoOpen(true)}
+          onOpenPublicProfile={(authorName) => {
+            setPublicProfileAuthor(authorName);
+            setIsPublicProfileOpen(true);
+          }}
         />
       )}
 
@@ -417,7 +428,7 @@ export function App() {
         onOpenLogin={() => setIsLoginOpen(true)}
       />
 
-      {/* Profile Drawer */}
+      {/* Profile Drawer (Own Profile) */}
       <ProfileDrawer
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
@@ -431,6 +442,21 @@ export function App() {
         }}
         onDeleteProject={(projectId) => {
           setCovers(prev => prev.filter(c => c.id !== projectId));
+        }}
+      />
+
+      {/* Public Profile Drawer (Viewing Other Users) */}
+      <PublicProfileDrawer
+        isOpen={isPublicProfileOpen}
+        onClose={() => setIsPublicProfileOpen(false)}
+        authorName={publicProfileAuthor}
+        user={user}
+        covers={covers}
+        onOpenInfo={() => setIsInfoOpen(true)}
+        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenLogin={() => setIsLoginOpen(true)}
+        onSelectProject={(project) => {
+          setSelectedCard(project);
         }}
       />
 
@@ -463,7 +489,21 @@ export function App() {
         onSuccess={() => setIsSubmitOpen(true)} // Open submit right after register
       />
 
-      <Toaster position="bottom-center" />
+      <Toaster 
+        position="bottom-center" 
+        toastOptions={{
+          style: {
+            backgroundColor: '#EEEEEE',
+            color: '#111111',
+            border: '1.5px solid #111111',
+            borderRadius: '14px',
+            fontFamily: "'Satoshi', 'Inter', sans-serif",
+            fontSize: '15px',
+            fontWeight: '500',
+            boxShadow: '0 4px 16px rgba(17, 17, 17, 0.12)'
+          }
+        }}
+      />
     </div>
   );
 }

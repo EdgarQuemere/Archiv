@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, BookOpen, Share2, Heart, Download } from 'lucide-react';
 import gsap from 'gsap';
 
-export function DetailModal({ item, onClose }) {
+export function DetailModal({ item, onClose, onOpenPublicProfile }) {
   const [liked, setLiked] = useState(false);
   const [pdfSimulated, setPdfSimulated] = useState(false);
   
@@ -19,57 +19,50 @@ export function DetailModal({ item, onClose }) {
       ).fromTo(
         modalContainerRef.current,
         { opacity: 0, scale: 0.95, y: 20 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: 'power2.out' },
+        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'power3.out' },
         '-=0.15'
       );
     }
   }, [item]);
 
-  const handleClose = () => {
-    if (modalContainerRef.current && backdropRef.current) {
-      gsap.timeline({
-        onComplete: () => {
-          onClose();
-        }
-      })
-      .to(modalContainerRef.current, { opacity: 0, scale: 0.95, y: 15, duration: 0.2, ease: 'power2.in' })
-      .to(backdropRef.current, { opacity: 0, duration: 0.2 }, '-=0.1');
-    } else {
-      onClose();
-    }
-  };
-
   if (!item) return null;
 
+  const handleCloseAnimation = () => {
+    const tl = gsap.timeline({ onComplete: onClose });
+    tl.to(modalContainerRef.current, { opacity: 0, scale: 0.95, y: 15, duration: 0.2, ease: 'power2.in' })
+      .to(backdropRef.current, { opacity: 0, duration: 0.15 }, '-=0.1');
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto font-sans">
-      {/* Backdrop */}
-      <div
-        ref={backdropRef}
-        className="fixed inset-0 bg-[#111111]/75 backdrop-blur-sm transition-opacity"
-        onClick={handleClose}
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 font-sans text-[#111111] select-none">
+      {/* Backdrop with Soft Blur */}
+      <div 
+        ref={backdropRef} 
+        onClick={handleCloseAnimation}
+        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs" 
       />
 
-      {/* Modal Card Container */}
-      <div
+      {/* Modal Dialog Container */}
+      <div 
         ref={modalContainerRef}
-        className="relative bg-[#EEEEEE] rounded-none shadow-2xl max-w-4xl w-full overflow-hidden z-10 my-auto border-2 border-[#111111] flex flex-col md:flex-row max-h-[90vh] text-[#111111] transform-gpu"
+        className="relative w-full max-w-4xl max-h-[90vh] bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] shadow-2xl overflow-hidden flex flex-col md:flex-row transform-gpu z-10"
       >
         {/* Close Button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 z-30 bg-[#111111] hover:opacity-90 text-[#EEEEEE] p-2 rounded-none transition-colors"
+        <button 
+          onClick={handleCloseAnimation}
+          title="Fermer"
+          className="absolute top-4 right-4 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#111111] hover:text-[#EEEEEE] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 stroke-[2.25]" />
         </button>
 
-        {/* Left Column: Cover Image Display */}
-        <div className="md:w-1/2 bg-[#111111] p-6 sm:p-8 flex items-center justify-center relative overflow-hidden">
-          <div className="relative z-10 max-w-xs w-full shadow-2xl rounded-none overflow-hidden">
-            <img
-              src={item.coverUrl}
+        {/* Left Column: Large PDF Cover Preview */}
+        <div className="md:w-1/2 bg-[#E2E2E2] border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-[#111111] p-6 flex flex-col items-center justify-center relative min-h-[280px]">
+          <div className="w-48 sm:w-60 aspect-[3/4] bg-white rounded-[10px] border-[1.5px] border-[#111111] shadow-md overflow-hidden relative group">
+            <img 
+              src={item.coverUrl || item.imageUrl || '/page-profile-test-front/edgar-avatar.jpg'} 
               alt={item.title}
-              className="w-full h-auto object-cover max-h-[60vh] rounded-none"
+              className="w-full h-full object-cover" 
             />
           </div>
         </div>
@@ -83,25 +76,33 @@ export function DetailModal({ item, onClose }) {
             </h1>
 
             {/* Author */}
-            <p className="text-sm font-medium text-[#111111] mb-2">
-              par {item.author}
+            <p className="text-base font-medium text-[#111111] mb-2">
+              par{' '}
+              <span 
+                onClick={() => {
+                  if (onOpenPublicProfile) onOpenPublicProfile(item.author);
+                }}
+                className="underline cursor-pointer hover:opacity-80 font-bold"
+              >
+                {item.author}
+              </span>
             </p>
 
             {/* Monospace Metadata Line (School — Year • Field) */}
-            <p className="text-xs font-mono text-slate-600 mb-4">
+            <p className="text-base font-mono text-slate-600 mb-4">
               {item.school} — {item.year} • {item.field || item.type}
             </p>
 
             {/* Subtitle if available */}
             {item.subtitle && (
-              <p className="text-xs sm:text-sm text-slate-700 font-medium mb-3 italic">
+              <p className="text-base text-slate-700 font-medium mb-3 italic">
                 {item.subtitle}
               </p>
             )}
 
             {/* Abstract */}
             {item.abstract && (
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-6">
+              <p className="text-base text-slate-700 leading-relaxed mb-6">
                 {item.abstract}
               </p>
             )}

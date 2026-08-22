@@ -16,9 +16,21 @@ const pdfOptions = {
 };
 
 // User provided SVGs
-const PageSingleSVG = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 256 256">
+const IconUserProfile = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
+  </svg>
+);
+
+const PageSingleSVG = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z"></path>
+  </svg>
+);
+
+const PageDoubleSVG = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM120,208H48V48h72Zm88,0H136V48h72Z"></path>
   </svg>
 );
 
@@ -34,7 +46,7 @@ const BookmarkSVG = () => (
   </svg>
 );
 
-export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, onOpenInfo }) {
+export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, onOpenInfo, onOpenPublicProfile }) {
   const { user, setUser } = useContext(AuthContext);
   const [showInfo, setShowInfo] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -67,7 +79,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     }
   };
 
-  const [zoomLevel, setZoomLevel] = useState(isPortrait ? 48 : 80);
+  const [zoomLevel, setZoomLevel] = useState(isPortrait ? 36 : 50);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'double'
   const [numPages, setNumPages] = useState(0);
@@ -175,12 +187,28 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   };
 
   const handleZoomIn = () => {
-    setZoomLevel((z) => Math.min(220, z + 15));
+    setZoomLevel((z) => Math.min(220, Math.round(z * 1.25)));
   };
 
   const handleZoomOut = () => {
-    setZoomLevel((z) => Math.max(25, z - 15));
+    setZoomLevel((z) => Math.max(25, Math.round(z / 1.25)));
   };
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    const handleWheel = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const factor = e.deltaY > 0 ? 0.9 : 1.1;
+        setZoomLevel((prev) => Math.max(25, Math.min(220, prev * factor)));
+      }
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   const getSpreads = () => {
     if (viewMode === 'single') {
@@ -230,7 +258,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           title={user ? user.name || 'Profil' : 'Se connecter'}
           className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <User className="w-4 h-4 stroke-[2.25]" />
+          <IconUserProfile className="w-4 h-4" />
         </button>
       </div>
 
@@ -252,20 +280,20 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 max-w-xs sm:max-w-md pointer-events-auto font-sans text-[#111111]">
           {showInfo && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 mb-4">
-              <h1 className="text-xl sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
+              <h1 className="text-xl sm:text-2xl font-bold leading-tight mb-1.5 text-[#111111]">
                 {item.title}
               </h1>
 
-              <p className="text-sm font-semibold mb-1 text-[#111111]">
-                par <span className="underline cursor-pointer hover:opacity-80">{item.author}</span>
+              <p className="text-base font-semibold mb-1 text-[#111111]">
+                par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(item.author)} className="underline cursor-pointer hover:opacity-80">{item.author}</span>
               </p>
 
-              <p className="text-xs font-semibold text-[#111111]/80 mb-3">
+              <p className="text-base font-medium text-[#111111]/80 mb-3">
                 {item.school} — {item.year} — {item.type || item.field}
               </p>
 
               {(item.description || item.abstract) && (
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed max-w-sm">
+                <p className="text-base text-slate-700 leading-relaxed max-w-sm sm:max-w-md">
                   {item.description || item.abstract}
                 </p>
               )}
@@ -335,37 +363,39 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         >
           <div
             ref={scrollContainerRef}
-            className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] flex flex-col items-center py-16 px-8 space-y-8"
+            className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] py-24 sm:py-28 pb-32 px-8"
           >
-            {spreads.map((pages, spreadIdx) => {
-              return (
-                <div
-                  key={spreadIdx}
-                  className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0`}
-                >
-                  {pages.map((pageNum) => (
-                    <div
-                      key={pageNum}
-                      ref={pageRefs.current[pageNum - 1]}
-                      className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0`}
-                    >
-                      <Page
-                        pageNumber={pageNum}
-                        width={
-                          viewMode === 'double'
-                            ? (isPortrait ? zoomLevel * 6.5 : zoomLevel * 8.5)
-                            : (isPortrait ? zoomLevel * 10 : zoomLevel * 14)
-                        }
-                        renderTextLayer={false}
-                        renderAnnotationLayer={true}
-                        devicePixelRatio={Math.max(window.devicePixelRatio || 1, 2)}
-                        className="block select-none pointer-events-none"
-                      />
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+            <div className="w-max min-w-full mx-auto flex flex-col items-center space-y-8 transition-all duration-300 ease-out">
+              {spreads.map((pages, spreadIdx) => {
+                return (
+                  <div
+                    key={spreadIdx}
+                    className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0 transition-all duration-300 ease-out`}
+                  >
+                    {pages.map((pageNum) => (
+                      <div
+                        key={pageNum}
+                        ref={pageRefs.current[pageNum - 1]}
+                        className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0 transition-all duration-300 ease-out`}
+                      >
+                        <Page
+                          pageNumber={pageNum}
+                          width={
+                            viewMode === 'double'
+                              ? (isPortrait ? zoomLevel * 6.5 : zoomLevel * 7.5)
+                              : (isPortrait ? zoomLevel * 9 : zoomLevel * 11)
+                          }
+                          renderTextLayer={false}
+                          renderAnnotationLayer={true}
+                          devicePixelRatio={Math.max(window.devicePixelRatio || 1, 2)}
+                          className="block select-none pointer-events-none"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </Document>
 
@@ -383,7 +413,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
               }`}
             >
-              <PageSingleSVG />
+              <PageSingleSVG className="w-4 h-4" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
@@ -397,7 +427,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
               }`}
             >
-              <Columns className="w-4 h-4 stroke-[2.25]" />
+              <PageDoubleSVG className="w-4 h-4" />
             </button>
           </div>
 

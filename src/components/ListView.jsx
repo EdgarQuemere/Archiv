@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useCallback, useMe
 import { ExternalLink, BookOpen, MapPin, User } from 'lucide-react';
 import gsap from 'gsap';
 
-export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardClick }) {
+export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardClick, onOpenPublicProfile }) {
   const containerRef = useRef(null);
   const itemMapRef = useRef(new Map());
   const activeItemRef = useRef(null);
@@ -371,7 +371,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             </h3>
 
             <p className="text-sm font-medium mb-2">
-              par {currentInfoItem.author}
+              par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.author)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author}</span>
             </p>
 
             <p className="text-xs font-mono mb-4 text-slate-600">
