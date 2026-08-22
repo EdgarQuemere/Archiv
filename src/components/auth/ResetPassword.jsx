@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyRound, Lock, Eye, EyeOff } from 'lucide-react';
+import { KeyRound, Lock, Eye, EyeOff, Check } from 'lucide-react';
 import axios from '../../api/axios';
 
 export function ResetPassword({ token }) {
@@ -8,6 +8,14 @@ export function ResetPassword({ token }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  // Critères du mot de passe
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  const allCriteriaMet = hasMinLength && hasUppercase && hasNumber && hasSpecial;
+  const showCriteria = password.length > 0 && !allCriteriaMet;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,9 +93,32 @@ export function ResetPassword({ token }) {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1.5">
-                  Min 8 caractères, dont une majuscule et un chiffre.
-                </p>
+                
+                {/* Critères du mot de passe */}
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    showCriteria ? 'max-h-24 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
+                  }`}
+                >
+                  <div className="flex flex-col gap-1.5 text-[10px] sm:text-xs pl-2">
+                    <div className={`flex items-center gap-2 ${hasMinLength ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasMinLength ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Au moins 8 caractères</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${hasUppercase ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasUppercase ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Une majuscule minimum</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${hasNumber ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasNumber ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Un chiffre minimum</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${hasSpecial ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasSpecial ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Un caractère spécial minimum</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-2">

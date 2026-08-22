@@ -543,14 +543,12 @@ export function App() {
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
         onOpenRegister={() => setIsRegisterOpen(true)}
-        onSuccess={() => setIsSubmitOpen(true)} // Open submit right after login
       />
       
       <RegisterModal 
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
         onOpenLogin={() => setIsLoginOpen(true)}
-        onSuccess={() => setIsSubmitOpen(true)} // Open submit right after register
       />
 
       <Toaster 

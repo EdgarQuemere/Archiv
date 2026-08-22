@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { X, UserPlus, ChevronDown } from 'lucide-react';
+import { X, UserPlus, ChevronDown, Check, UploadCloud } from 'lucide-react';
 import gsap from 'gsap';
 import { AuthContext } from '../../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { SCHOOLS_LIST } from '../../utils/constants';
+import api from '../../api/axios';
 
 const IconEye = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -35,13 +36,34 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
     personalLink: ''
   });
 
+  // Critères du mot de passe
+  const hasMinLength = formData.password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(formData.password);
+  const hasNumber = /[0-9]/.test(formData.password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(formData.password);
+  const allCriteriaMet = hasMinLength && hasUppercase && hasNumber && hasSpecial;
+  const showCriteria = formData.password.length > 0 && !allCriteriaMet;
+
   const [step, setStep] = useState(1);
   const [googleToken, setGoogleToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const fileInputRef = useRef(null);
+
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
+
+  const handleAvatarSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarFile(file);
+    const reader = new FileReader();
+    reader.addEventListener('load', () => setAvatarPreview(reader.result?.toString() || null));
+    reader.readAsDataURL(file);
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -165,13 +187,30 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
       } else {
         await register(formData);
       }
+      
+      if (avatarFile) {
+        const avatarData = new FormData();
+        avatarData.append('profilePicture', avatarFile);
+        try {
+          await api.put('/users/me', avatarData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        } catch (avatarErr) {
+          console.error("Erreur lors de l'upload de l'avatar", avatarErr);
+        }
+      }
+
       if (onSuccess) onSuccess();
       handleClose();
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
+      if (err.response && err.response.data) {
+        if (err.response.data.errors && err.response.data.errors.length > 0) {
+          setError(err.response.data.errors[0].msg);
+        } else if (err.response.data.error) {
+          setError(err.response.data.error);
+        } else {
+          setError("Une erreur est survenue lors de l'inscription.");
+        }
       } else {
-        setError("Une erreur est survenue lors de l'inscription.");
+        setError("Une erreur de réseau est survenue.");
       }
     } finally {
       setLoading(false);
@@ -295,7 +334,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                     required
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    minLength="6"
+                    minLength="8"
                     value={formData.password}
                     onChange={handleChange}
                     className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
@@ -308,6 +347,31 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                   >
                     {showPassword ? <IconEye className="w-4 h-4" /> : <IconEyeClosed className="w-4 h-4" />}
                   </button>
+                </div>
+                {/* Critères du mot de passe */}
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    showCriteria ? 'max-h-24 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
+                  }`}
+                >
+                  <div className="flex flex-col gap-1.5 text-[10px] sm:text-xs pl-2">
+                    <div className={`flex items-center gap-2 ${hasMinLength ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasMinLength ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Au moins 8 caractères</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${hasUppercase ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasUppercase ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Une majuscule minimum</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${hasNumber ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasNumber ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Un chiffre minimum</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${hasSpecial ? 'text-green-600' : 'text-slate-500'}`}>
+                      {hasSpecial ? <Check className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-400 ml-1 mr-1" />}
+                      <span>Un caractère spécial minimum</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -336,8 +400,32 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
             </>
           ) : (
             <>
+              {/* Avatar Upload */}
+              <div className="flex flex-col items-center mb-4">
+                <div 
+                  className="relative w-20 h-20 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[10px] overflow-hidden cursor-pointer group shadow-sm flex items-center justify-center"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {avatarPreview ? (
+                    <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <UploadCloud className="w-6 h-6 text-slate-400 group-hover:text-[#111111] transition-colors" />
+                  )}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
+                    <span className="text-[9px] font-bold uppercase text-center leading-tight">Photo</span>
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleAvatarSelect}
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
-                <div>
+                <div className={formData.role === 'Autre' ? "col-span-2" : ""}>
                   <label className="text-xs sm:text-sm font-medium block mb-1">Rôle *</label>
                   <div className="relative">
                     <select
@@ -354,22 +442,24 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-medium block mb-1">École *</label>
-                  <div className="relative">
-                    <select
-                      name="currentSchool"
-                      value={formData.currentSchool}
-                      onChange={handleChange}
-                      className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20 appearance-none cursor-pointer"
-                    >
-                      {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
-                        <option key={sch} value={sch}>{sch}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
+                {formData.role !== 'Autre' && (
+                  <div>
+                    <label className="text-xs sm:text-sm font-medium block mb-1">École *</label>
+                    <div className="relative">
+                      <select
+                        name="currentSchool"
+                        value={formData.currentSchool}
+                        onChange={handleChange}
+                        className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20 appearance-none cursor-pointer"
+                      >
+                        {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
+                          <option key={sch} value={sch}>{sch}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <div>
@@ -392,6 +482,18 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                   value={formData.instaLink}
                   onChange={handleChange}
                   placeholder="https://instagram.com/..."
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs sm:text-sm font-medium block mb-1">Lien Perso / Portfolio (Optionnel)</label>
+                <input
+                  type="url"
+                  name="personalLink"
+                  value={formData.personalLink}
+                  onChange={handleChange}
+                  placeholder="https://mon-site.com"
                   className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
                 />
               </div>
