@@ -78,10 +78,10 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
       </div>
 
       {/* MOBILE LAYOUT (< 768px): SCROLLABLE VERTICAL FLOW WITH 3 HORIZONTAL PHOTOS */}
-      <div className="md:hidden absolute top-20 bottom-3 left-4 right-4 overflow-y-auto pb-6 pt-2 text-[#111111] flex flex-col gap-8">
+      <div className="md:hidden absolute top-20 bottom-3 left-4 right-4 overflow-y-auto pb-6 pt-2 text-[#111111] flex flex-col gap-9">
         {/* 1. TEXT SECTION */}
-        <div className="space-y-3 pt-1">
-          <h1 className="text-2xl font-bold italic mb-3 text-[#111111] leading-tight">Artchiv’</h1>
+        <div className="space-y-4 pt-1">
+          <h1 className="text-2xl font-bold italic mb-4 text-[#111111] leading-tight">Artchiv’</h1>
 
           <p className="text-sm leading-relaxed font-normal">
             Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les portfolios et les mémoires de fin d’études.
@@ -191,7 +191,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         </div>
 
         {/* 3. CONTACT & PARTNERS SECTION */}
-        <div className="space-y-2 pt-1">
+        <div className="space-y-3 pt-2">
           <a
             href="mailto:contact@archiv.fr"
             className="block text-sm italic font-medium hover:underline text-[#111111]"
@@ -207,27 +207,41 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           </button>
 
           {/* LOGOS PARTENAIRES */}
-          <div className="flex items-center gap-3.5 pt-2">
-            <img
-              src="/page_info/Logo_Omniscient_project_gauche.png"
-              alt="Omniscient Project"
-              className="h-8 w-auto object-contain"
-            />
+          <div className="flex items-center gap-4 pt-3">
+            <a
+              href="https://omniscientdesign.fr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="/page_info/Logo_Omniscient_project_gauche.png"
+                alt="Omniscient Project"
+                className="h-8 w-auto object-contain"
+              />
+            </a>
             <span className="text-sm font-light text-[#111111]">✕</span>
-            <img
-              src="/page_info/logo_olwen_droite.png"
-              alt="Olwen"
-              className="h-8 w-auto object-contain"
-            />
+            <a
+              href="https://www.instagram.com/theblacklilcat/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="/page_info/logo_olwen_droite.png"
+                alt="Olwen"
+                className="h-8 w-auto object-contain"
+              />
+            </a>
           </div>
         </div>
       </div>
 
       {/* DESKTOP LAYOUT (>= 768px): FIXED 24px FROM BOTTOM & EDGES */}
       {/* DESKTOP LEFT SECTION (TEXT + CONTACT): FIXED BOTTOM-6 LEFT-6 (24px) */}
-      <div className="hidden md:flex flex-col justify-end gap-5 fixed bottom-6 left-6 z-40 max-w-[580px] lg:max-w-[640px] text-[#111111] pointer-events-auto">
-        <div className="space-y-3">
-          <h1 className="text-3xl font-bold italic mb-3 text-[#111111] leading-tight">Artchiv’</h1>
+      <div className="hidden md:flex flex-col justify-end gap-7 lg:gap-8 fixed bottom-6 left-6 z-40 max-w-[580px] lg:max-w-[640px] text-[#111111] pointer-events-auto">
+        <div className="space-y-4 lg:space-y-5">
+          <h1 className="text-3xl font-bold italic mb-4 lg:mb-5 text-[#111111] leading-tight">Artchiv’</h1>
 
           <p className="text-base leading-relaxed font-normal">
             Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les portfolios et les mémoires de fin d’études.
@@ -246,7 +260,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           </p>
         </div>
 
-        <div className="space-y-2 pt-1">
+        <div className="space-y-3 pt-2">
           <a
             href="mailto:contact@archiv.fr"
             className="block text-base italic font-medium hover:underline text-[#111111]"
@@ -262,18 +276,32 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           </button>
 
           {/* LOGOS PARTENAIRES */}
-          <div className="flex items-center gap-3.5 pt-2">
-            <img
-              src="/page_info/Logo_Omniscient_project_gauche.png"
-              alt="Omniscient Project"
-              className="h-9 w-auto object-contain"
-            />
+          <div className="flex items-center gap-4 pt-3 lg:pt-4">
+            <a
+              href="https://omniscientdesign.fr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="/page_info/Logo_Omniscient_project_gauche.png"
+                alt="Omniscient Project"
+                className="h-9 w-auto object-contain"
+              />
+            </a>
             <span className="text-base font-light text-[#111111]">✕</span>
-            <img
-              src="/page_info/logo_olwen_droite.png"
-              alt="Olwen"
-              className="h-9 w-auto object-contain"
-            />
+            <a
+              href="https://www.instagram.com/theblacklilcat/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="/page_info/logo_olwen_droite.png"
+                alt="Olwen"
+                className="h-9 w-auto object-contain"
+              />
+            </a>
           </div>
         </div>
       </div>
