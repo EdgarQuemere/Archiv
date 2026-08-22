@@ -52,7 +52,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const [showInfo, setShowInfo] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const isPortrait = item?.orientation === 'portrait' || (item?.aspectRatio && item?.aspectRatio > 1.1);
-  
+
   const isSaved = user?.savedProjects?.some(sp => sp.projectId === item?.id);
 
   const handleDownload = async () => {
@@ -91,7 +91,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     } finally {
       setIsSaving(false);
     }
-  };  const [zoomLevel, setZoomLevel] = useState(() => {
+  }; const [zoomLevel, setZoomLevel] = useState(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     if (isMobile) {
       return isPortrait ? 24 : 28;
@@ -156,7 +156,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
     const observer = new ResizeObserver(() => {
       if (isNavigatingRef.current) return;
-      
+
       const targetRef = pageRefs.current[currentPage - 1];
       if (targetRef && targetRef.current) {
         const activeElem = targetRef.current;
@@ -256,12 +256,12 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
   return (
     <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden select-none animate-in fade-in duration-200">
-      <SEO 
-        title={item.title} 
+      <SEO
+        title={item.title}
         description={`Projet par ${item.author?.firstName || 'Anonyme'} ${item.author?.lastName || ''} - ${item.school}`}
         image={item.coverUrl}
       />
-      
+
       {/* TOP LEFT BUTTONS */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={onClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
@@ -342,9 +342,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
             >
               {showInfo ? (
-                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+                <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
               ) : (
-                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+                <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
               )}
             </button>
 
@@ -364,11 +364,10 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={toggleSave}
               disabled={isSaving}
-              className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0 ${
-                isSaved
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-              } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0 ${isSaved
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
               title={isSaved ? "Retirer des enregistrements" : "Enregistrer"}
             >
               <Bookmark className={`w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25] ${isSaved ? 'fill-current' : ''}`} />
@@ -433,17 +432,16 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
         {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR (3 Segmented Pill Containers stacked vertically on mobile) */}
         <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end sm:flex-row sm:items-center gap-2 sm:gap-3.5 pointer-events-auto font-sans max-w-full">
-          
+
           {/* Segment 1: View Mode Switcher (Single / Double) */}
           <div className="flex h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={() => setViewMode('single')}
               title="Page Simple"
-              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-                viewMode === 'single'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-              }`}
+              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'single'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                }`}
             >
               <PageSingleSVG className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -453,11 +451,10 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setViewMode('double')}
               title="Double Page"
-              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-                viewMode === 'double'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-              }`}
+              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'double'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                }`}
             >
               <PageDoubleSVG className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>

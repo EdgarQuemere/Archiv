@@ -307,8 +307,9 @@ export function ProfileDrawer({
           <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>
         <button
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm"
-          title="Mon Profil"
+          onClick={handleClose}
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm transition-colors cursor-pointer"
+          title="Fermer le Profil"
         >
           <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
@@ -464,8 +465,8 @@ export function ProfileDrawer({
               <button
                 onClick={() => setActiveTab('documents')}
                 className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'documents'
-                    ? 'bg-[#111111] text-[#EEEEEE]'
-                    : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                  ? 'bg-[#111111] text-[#EEEEEE]'
+                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                   }`}
               >
                 <span className="inline sm:hidden">Documents ({userProjects.length})</span>
@@ -478,8 +479,8 @@ export function ProfileDrawer({
               <button
                 onClick={() => setActiveTab('enregistrements')}
                 className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'enregistrements'
-                    ? 'bg-[#111111] text-[#EEEEEE]'
-                    : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                  ? 'bg-[#111111] text-[#EEEEEE]'
+                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                   }`}
               >
                 <span className="inline sm:hidden">Enregistrements ({savedProjects.length || 0})</span>

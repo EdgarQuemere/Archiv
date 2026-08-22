@@ -369,7 +369,7 @@ export function App() {
         }}
         onOpenLogin={() => setIsLoginOpen(true)}
         onOpenProfile={() => {
-          if (user) setIsProfileOpen(true);
+          if (user) setIsProfileOpen(prev => !prev);
           else setIsLoginOpen(true);
         }}
         isProfileOpen={isProfileOpen}
@@ -463,7 +463,7 @@ export function App() {
           item={selectedCard}
           onClose={() => setSelectedCard(null)}
           onOpenProfile={() => {
-          if (user) setIsProfileOpen(true);
+          if (user) setIsProfileOpen(prev => !prev);
           else setIsLoginOpen(true);
         }}
           onOpenLogin={() => setIsLoginOpen(true)}
@@ -481,7 +481,7 @@ export function App() {
         onClose={() => setIsInfoOpen(false)}
         user={user}
         onOpenProfile={() => {
-          if (user) setIsProfileOpen(true);
+          if (user) setIsProfileOpen(prev => !prev);
           else setIsLoginOpen(true);
         }}
         onOpenLogin={() => setIsLoginOpen(true)}
@@ -515,7 +515,7 @@ export function App() {
         covers={covers}
         onOpenInfo={() => setIsInfoOpen(true)}
         onOpenProfile={() => {
-          if (user) setIsProfileOpen(true);
+          if (user) setIsProfileOpen(prev => !prev);
           else setIsLoginOpen(true);
         }}
         onOpenLogin={() => setIsLoginOpen(true)}
