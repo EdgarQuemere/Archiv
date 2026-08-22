@@ -284,39 +284,41 @@ export function ProfileDrawer({
   return (
     <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
       
-      {/* 1. TOP NAVBAR (Identical responsive classes top-4 left-4 sm:top-6 sm:left-6 matching Navbar.jsx) */}
-      <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto">
-        <img 
-          src="/Artchiv-logo.webp" 
-          alt="Artchiv" 
-          className="h-12 sm:h-15 w-auto object-contain cursor-pointer transition-opacity hover:opacity-80 mr-0.5" 
-          onClick={handleClose}
-        />
+      {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
+      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-2 sm:gap-3.5 pointer-events-auto">
+        <picture onClick={handleClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
+          <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
+          <img 
+            src="/Artchiv-logo.webp" 
+            alt="Artchiv" 
+            className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block" 
+          />
+        </picture>
         <button 
           onClick={() => {
             handleClose();
             onOpenInfo?.();
           }}
           title="Informations"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors cursor-pointer"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors cursor-pointer"
         >
-          <Info className="w-4 h-4 stroke-[2.25]" />
+          <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>
         <button 
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm"
           title="Mon Profil"
         >
-          <IconUserProfile className="w-4 h-4" />
+          <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
       </div>
 
       {/* TOP RIGHT CLOSE BUTTON (Matching Navbar.jsx position) */}
       <button 
         onClick={handleClose}
-        className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center hover:bg-[#111111] hover:text-[#EEEEEE] transition-colors shadow-sm"
+        className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center hover:bg-[#111111] hover:text-[#EEEEEE] transition-colors shadow-sm"
         title="Fermer"
       >
-        <X className="w-4 h-4 stroke-[2.25]" />
+        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
       </button>
 
       {/* VERTICAL SEPARATOR LINE */}

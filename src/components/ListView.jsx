@@ -364,17 +364,17 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
       {/* Fixed Bottom-Right Information Card (Right-aligned text style) */}
       {currentInfoItem && (
-        <div className="fixed bottom-12 right-12 z-30 w-[400px] text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
-          <div className="flex flex-col items-end gap-1 pointer-events-auto">
-            <h3 className="text-xl font-bold leading-tight mb-1">
+        <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-12 sm:right-12 z-30 sm:w-[400px] max-w-[calc(100vw-2rem)] text-center sm:text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
+          <div className="flex flex-col items-center sm:items-end gap-1 pointer-events-auto bg-[#EEEEEE]/85 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-2xl sm:rounded-none border border-[#111111]/15 sm:border-0 shadow-lg sm:shadow-none">
+            <h3 className="text-base sm:text-xl font-bold leading-tight mb-0.5 sm:mb-1">
               {currentInfoItem.title}
             </h3>
 
-            <p className="text-sm font-medium mb-2">
+            <p className="text-xs sm:text-sm font-medium mb-1 sm:mb-2">
               par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.author)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author}</span>
             </p>
 
-            <p className="text-xs font-mono mb-4 text-slate-600">
+            <p className="text-[11px] sm:text-xs font-mono mb-2 sm:mb-4 text-slate-600">
               {currentInfoItem.school} — {currentInfoItem.year} • {currentInfoItem.field}
             </p>
 

@@ -117,7 +117,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
       {/* Modal Dialog Card */}
       <div
         ref={dialogRef}
-        className="relative bg-[#EEEEEE] rounded-[10px] shadow-2xl max-w-sm w-full z-10 border-[1.5px] border-[#111111] p-6 sm:p-8 transform-gpu"
+        className="relative bg-[#EEEEEE] rounded-[10px] shadow-2xl max-w-sm w-full z-10 border-[1.5px] border-[#111111] p-5 sm:p-8 transform-gpu max-h-[90vh] overflow-y-auto"
       >
         {/* Close Button */}
         <button

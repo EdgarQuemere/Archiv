@@ -32,20 +32,22 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
     <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans overflow-hidden select-none animate-in fade-in duration-200 h-screen w-screen">
       
       {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
-      <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto">
-        <img
-          src="/Artchiv-logo.webp"
-          alt="Artchiv"
-          className="h-12 sm:h-15 w-auto object-contain cursor-pointer transition-opacity hover:opacity-80 mr-0.5"
-          onClick={onClose}
-        />
+      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-2 sm:gap-3.5 pointer-events-auto">
+        <picture onClick={onClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
+          <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
+          <img
+            src="/Artchiv-logo.webp"
+            alt="Artchiv"
+            className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
+          />
+        </picture>
         {/* Info Button - Active Solid Black */}
         <button
           onClick={onClose}
           title="Fermer la page information"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#111111] border-[1.5px] border-[#111111] text-[#EEEEEE] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#111111] border-[1.5px] border-[#111111] text-[#EEEEEE] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <Info className="w-4 h-4 stroke-[2.25]" />
+          <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>
         {/* User Profile Button */}
         <button
@@ -58,30 +60,30 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             }
           }}
           title={user ? `${user.firstName || user.name || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Se connecter'}
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <IconUserProfile className="w-4 h-4" />
+          <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
       </div>
 
       {/* TOP RIGHT CLOSE BUTTON */}
-      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-auto">
+      <div className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 pointer-events-auto">
         <button
           onClick={onClose}
           title="Fermer"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#EEEEEE] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#EEEEEE] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
         >
-          <X className="w-4 h-4 stroke-[2.25]" />
+          <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>
       </div>
 
-      {/* MAIN CONTENT CONTAINER - 24PX MARGINS FROM SCREEN EDGES */}
-      <div className="absolute top-28 bottom-6 left-6 right-6 flex flex-row justify-between items-end overflow-hidden">
+      {/* MAIN CONTENT CONTAINER - RESPONSIVE SCROLL & LAYOUT */}
+      <div className="absolute top-20 sm:top-28 bottom-3 sm:bottom-6 left-4 sm:left-8 right-4 sm:right-8 flex flex-col md:flex-row justify-between items-start md:items-end overflow-y-auto gap-8 pb-4 pt-2">
         
-        {/* LEFT COLUMN: ABOUT ARTCHIV (Width max-w-[480px], overflow-hidden, no scrolling) */}
-        <div className="w-full max-w-[480px] text-[#111111] flex flex-col justify-end gap-5 overflow-hidden">
-          <div className="space-y-3">
-            <h1 className="text-xl sm:text-2xl font-bold italic mb-3">Artchiv’</h1>
+        {/* LEFT COLUMN: ABOUT ARTCHIV (Expanded max width & clear top title) */}
+        <div className="w-full max-w-[580px] lg:max-w-[640px] text-[#111111] flex flex-col justify-start md:justify-end gap-4 sm:gap-5">
+          <div className="space-y-3 pt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold italic mb-3 text-[#111111] leading-tight">Artchiv’</h1>
 
             <p className="text-sm sm:text-base leading-relaxed font-normal">
               Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les portfolios et les mémoires de fin d’études.

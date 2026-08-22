@@ -18,9 +18,12 @@ export function FilterDrawer({
   const backdropRef = useRef(null);
   const panelRef = useRef(null);
   const schoolSearchContainerRef = useRef(null);
+  const fieldSearchContainerRef = useRef(null);
   const [allDomains, setAllDomains] = useState([]);
   const [schoolSearch, setSchoolSearch] = useState('');
   const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
+  const [fieldSearch, setFieldSearch] = useState('');
+  const [showFieldDropdown, setShowFieldDropdown] = useState(false);
 
   useEffect(() => {
     api.get('/domains')
@@ -28,11 +31,14 @@ export function FilterDrawer({
       .catch(err => console.error('Erreur de chargement des domaines', err));
   }, []);
 
-  // Close school dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (schoolSearchContainerRef.current && !schoolSearchContainerRef.current.contains(e.target)) {
         setShowSchoolDropdown(false);
+      }
+      if (fieldSearchContainerRef.current && !fieldSearchContainerRef.current.contains(e.target)) {
+        setShowFieldDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -85,6 +91,9 @@ export function FilterDrawer({
   const availableFields = dynamicFields.length > 0 
     ? dynamicFields 
     : ['Tous les domaines', ...allDomains];
+  const filteredFields = availableFields.filter(field =>
+    field === 'Tous les domaines' || field.toLowerCase().includes(fieldSearch.toLowerCase())
+  );
 
   // Filter available years dynamically from DB/covers
   const availableYears = dynamicYears.length > 0 
@@ -92,7 +101,7 @@ export function FilterDrawer({
     : ['Toutes', '2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018'];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden font-sans flex justify-end p-4 sm:p-6 pointer-events-none">
+    <div className="fixed inset-0 z-50 overflow-hidden font-sans flex justify-center sm:justify-end p-2 xs:p-4 sm:p-6 pointer-events-none">
       {/* Backdrop Overlay */}
       <div
         ref={backdropRef}
@@ -101,19 +110,19 @@ export function FilterDrawer({
       />
 
       {/* Filter Modal / Card Popover */}
-      <div className="relative z-50 w-full sm:w-[562px] max-w-[calc(100vw-2rem)] pointer-events-auto mt-16 sm:mt-18 self-start">
+      <div className="relative z-50 w-full sm:w-[562px] max-w-full sm:max-w-[calc(100vw-2rem)] pointer-events-auto mt-14 sm:mt-20 md:mt-22 self-end sm:self-start">
         <div
           ref={panelRef}
-          className="bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[10px] p-6 sm:p-7 shadow-2xl text-[#111111] space-y-6 max-h-[82vh] overflow-y-auto"
+          className="bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-t-[16px] sm:rounded-[10px] p-5 sm:p-7 shadow-2xl text-[#111111] space-y-5 sm:space-y-6 max-h-[85vh] sm:max-h-[82vh] overflow-y-auto"
         >
           {/* Header Count */}
           <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-bold text-[#111111] tracking-tight">
+            <h2 className="text-sm xs:text-base sm:text-lg font-bold text-[#111111] tracking-tight">
               {totalResults} document{totalResults > 1 ? 's' : ''} consultable{totalResults > 1 ? 's' : ''}
             </h2>
             <button
               onClick={handleClose}
-              className="w-8 h-8 rounded-full border border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] flex items-center justify-center text-[#111111] transition-colors"
+              className="w-8 h-8 rounded-full border border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] flex items-center justify-center text-[#111111] transition-colors cursor-pointer"
             >
               <X className="w-4 h-4 stroke-[2.25]" />
             </button>
@@ -163,7 +172,7 @@ export function FilterDrawer({
                     }
                   }}
                   onFocus={() => setShowSchoolDropdown(true)}
-                  placeholder="Recherché une école"
+                  placeholder="Rechercher une école"
                   className="w-full bg-transparent text-sm text-[#111111] font-normal focus:outline-none placeholder:text-slate-500"
                 />
                 {filters.school !== 'Toutes les écoles' && (
@@ -172,7 +181,7 @@ export function FilterDrawer({
                       setFilters(prev => ({ ...prev, school: 'Toutes les écoles' }));
                       setSchoolSearch('');
                     }}
-                    className="text-[#111111] hover:opacity-60 shrink-0 ml-1"
+                    className="text-[#111111] hover:opacity-60 shrink-0 ml-1 cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5 stroke-[2.25]" />
                   </button>
@@ -217,24 +226,75 @@ export function FilterDrawer({
           </div>
 
           {/* Section 3: Domaines */}
-          <div>
+          <div className="relative" ref={fieldSearchContainerRef}>
             <label className="text-sm font-medium text-[#111111] block mb-3">
               Domaines
             </label>
             <div className="relative flex items-center">
-              <select
-                value={filters.field}
-                onChange={(e) => setFilters((prev) => ({ ...prev, field: e.target.value }))}
-                className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-5 py-2.5 text-sm text-[#111111] font-normal appearance-none focus:outline-none cursor-pointer pr-10 shadow-xs"
-              >
-                {availableFields.map((field) => (
-                  <option key={field} value={field}>
-                    {field === 'Tous les domaines' ? 'Tout les domaines' : field}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-[#111111] opacity-80 stroke-[2.25] absolute right-4 pointer-events-none" />
+              <div className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 py-2.5 flex items-center shadow-xs">
+                <Search className="w-4 h-4 text-[#111111] opacity-75 shrink-0 mr-2.5 stroke-[2.25]" />
+                <input
+                  type="text"
+                  value={fieldSearch || (filters.field !== 'Tous les domaines' ? filters.field : '')}
+                  onChange={(e) => {
+                    setFieldSearch(e.target.value);
+                    setShowFieldDropdown(true);
+                    if (!e.target.value) {
+                      setFilters(prev => ({ ...prev, field: 'Tous les domaines' }));
+                    }
+                  }}
+                  onFocus={() => setShowFieldDropdown(true)}
+                  placeholder="Rechercher un domaine"
+                  className="w-full bg-transparent text-sm text-[#111111] font-normal focus:outline-none placeholder:text-slate-500"
+                />
+                {filters.field !== 'Tous les domaines' && (
+                  <button
+                    onClick={() => {
+                      setFilters(prev => ({ ...prev, field: 'Tous les domaines' }));
+                      setFieldSearch('');
+                    }}
+                    className="text-[#111111] hover:opacity-60 shrink-0 ml-1 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5 stroke-[2.25]" />
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Field Dropdown Suggestions */}
+            {showFieldDropdown && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-2xl p-2 shadow-xl z-20 max-h-48 overflow-y-auto">
+                <button
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, field: 'Tous les domaines' }));
+                    setFieldSearch('');
+                    setShowFieldDropdown(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                    filters.field === 'Tous les domaines' ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
+                  }`}
+                >
+                  Tous les domaines
+                </button>
+                {filteredFields
+                  .filter(f => f !== 'Tous les domaines')
+                  .map(field => (
+                    <button
+                      key={field}
+                      onClick={() => {
+                        setFilters(prev => ({ ...prev, field }));
+                        setFieldSearch(field);
+                        setShowFieldDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                        filters.field === field ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
+                      }`}
+                    >
+                      {field}
+                    </button>
+                  ))}
+              </div>
+            )}
           </div>
 
           {/* Section 4: Années */}
@@ -268,6 +328,7 @@ export function FilterDrawer({
               onClick={() => {
                 resetFilters();
                 setSchoolSearch('');
+                setFieldSearch('');
               }}
               className="px-5 py-2.5 border-[1.5px] border-[#111111] text-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-sm font-medium inline-flex items-center gap-2 transition-colors cursor-pointer shadow-xs"
             >
