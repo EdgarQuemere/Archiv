@@ -28,6 +28,12 @@ function shuffleArray(array) {
   return arr;
 }
 
+const IconAddDocument = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M216.49,79.51l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.51ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm104-60a12,12,0,0,1-12,12H140v12a12,12,0,0,1-24,0V164H104a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,164,152Z" />
+  </svg>
+);
+
 export function App() {
   const [covers, setCovers] = useState([]);
   const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'network' | 'list'
@@ -361,6 +367,19 @@ export function App() {
             <p className="text-xs sm:text-sm text-slate-600 max-w-sm">
               Essayez de modifier vos critères de recherche<br />ou réinitialisez les filtres.
             </p>
+            <button 
+              onClick={() => {
+                if (user) {
+                  setIsSubmitOpen(true);
+                } else {
+                  setIsLoginOpen(true);
+                }
+              }}
+              className="mt-6 h-9 xs:h-10 px-5 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+            >
+              <span>Ajouter mon travail</span>
+              <IconAddDocument className="w-4 h-4 text-[#111111]" />
+            </button>
           </div>
         ) : activeView === 'canvas' ? (
           <InfiniteCanvas
@@ -368,6 +387,10 @@ export function App() {
             camera={camera}
             setCamera={setCamera}
             onCardClick={handleCardClick}
+            onAddWork={() => {
+              if (user) setIsSubmitOpen(true);
+              else setIsLoginOpen(true);
+            }}
           />
         ) : activeView === 'network' ? (
           <NetworkGraphCanvas
@@ -385,6 +408,10 @@ export function App() {
             onOpenPublicProfile={(authorName) => {
               setPublicProfileAuthor(authorName);
               setIsPublicProfileOpen(true);
+            }}
+            onAddWork={() => {
+              if (user) setIsSubmitOpen(true);
+              else setIsLoginOpen(true);
             }}
           />
         )}
@@ -436,6 +463,7 @@ export function App() {
         logout={logout}
         covers={covers}
         onOpenInfo={() => setIsInfoOpen(true)}
+        onOpenSubmit={() => setIsSubmitOpen(true)}
         onEditProject={(project) => {
           setEditProjectData(project);
           setIsSubmitOpen(true);

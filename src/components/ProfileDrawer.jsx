@@ -49,6 +49,12 @@ const IconBookmark = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
+const IconAddDocument = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M216.49,79.51l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.51ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm104-60a12,12,0,0,1-12,12H140v12a12,12,0,0,1-24,0V164H104a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,164,152Z" />
+  </svg>
+);
+
 const IconPencil = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M230.14,70.54,185.46,25.85a20,20,0,0,0-28.29,0L33.86,149.17A19.85,19.85,0,0,0,28,163.31V208a20,20,0,0,0,20,20H92.69a19.86,19.86,0,0,0,14.14-5.86L230.14,98.82a20,20,0,0,0,0-28.28ZM91,204H52V165l84-84,39,39ZM192,103,153,64l18.34-18.34,39,39Z" />
@@ -75,7 +81,8 @@ export function ProfileDrawer({
   covers = [],
   onEditProject,
   onDeleteProject,
-  onOpenInfo
+  onOpenInfo,
+  onOpenSubmit
 }) {
   const { deleteAccount, setUser } = useContext(AuthContext);
   const containerRef = useRef(null);
@@ -454,10 +461,10 @@ export function ProfileDrawer({
         </div>
 
         {/* RIGHT COLUMN - DOCUMENTS / ENREGISTREMENTS */}
-        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col pt-8 md:pt-28 pb-10 px-4 xs:px-6 md:pl-6 md:pr-14 md:overflow-hidden bg-[#EEEEEE]">
+        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col pt-8 md:pt-28 pb-10 md:pb-0 px-4 xs:px-6 md:pl-6 md:pr-14 md:overflow-hidden bg-[#EEEEEE]">
           
           {/* SEGMENTED SWITCH CONTROL */}
-          <div className="mb-8 xs:mb-10 flex items-center justify-start shrink-0">
+          <div className="mb-5 xs:mb-6 flex items-center justify-start shrink-0">
             <div className="h-9 xs:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] inline-flex items-center rounded-full overflow-hidden p-0 shadow-sm">
               <button 
                 onClick={() => setActiveTab('documents')}
@@ -488,6 +495,19 @@ export function ProfileDrawer({
               </button>
             </div>
           </div>
+
+          {/* CTA "AJOUTER MON TRAVAIL" */}
+          {activeTab === 'documents' && (
+            <div className="mb-6 xs:mb-8 flex items-center justify-start shrink-0">
+              <button 
+                onClick={() => onOpenSubmit?.()}
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+              >
+                <span>Ajouter mon travail</span>
+                <IconAddDocument className="w-4 h-4 text-[#111111]" />
+              </button>
+            </div>
+          )}
 
           {/* SCROLLABLE COVERS LIST */}
           <div className="flex-1 overflow-y-auto space-y-12 pr-2 pb-10 scrollbar-none">
