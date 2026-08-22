@@ -22,7 +22,7 @@ const emailLimiter = rateLimit({
   message: { error: 'Trop de demandes liées aux emails depuis cette adresse IP, veuillez réessayer dans 1 heure.' }
 });
 
-router.post('/register', [
+router.post('/register', registerLimiter, [
   body('email').isEmail().withMessage('Veuillez fournir un email valide').normalizeEmail(),
   body('password')
     .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères')
