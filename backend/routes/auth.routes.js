@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const authController = require('../controllers/auth.controller');
+const upload = require('../middlewares/upload.middleware');
 const rateLimit = require('express-rate-limit');
 
 const loginLimiter = rateLimit({
@@ -22,14 +23,15 @@ const emailLimiter = rateLimit({
   message: { error: 'Trop de demandes liées aux emails depuis cette adresse IP, veuillez réessayer dans 1 heure.' }
 });
 
-router.post('/register', [
+router.post('/register', upload.single('profilePicture'), [
   body('email').isEmail().withMessage('Veuillez fournir un email valide').normalizeEmail(),
   body('password')
     .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères')
     .matches(/[A-Z]/).withMessage('Le mot de passe doit contenir au moins une majuscule')
     .matches(/[0-9]/).withMessage('Le mot de passe doit contenir au moins un chiffre').matches(/[^A-Za-z0-9]/).withMessage('Le mot de passe doit contenir au moins un caractère spécial'),
   body('firstName').notEmpty().withMessage('Le prénom est requis').trim().escape(),
-  body('lastName').notEmpty().withMessage('Le nom est requis').trim().escape()
+  body('lastName').notEmpty().withMessage('Le nom est requis').trim().escape(),
+  body('pseudo').optional({ checkFalsy: true }).isLength({ min: 3, max: 30 }).withMessage('Le pseudo doit faire entre 3 et 30 caractères').matches(/^[a-zA-Z0-9_]+$/).withMessage('Le pseudo ne peut contenir que des lettres, chiffres et tirets du bas').trim().escape()
 ], authController.register);
 
 router.post('/login', loginLimiter, [

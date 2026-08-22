@@ -20,6 +20,8 @@ model User {
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
   lastName                 String?
+  pseudo                   String?        @unique
+  displayPreference        String         @default("NAME")
   isOmniscient             Boolean        @default(false)
   isAdmin                  Boolean        @default(false)
   resetPasswordExpires     DateTime?
@@ -37,6 +39,8 @@ model Project {
   title          String
   description    String?
   type           String
+  orientation    String?        @default("portrait")
+  aspectRatio    Float?         @default(1.414)
   school         String
   year           Int
   pdfUrl         String
@@ -70,4 +74,16 @@ model SavedProject {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
+}
+
+model DeletedAccount {
+  id          String   @id @default(uuid())
+  email       String
+  firstName   String?
+  lastName    String?
+  pseudo      String?
+  role        String?
+  school      String?
+  reason      String
+  deletedAt   DateTime @default(now())
 }

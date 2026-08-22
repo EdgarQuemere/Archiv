@@ -86,3 +86,15 @@ exports.toggleBanUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getDeletedAccounts = async (req, res) => {
+  try {
+    const deletedAccounts = await prisma.deletedAccount.findMany({
+      orderBy: { deletedAt: 'desc' }
+    });
+    res.json(deletedAccounts);
+  } catch (error) {
+    console.error("Get Deleted Accounts Error:", error);
+    res.status(500).json({ error: "Erreur lors de la récupération des comptes supprimés." });
+  }
+};

@@ -278,7 +278,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filtre par type (Portfolio/Mémoire)"
+            "description": "Filtre par type (Book/Mémoire)"
           },
           {
             "in": "query",
@@ -329,7 +329,7 @@
                   "type": {
                     "type": "string",
                     "enum": [
-                      "Portfolio",
+                      "Book",
                       "Mémoire"
                     ]
                   },

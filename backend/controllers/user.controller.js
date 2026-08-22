@@ -8,7 +8,7 @@ exports.getProfile = async (req, res) => {
       select: {
         id: true,
         email: true,
-        firstName: true, lastName: true,
+        firstName: true, lastName: true, pseudo: true, displayPreference: true,
         role: true,
         currentSchool: true,
         behanceLink: true,
@@ -19,7 +19,7 @@ exports.getProfile = async (req, res) => {
         isAdmin: true,
         createdAt: true,
         projects: true,
-        savedProjects: { include: { project: { include: { domain: true, author: { select: { firstName: true, lastName: true, profilePicture: true } } } } } }
+        savedProjects: { include: { project: { include: { domain: true, author: { select: { firstName: true, lastName: true, pseudo: true, displayPreference: true, profilePicture: true } } } } } }
       }
     });
 
@@ -54,7 +54,7 @@ exports.updateProfile = async (req, res) => {
       select: { // On ne renvoie pas le mot de passe
         id: true,
         email: true,
-        firstName: true, lastName: true,
+        firstName: true, lastName: true, pseudo: true, displayPreference: true,
         role: true,
         currentSchool: true,
         behanceLink: true,
@@ -75,10 +75,34 @@ exports.updateProfile = async (req, res) => {
 
 exports.deleteAccount = async (req, res) => {
   try {
-    // Supprimer d'abord les projets pour éviter les erreurs de clés étrangères
-    await prisma.project.deleteMany({
-      where: { userId: req.userId }
+    const { reason } = req.body;
+
+    // Récupérer les infos de l'utilisateur avant suppression
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { email: true, firstName: true, lastName: true, pseudo: true, role: true, currentSchool: true }
     });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Utilisateur introuvable.' });
+    }
+
+    // Enregistrer la raison de suppression AVANT de supprimer le compte
+    await prisma.deletedAccount.create({
+      data: {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        pseudo: user.pseudo,
+        role: user.role,
+        school: user.currentSchool,
+        reason: reason || 'Aucune raison fournie',
+      }
+    });
+
+    // Supprimer d'abord les projets sauvegardés, puis les projets, pour éviter les erreurs de clés étrangères
+    await prisma.savedProject.deleteMany({ where: { userId: req.userId } });
+    await prisma.project.deleteMany({ where: { userId: req.userId } });
 
     // Supprimer l'utilisateur
     await prisma.user.delete({
@@ -107,7 +131,7 @@ exports.getPublicProfile = async (req, res) => {
       select: {
         id: true,
         firstName: true,
-        lastName: true,
+        lastName: true, pseudo: true, displayPreference: true,
         role: true,
         currentSchool: true,
         behanceLink: true,
@@ -144,7 +168,7 @@ exports.getSavedProjects = async (req, res) => {
         project: {
           include: {
             domain: true,
-            author: { select: { firstName: true, lastName: true, profilePicture: true } }
+            author: { select: { firstName: true, lastName: true, pseudo: true, displayPreference: true, profilePicture: true } }
           }
         }
       },

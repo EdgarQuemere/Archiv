@@ -33,7 +33,7 @@ const deleteFile = async (fileUrl) => {
 
 exports.createProject = async (req, res) => {
   try {
-    const { title, description, type, school, year, domain } = req.body;
+    const { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
 
     if (!title || !type || !school || !year || !domain) {
       return res.status(400).json({ error: 'Veuillez remplir tous les champs obligatoires (Titre, Type, Ecole, Année, Domaine).' });
@@ -54,6 +54,8 @@ exports.createProject = async (req, res) => {
         title,
         description,
         type,
+        orientation: orientation || 'portrait',
+        aspectRatio: aspectRatio ? parseFloat(aspectRatio) : 1.414,
         school,
         year: parseInt(year),
         domain: { connectOrCreate: { where: { name: domain }, create: { name: domain } } },
@@ -129,7 +131,7 @@ exports.getProjects = async (req, res) => {
 exports.updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, type, school, year, domain } = req.body;
+    const { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
 
     const project = await prisma.project.findUnique({ where: { id } });
     

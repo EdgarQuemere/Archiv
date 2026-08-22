@@ -13,3 +13,5 @@ router.get('/projects', adminController.getProjects);
 router.delete('/projects/:id', adminController.deleteProject);
 
 module.exports = router;
+
+router.get('/deleted-accounts', adminController.getDeletedAccounts);
