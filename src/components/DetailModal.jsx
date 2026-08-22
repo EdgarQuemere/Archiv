@@ -5,7 +5,7 @@ import gsap from 'gsap';
 export function DetailModal({ item, onClose, onOpenPublicProfile }) {
   const [liked, setLiked] = useState(false);
   const [pdfSimulated, setPdfSimulated] = useState(false);
-  
+
   const backdropRef = useRef(null);
   const modalContainerRef = useRef(null);
 
@@ -34,21 +34,21 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 font-sans text-[#111111] select-none">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 font-sans text-[#111111] ">
       {/* Backdrop with Soft Blur */}
-      <div 
-        ref={backdropRef} 
+      <div
+        ref={backdropRef}
         onClick={handleCloseAnimation}
-        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs" 
+        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs"
       />
 
       {/* Modal Dialog Container */}
-      <div 
+      <div
         ref={modalContainerRef}
         className="relative w-full max-w-4xl max-h-[90vh] bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] shadow-2xl overflow-hidden flex flex-col md:flex-row transform-gpu z-10"
       >
         {/* Close Button */}
-        <button 
+        <button
           onClick={handleCloseAnimation}
           title="Fermer"
           className="absolute top-4 right-4 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#111111] hover:text-[#EEEEEE] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
@@ -59,10 +59,10 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
         {/* Left Column: Large PDF Cover Preview */}
         <div className="md:w-1/2 bg-[#E2E2E2] border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-[#111111] p-6 flex flex-col items-center justify-center relative min-h-[280px]">
           <div className="w-48 sm:w-60 aspect-[3/4] bg-white rounded-[10px] border-[1.5px] border-[#111111] shadow-md overflow-hidden relative group">
-            <img 
-              src={item.coverUrl || item.imageUrl || '/page-profile-test-front/edgar-avatar.jpg'} 
+            <img
+              src={item.coverUrl || item.imageUrl || '/artchiv-logo.webp'}
               alt={item.title}
-              className="w-full h-full object-cover" 
+              className="w-full h-full object-cover"
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
             {/* Author */}
             <p className="text-base font-medium text-[#111111] mb-2">
               par{' '}
-              <span 
+              <span
                 onClick={() => {
                   if (onOpenPublicProfile) onOpenPublicProfile(item.author);
                 }}
@@ -132,11 +132,10 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
 
             <button
               onClick={() => setLiked(!liked)}
-              className={`p-2.5 rounded-none border-2 border-[#111111] transition-colors ${
-                liked
+              className={`p-2.5 rounded-none border-2 border-[#111111] transition-colors ${liked
                   ? 'bg-rose-500 text-[#EEEEEE]'
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#dddddd]'
-              }`}
+                }`}
               title="Ajouter aux favoris"
             >
               <Heart className={`w-4 h-4 ${liked ? 'fill-[#EEEEEE]' : ''}`} />

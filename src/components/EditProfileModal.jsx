@@ -40,6 +40,8 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    pseudo: '',
+    displayPreference: 'NAME',
     role: 'Etudiant',
     currentSchool: '',
     email: '',
@@ -58,7 +60,9 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
       setFormData({
         firstName: userProfile.firstName || '',
         lastName: userProfile.lastName || '',
-        role: userProfile.role || 'Étudiant en Design',
+        pseudo: userProfile.pseudo || '',
+        displayPreference: userProfile.displayPreference || 'NAME',
+        role: userProfile.role || 'Etudiant',
         currentSchool: userProfile.currentSchool || SCHOOLS_LIST[1] || 'ÉNSAD Paris',
         email: userProfile.email || '',
         newPassword: '',
@@ -114,21 +118,21 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-sans text-[#111111] select-none">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-sans text-[#111111] ">
       {/* Backdrop */}
-      <div 
-        ref={backdropRef} 
-        onClick={handleClose} 
-        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs" 
+      <div
+        ref={backdropRef}
+        onClick={handleClose}
+        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs"
       />
 
       {/* Modal Dialog Container */}
-      <div 
-        ref={modalRef} 
+      <div
+        ref={modalRef}
         className="relative w-full max-w-lg bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh] p-6 sm:p-8 transform-gpu"
       >
         {/* Close Button */}
-        <button 
+        <button
           onClick={handleClose}
           title="Fermer"
           className="absolute top-4 right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm z-20"
@@ -153,10 +157,10 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                 Prénom *
               </label>
-              <input 
-                type="text" 
-                name="firstName" 
-                value={formData.firstName} 
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
                 onChange={handleChange}
                 required
                 className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -166,10 +170,10 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                 Nom *
               </label>
-              <input 
-                type="text" 
-                name="lastName" 
-                value={formData.lastName} 
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
                 onChange={handleChange}
                 required
                 className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -186,16 +190,16 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               </span>
               <div className="flex-grow border-t-[1.5px] border-[#111111]"></div>
             </div>
-            
+
             <div className="space-y-3">
               <div>
                 <label className="text-xs sm:text-sm font-medium text-slate-500 block mb-1 flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5" /> Adresse e-mail (Non modifiable)
                 </label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  value={formData.email} 
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   disabled
                   readOnly
                   title="Vous ne pouvez pas modifier votre adresse e-mail."
@@ -208,10 +212,10 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                   <Lock className="w-3.5 h-3.5 text-[#111111]" /> Nouveau mot de passe
                 </label>
                 <div className="relative">
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    name="newPassword" 
-                    value={formData.newPassword} 
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="newPassword"
+                    value={formData.newPassword}
                     onChange={handleChange}
                     placeholder="•••••••• (inchangé si vide)"
                     className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -236,16 +240,15 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                 Statut / Rôle
               </label>
               <div className="relative">
-                <select 
-                  name="role" 
-                  value={formData.role} 
+                <select
+                  name="role"
+                  value={formData.role}
                   onChange={handleChange}
                   className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                 >
-                  <option value="Étudiant en Design">Étudiant en Design</option>
-                  <option value="Étudiant en Architecture">Étudiant en Architecture</option>
-                  <option value="Designer Indépendant">Designer Indépendant</option>
-                  <option value="Enseignant / Chercheur">Enseignant / Chercheur</option>
+                  <option value="Etudiant">Étudiant(e)</option>
+                  <option value="Enseignant">Enseignant(e)</option>
+                  <option value="Alumni">Alumni</option>
                   <option value="Autre">Autre</option>
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
@@ -255,10 +258,10 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                 Établissement / École
               </label>
-              <input 
-                type="text" 
-                name="currentSchool" 
-                value={formData.currentSchool} 
+              <input
+                type="text"
+                name="currentSchool"
+                value={formData.currentSchool}
                 onChange={handleChange}
                 placeholder="ex: ÉNSAD Paris, École Boulle..."
                 className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -271,10 +274,10 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
             <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
               Biographie & Présentation
             </label>
-            <textarea 
-              name="bio" 
-              rows={3} 
-              value={formData.bio} 
+            <textarea
+              name="bio"
+              rows={3}
+              value={formData.bio}
               onChange={handleChange}
               placeholder="Décris tes compétences, domaines de recherche ou intentions créatives..."
               className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
@@ -290,16 +293,16 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               </span>
               <div className="flex-grow border-t-[1.5px] border-[#111111]"></div>
             </div>
-            
+
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-[#111111] block mb-1 flex items-center gap-1.5">
                   <IconBehance className="w-4 h-4 text-[#111111]" /> Lien Behance
                 </label>
-                <input 
-                  type="url" 
-                  name="behanceLink" 
-                  value={formData.behanceLink} 
+                <input
+                  type="url"
+                  name="behanceLink"
+                  value={formData.behanceLink}
                   onChange={handleChange}
                   placeholder="https://behance.net/ton-profil"
                   className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -310,10 +313,10 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                 <label className="text-xs font-medium text-[#111111] block mb-1 flex items-center gap-1.5">
                   <IconInstagram className="w-4 h-4 text-[#111111]" /> Lien Instagram
                 </label>
-                <input 
-                  type="url" 
-                  name="instaLink" 
-                  value={formData.instaLink} 
+                <input
+                  type="url"
+                  name="instaLink"
+                  value={formData.instaLink}
                   onChange={handleChange}
                   placeholder="https://instagram.com/ton-pseudo"
                   className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -322,12 +325,12 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
 
               <div>
                 <label className="text-xs font-medium text-[#111111] block mb-1 flex items-center gap-1.5">
-                  <IconLink className="w-4 h-4 text-[#111111]" /> Site web personnel / Portfolio
+                  <IconLink className="w-4 h-4 text-[#111111]" /> Site web personnel / Book
                 </label>
-                <input 
-                  type="url" 
-                  name="personalLink" 
-                  value={formData.personalLink} 
+                <input
+                  type="url"
+                  name="personalLink"
+                  value={formData.personalLink}
                   onChange={handleChange}
                   placeholder="https://ton-site.com"
                   className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -338,14 +341,14 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
 
           {/* Footer Actions */}
           <div className="pt-3 border-t-[1.5px] border-[#111111] flex items-center justify-end gap-3 mt-4">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={handleClose}
               className="h-10 sm:h-11 px-5 bg-[#EEEEEE] text-[#111111] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
             >
               Annuler
             </button>
-            <button 
+            <button
               type="submit"
               className="h-10 sm:h-11 px-6 bg-[#111111] text-[#EEEEEE] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm"
             >

@@ -27,21 +27,21 @@ export function LogoutConfirmModal({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 font-sans text-[#111111] select-none">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 font-sans text-[#111111] ">
       {/* Backdrop */}
-      <div 
-        ref={backdropRef} 
-        onClick={handleClose} 
-        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs" 
+      <div
+        ref={backdropRef}
+        onClick={handleClose}
+        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs"
       />
 
       {/* Modal Dialog Container */}
-      <div 
-        ref={modalRef} 
+      <div
+        ref={modalRef}
         className="relative w-full max-w-[480px] bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] shadow-2xl p-6 sm:p-8 transform-gpu z-10"
       >
         {/* Close Button */}
-        <button 
+        <button
           onClick={handleClose}
           title="Fermer"
           className="absolute top-4 right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
@@ -63,14 +63,14 @@ export function LogoutConfirmModal({ isOpen, onClose, onConfirm }) {
 
         {/* Actions */}
         <div className="pt-4 border-t-[1.5px] border-[#111111] flex items-center justify-end gap-3">
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={handleClose}
             className="h-10 sm:h-11 px-5 bg-[#EEEEEE] text-[#111111] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-[#E2E2E2] transition-colors cursor-pointer shadow-sm"
           >
             Annuler
           </button>
-          <button 
+          <button
             type="button"
             onClick={() => {
               onConfirm();

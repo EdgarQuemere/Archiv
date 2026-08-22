@@ -79,7 +79,7 @@ export function FilterDrawer({
   if (!isOpen) return null;
 
   // Filter available types dynamically from DB/covers
-  const availableTypes = dynamicTypes.length > 0 ? dynamicTypes : ['Tous', 'Mémoire', 'Portfolio'];
+  const availableTypes = dynamicTypes.length > 0 ? dynamicTypes : ['Tous', 'Mémoire', 'Book'];
 
   // Filter available schools dynamically from DB/covers
   const availableSchools = dynamicSchools.length > 0 ? dynamicSchools : ['Toutes les écoles'];

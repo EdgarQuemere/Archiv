@@ -1,3 +1,4 @@
+import { getUserDisplayName } from '../utils/userUtils';
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Info } from 'lucide-react';
 import gsap from 'gsap';
@@ -161,7 +162,7 @@ export function PublicProfileDrawer({
             }
           }}
           className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center shrink-0 shadow-sm transition-colors cursor-pointer"
-          title={user ? `${user.firstName || user.name || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Se connecter'}
+          title={user ? getUserDisplayName(user) || 'Profil' : 'Se connecter'}
         >
           <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
@@ -187,7 +188,7 @@ export function PublicProfileDrawer({
             {/* Avatar (10px border-radius matching ProfileDrawer) */}
             <div className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden shadow-sm">
               <img 
-                src={profileData.profilePicture || '/page-profile-test-front/edgar-avatar.jpg'} 
+                src={profileData.profilePicture || '/pdp_1.webp'} 
                 alt="Avatar" 
                 className="w-full h-full object-cover" 
               />
@@ -196,7 +197,7 @@ export function PublicProfileDrawer({
             {/* Name & Small Omniscient Design Logo */}
             <div className="flex items-center gap-2">
               <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
-                <span>{firstName} {lastName}</span>
+                <span>{getUserDisplayName(profileData)}</span>
                 {profileData.isOmniscient && (
                   <img 
                     src="/logo-od.svg" 
@@ -244,7 +245,7 @@ export function PublicProfileDrawer({
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-[#111111] hover:opacity-75 transition-opacity"
-                  title="Portfolio Link"
+                  title="Book Link"
                 >
                   <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
                 </a>
@@ -285,7 +286,7 @@ export function PublicProfileDrawer({
                          onSelectProject({
                            id: project.id,
                            title: project.title,
-                           author: `${firstName} ${lastName}`.trim(),
+                           author: getUserDisplayName(profileData),
                            school: project.school || profileData.currentSchool,
                            year: project.year?.toString() || new Date(project.createdAt).getFullYear().toString(),
                            type: project.type,
@@ -323,7 +324,7 @@ export function PublicProfileDrawer({
                              onSelectProject({
                                id: project.id,
                                title: project.title,
-                               author: `${firstName} ${lastName}`.trim(),
+                               author: getUserDisplayName(profileData),
                                school: project.school || profileData.currentSchool,
                                year: project.year?.toString() || new Date(project.createdAt).getFullYear().toString(),
                                type: project.type,

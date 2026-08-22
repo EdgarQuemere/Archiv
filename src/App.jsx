@@ -42,7 +42,7 @@ export function App() {
   const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'network' | 'list'
   const [focusedCoverId, setFocusedCoverId] = useState(null); // Keeps track of last viewed cover in List mode
   const mainContainerRef = useRef(null);
-  
+
   // Camera state locked at 1.0 zoom
   const [camera, setCamera] = useState({
     x: typeof window !== 'undefined' ? Math.round(window.innerWidth / 2 - 110) : 0,
@@ -81,22 +81,48 @@ export function App() {
 
   // Deep Linking: Update URL when a project is selected/closed
   useEffect(() => {
-    if (selectedCard) {
-      const url = new URL(window.location);
+    const url = new URL(window.location);
+    const currentProject = url.searchParams.get('project');
+
+    if (selectedCard && currentProject !== selectedCard.id) {
       url.searchParams.set('project', selectedCard.id);
       window.history.pushState({}, '', url);
-    } else {
-      const url = new URL(window.location);
+    } else if (!selectedCard && currentProject) {
       url.searchParams.delete('project');
       window.history.pushState({}, '', url);
     }
   }, [selectedCard]);
 
+  // Listen to browser Back button for deep linked projects
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const projectId = params.get('project');
+
+      // If we went back to a state without a project, close the modal
+      if (!projectId) {
+        setSelectedCard(null);
+      }
+
+      // Close other modals if they are open (best effort for mobile back button)
+      setIsFilterOpen(false);
+      setIsInfoOpen(false);
+      setIsProfileOpen(false);
+      setIsSubmitOpen(false);
+      setIsLoginOpen(false);
+      setIsRegisterOpen(false);
+      setIsPublicProfileOpen(false);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Deep Linking: Check URL on mount and fetch specific project
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const projectId = params.get('project');
-    
+
     if (projectId) {
       const fetchSpecificProject = async () => {
         try {
@@ -169,13 +195,13 @@ export function App() {
             tags: [],
             date: p.createdAt
           }));
-          
+
           setCovers(prev => {
             // Deduplicate by ID to prevent duplicate keys in Strict Mode
             const prevIds = new Set(prev.map(p => p.id));
             const uniqueNew = formattedProjects.filter(p => !prevIds.has(p.id));
             if (uniqueNew.length === 0) return prev;
-            
+
             // Append new projects and shuffle the whole set to blend them in seamlessly
             const newSet = [...prev, ...uniqueNew];
             return shuffleArray(newSet);
@@ -348,9 +374,9 @@ export function App() {
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden relative font-sans select-none bg-[#EEEEEE] text-[#111111]">
+    <div className="w-screen h-screen overflow-hidden relative font-sans  bg-[#EEEEEE] text-[#111111]">
       <SEO />
-      
+
       {/* Top Navbar */}
       <Navbar
         activeView={activeView}
@@ -387,13 +413,13 @@ export function App() {
             <img
               src="/sad-spongebob.webp"
               alt="Aucun résultat"
-              className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md select-none pointer-events-none"
+              className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md  pointer-events-none"
             />
             <h3 className="text-xl font-bold text-[#111111] mb-1">Aucun résultat trouvé</h3>
             <p className="text-xs sm:text-sm text-slate-600 max-w-sm">
               Essayez de modifier vos critères de recherche<br />ou réinitialisez les filtres.
             </p>
-            <button 
+            <button
               onClick={() => {
                 if (user) {
                   setIsSubmitOpen(true);
@@ -432,7 +458,7 @@ export function App() {
             onActiveCoverChange={(id) => setFocusedCoverId(id)}
             onCardClick={handleCardClick}
             onOpenPublicProfile={(authorName) => {
-              setPublicProfileAuthor(authorName);
+              setPublicProfileUserId(authorName);
               setIsPublicProfileOpen(true);
             }}
             onAddWork={() => {
@@ -463,9 +489,9 @@ export function App() {
           item={selectedCard}
           onClose={() => setSelectedCard(null)}
           onOpenProfile={() => {
-          if (user) setIsProfileOpen(prev => !prev);
-          else setIsLoginOpen(true);
-        }}
+            if (user) setIsProfileOpen(prev => !prev);
+            else setIsLoginOpen(true);
+          }}
           onOpenLogin={() => setIsLoginOpen(true)}
           onOpenInfo={() => setIsInfoOpen(true)}
           onOpenPublicProfile={(userId) => {
@@ -539,20 +565,20 @@ export function App() {
       />
 
       {/* Auth Modals */}
-      <LoginModal 
+      <LoginModal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
         onOpenRegister={() => setIsRegisterOpen(true)}
       />
-      
-      <RegisterModal 
+
+      <RegisterModal
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
         onOpenLogin={() => setIsLoginOpen(true)}
       />
 
-      <Toaster 
-        position="bottom-center" 
+      <Toaster
+        position="bottom-center"
         toastOptions={{
           style: {
             backgroundColor: '#EEEEEE',

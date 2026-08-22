@@ -36,12 +36,12 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 font-sans text-[#111111] select-none">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 font-sans text-[#111111] ">
       <div className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs" onClick={onClose} />
-      
+
       <div className="relative bg-[#EEEEEE] w-full max-w-lg border-[1.5px] border-[#111111] rounded-[14px] shadow-2xl overflow-hidden z-10 flex flex-col p-6 sm:p-8 transform-gpu">
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           title="Fermer"
           className="absolute top-4 right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm z-20"
         >
@@ -54,7 +54,7 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
         <p className="text-xs sm:text-sm text-slate-600 mb-4">
           Ajustez le cadrage de votre photo de profil.
         </p>
-        
+
         <div className="relative w-full h-[320px] bg-[#E2E2E2] border-[1.5px] border-[#111111] rounded-[14px] overflow-hidden my-2">
           <Cropper
             image={imageSrc}
@@ -68,7 +68,7 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
             onZoomChange={setZoom}
           />
         </div>
-        
+
         <div className="pt-4 flex flex-col gap-4">
           <div className="flex items-center gap-4">
             <ZoomOut className="w-4 h-4 text-[#111111]" />
@@ -84,15 +84,15 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
             />
             <ZoomIn className="w-4 h-4 text-[#111111]" />
           </div>
-          
+
           <div className="pt-3 border-t-[1.5px] border-[#111111] flex justify-end gap-3 mt-2">
-            <button 
+            <button
               onClick={onClose}
               className="h-10 sm:h-11 px-5 bg-[#EEEEEE] text-[#111111] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
             >
               Annuler
             </button>
-            <button 
+            <button
               onClick={handleSave}
               disabled={isProcessing}
               className="h-10 sm:h-11 px-6 bg-[#111111] text-[#EEEEEE] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm disabled:opacity-50"

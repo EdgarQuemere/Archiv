@@ -1,3 +1,4 @@
+import { getUserDisplayName } from '../utils/userUtils';
 import React from 'react';
 import { X, Info, User } from 'lucide-react';
 
@@ -29,8 +30,8 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans overflow-hidden select-none animate-in fade-in duration-200 h-screen w-screen">
-      
+    <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans overflow-hidden animate-in fade-in duration-200 h-screen w-screen">
+
       {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={onClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
@@ -59,7 +60,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               onOpenLogin?.();
             }
           }}
-          title={user ? `${user.firstName || user.name || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Se connecter'}
+          title={user ? getUserDisplayName(user) || 'Profil' : 'Se connecter'}
           className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
           <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -84,11 +85,11 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           <h1 className="text-2xl font-bold italic mb-4 text-[#111111] leading-tight">Artchiv’</h1>
 
           <p className="text-sm leading-relaxed font-normal">
-            Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les portfolios et les mémoires de fin d’études.
+            Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les books et les mémoires de fin d’études.
           </p>
 
           <p className="text-sm leading-relaxed font-normal">
-            D’un côté, il y a les books. On a tous vu les mêmes appels à l’aide sur les réseaux au moment des recherches pour les écoles : la constitution du portfolio, c’est le sujet qui prend la tête à tout le monde. Artchiv’ permet de partager simplement ses projets et d’aller fouiller dans ceux des autres. C’est l’endroit idéal pour découvrir l’univers créatif des futurs designers et trouver l’inspiration pour ses propres rendus.
+            D’un côté, il y a les books. On a tous vu les mêmes appels à l’aide sur les réseaux au moment des recherches pour les écoles : la constitution du book, c’est le sujet qui prend la tête à tout le monde. Artchiv’ permet de partager simplement ses projets et d’aller fouiller dans ceux des autres. C’est l’endroit idéal pour découvrir l’univers créatif des futurs designers et trouver l’inspiration pour ses propres rendus.
           </p>
 
           <p className="text-sm leading-relaxed font-normal">
@@ -239,163 +240,166 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
 
       {/* DESKTOP LAYOUT (>= 768px): FIXED 24px FROM BOTTOM & EDGES */}
       {/* DESKTOP LEFT SECTION (TEXT + CONTACT): FIXED BOTTOM-6 LEFT-6 (24px) */}
-      <div className="hidden md:flex flex-col justify-end gap-7 lg:gap-8 fixed bottom-6 left-6 z-40 max-w-[580px] lg:max-w-[640px] text-[#111111] pointer-events-auto">
-        <div className="space-y-4 lg:space-y-5">
-          <h1 className="text-3xl font-bold italic mb-4 lg:mb-5 text-[#111111] leading-tight">Artchiv’</h1>
+      <div className="hidden md:flex flex-col fixed top-24 bottom-6 left-6 z-40 max-w-[580px] lg:max-w-[640px] text-[#111111] pointer-events-auto overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="mt-auto flex flex-col gap-7 lg:gap-8 pb-2">
+          <div className="space-y-4 lg:space-y-5">
+            <h1 className="text-3xl font-bold italic mb-4 lg:mb-5 text-[#111111] leading-tight">Artchiv’</h1>
 
-          <p className="text-base leading-relaxed font-normal">
-            Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les portfolios et les mémoires de fin d’études.
-          </p>
+            <p className="text-base leading-relaxed font-normal">
+              Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les books et les mémoires de fin d’études.
+            </p>
 
-          <p className="text-base leading-relaxed font-normal">
-            D’un côté, il y a les books. On a tous vu les mêmes appels à l’aide sur les réseaux au moment des recherches pour les écoles : la constitution du portfolio, c’est le sujet qui prend la tête à tout le monde. Artchiv’ permet de partager simplement ses projets et d’aller fouiller dans ceux des autres. C’est l’endroit idéal pour découvrir l’univers créatif des futurs designers et trouver l’inspiration pour ses propres rendus.
-          </p>
+            <p className="text-base leading-relaxed font-normal">
+              D’un côté, il y a les books. On a tous vu les mêmes appels à l’aide sur les réseaux au moment des recherches pour les écoles : la constitution du book, c’est le sujet qui prend la tête à tout le monde. Artchiv’ permet de partager simplement ses projets et d’aller fouiller dans ceux des autres. C’est l’endroit idéal pour découvrir l’univers créatif des futurs designers et trouver l’inspiration pour ses propres rendus.
+            </p>
 
-          <p className="text-base leading-relaxed font-normal">
-            De l’autre, il y a les mémoires. Ce sont des travaux de recherche denses qui demandent des mois d’investissement. L’objectif est de conserver la trace de tous ces écrits précieux et de les valoriser, dans le respect total du travail de chaque auteur. Sans ça, ces mémoires finiraient, pour la plupart, tout simplement perdus à tout jamais dans les méandres d’une clé USB ou sur le disque dur d’un ordi poussiéreux.
-          </p>
+            <p className="text-base leading-relaxed font-normal">
+              De l’autre, il y a les mémoires. Ce sont des travaux de recherche denses qui demandent des mois d’investissement. L’objectif est de conserver la trace de tous ces écrits précieux et de les valoriser, dans le respect total du travail de chaque auteur. Sans ça, ces mémoires finiraient, pour la plupart, tout simplement perdus à tout jamais dans les méandres d’une clé USB ou sur le disque dur d’un ordi poussiéreux.
+            </p>
 
-          <p className="text-base leading-relaxed font-normal pt-1">
-            Partage ton travail sur Artchiv’ et laisse une trace de tes études en design.
-          </p>
-        </div>
+            <p className="text-base leading-relaxed font-normal pt-1">
+              Partage ton travail sur Artchiv’ et laisse une trace de tes études en design.
+            </p>
+          </div>
 
-        <div className="space-y-3 pt-2">
-          <a
-            href="mailto:contact@archiv.fr"
-            className="block text-base italic font-medium hover:underline text-[#111111]"
-          >
-            contact@archiv.fr
-          </a>
-
-          <button
-            onClick={() => onOpenMentions && onOpenMentions()}
-            className="block text-base italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
-          >
-            mentions légales
-          </button>
-
-          {/* LOGOS PARTENAIRES */}
-          <div className="flex items-center gap-4 pt-3 lg:pt-4">
+          <div className="space-y-3 pt-2">
             <a
-              href="https://omniscientdesign.fr/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity"
+              href="mailto:contact@archiv.fr"
+              className="block text-base italic font-medium hover:underline text-[#111111]"
             >
-              <img
-                src="/page_info/logo_omniscient_project_gauche.png"
-                alt="Omniscient Project"
-                className="h-9 w-auto object-contain"
-              />
+              contact@archiv.fr
             </a>
-            <span className="text-base font-light text-[#111111]">✕</span>
-            <a
-              href="https://www.instagram.com/theblacklilcat/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity"
+
+            <button
+              onClick={() => onOpenMentions && onOpenMentions()}
+              className="block text-base italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
             >
-              <img
-                src="/page_info/logo_olwen_droite.png"
-                alt="Olwen"
-                className="h-9 w-auto object-contain"
-              />
-            </a>
+              mentions légales
+            </button>
+
+            {/* LOGOS PARTENAIRES */}
+            <div className="flex items-center gap-4 pt-3 lg:pt-4">
+              <a
+                href="https://omniscientdesign.fr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/page_info/logo_omniscient_project_gauche.png"
+                  alt="Omniscient Project"
+                  className="h-9 w-auto object-contain"
+                />
+              </a>
+              <span className="text-base font-light text-[#111111]">✕</span>
+              <a
+                href="https://www.instagram.com/theblacklilcat/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/page_info/logo_olwen_droite.png"
+                  alt="Olwen"
+                  className="h-9 w-auto object-contain"
+                />
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       {/* DESKTOP RIGHT SECTION (TEAM CARDS): FIXED BOTTOM-6 RIGHT-6 (24px) */}
-      <div className="hidden md:flex flex-col gap-[24px] fixed bottom-6 right-6 z-40 shrink-0 items-start pointer-events-auto">
-        {/* Edgar Quéméré */}
-        <div className="flex flex-col items-start">
-          <img
-            src="/page_info/photo_edgar.webp"
-            alt="Edgar Quéméré"
-            className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
-          />
-          <h3 className="text-sm font-semibold mt-[8px] mb-[8px] text-[#111111]">
-            Edgar Quéméré
-          </h3>
-          <div className="flex items-center gap-2 text-[#111111]">
-            <a
-              href="https://www.linkedin.com/in/edgar-quemere/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="LinkedIn"
-              className="hover:opacity-70 transition-opacity"
-            >
-              <LinkedinSVG />
-            </a>
-            <a
-              href="https://www.edgar-quemere.fr/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Site Web"
-              className="hover:opacity-70 transition-opacity"
-            >
-              <LinkSVG />
-            </a>
+      <div className="hidden md:flex flex-col fixed top-24 bottom-6 right-6 z-40 shrink-0 items-start pointer-events-auto overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="mt-auto flex flex-col gap-[24px] pb-2">
+          {/* Edgar Quéméré */}
+          <div className="flex flex-col items-start">
+            <img
+              src="/page_info/photo_edgar.webp"
+              alt="Edgar Quéméré"
+              className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
+            />
+            <h3 className="text-sm font-semibold mt-[8px] mb-[8px] text-[#111111]">
+              Edgar Quéméré
+            </h3>
+            <div className="flex items-center gap-2 text-[#111111]">
+              <a
+                href="https://www.linkedin.com/in/edgar-quemere/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="LinkedIn"
+                className="hover:opacity-70 transition-opacity"
+              >
+                <LinkedinSVG />
+              </a>
+              <a
+                href="https://www.edgar-quemere.fr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Site Web"
+                className="hover:opacity-70 transition-opacity"
+              >
+                <LinkSVG />
+              </a>
+            </div>
           </div>
-        </div>
 
-        {/* Thomas Riquier */}
-        <div className="flex flex-col items-start">
-          <img
-            src="/page_info/photo_thomas.webp"
-            alt="Thomas Riquier"
-            className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
-          />
-          <h3 className="text-sm font-semibold mt-[8px] mb-[8px] text-[#111111]">
-            Thomas Riquier
-          </h3>
-          <div className="flex items-center gap-2 text-[#111111]">
-            <a
-              href="https://www.linkedin.com/in/thomas-riq/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="LinkedIn"
-              className="hover:opacity-70 transition-opacity"
-            >
-              <LinkedinSVG />
-            </a>
-            <a
-              href="https://thomas-riquier.viturna.fr/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Site Web"
-              className="hover:opacity-70 transition-opacity"
-            >
-              <LinkSVG />
-            </a>
+          {/* Thomas Riquier */}
+          <div className="flex flex-col items-start">
+            <img
+              src="/page_info/photo_thomas.webp"
+              alt="Thomas Riquier"
+              className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
+            />
+            <h3 className="text-sm font-semibold mt-[8px] mb-[8px] text-[#111111]">
+              Thomas Riquier
+            </h3>
+            <div className="flex items-center gap-2 text-[#111111]">
+              <a
+                href="https://www.linkedin.com/in/thomas-riq/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="LinkedIn"
+                className="hover:opacity-70 transition-opacity"
+              >
+                <LinkedinSVG />
+              </a>
+              <a
+                href="https://thomas-riquier.viturna.fr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Site Web"
+                className="hover:opacity-70 transition-opacity"
+              >
+                <LinkSVG />
+              </a>
+            </div>
           </div>
-        </div>
 
-        {/* Olwen Planchenault */}
-        <div className="flex flex-col items-start">
-          <img
-            src="/page_info/photo_olwen.webp"
-            alt="Olwen Planchenault"
-            className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
-          />
-          <h3 className="text-sm font-semibold mt-[8px] mb-[8px] text-[#111111]">
-            Olwen Planchenault
-          </h3>
-          <div className="flex items-center gap-2 text-[#111111]">
-            <a
-              href="https://www.instagram.com/theblacklilcat/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Instagram"
-              className="hover:opacity-70 transition-opacity"
-            >
-              <InstagramSVG />
-            </a>
+          {/* Olwen Planchenault */}
+          <div className="flex flex-col items-start">
+            <img
+              src="/page_info/photo_olwen.webp"
+              alt="Olwen Planchenault"
+              className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
+            />
+            <h3 className="text-sm font-semibold mt-[8px] mb-[8px] text-[#111111]">
+              Olwen Planchenault
+            </h3>
+            <div className="flex items-center gap-2 text-[#111111]">
+              <a
+                href="https://www.instagram.com/theblacklilcat/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Instagram"
+                className="hover:opacity-70 transition-opacity"
+              >
+                <InstagramSVG />
+              </a>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

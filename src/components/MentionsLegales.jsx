@@ -50,7 +50,7 @@ export function MentionsLegales() {
               L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle.
               Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.
               <br /><br />
-              Les travaux (documents, images, portfolios, mémoires) hébergés sur le Site restent la propriété intellectuelle exclusive de leurs auteurs respectifs.
+              Les travaux (documents, images, books, mémoires) hébergés sur le Site restent la propriété intellectuelle exclusive de leurs auteurs respectifs.
               Toute reproduction, distribution, modification, adaptation, retransmission ou publication, même partielle, de ces différents éléments est strictement interdite sans l'accord exprès par écrit de l'auteur.
             </p>
           </section>
@@ -60,7 +60,7 @@ export function MentionsLegales() {
             <p>
               Conformément à la loi "Informatique et Libertés" du 6 janvier 1978 modifiée, et au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, d'opposition et de suppression des données vous concernant.
               <br /><br />
-              Les données personnelles collectées via le Site (création de compte, dépôt de portfolio, informations de profil) sont strictement utilisées pour le fonctionnement du service Archiv. Vous pouvez exercer vos droits en nous contactant à l'adresse email mentionnée dans l'article 1, ou en supprimant directement votre compte depuis les paramètres de votre profil.
+              Les données personnelles collectées via le Site (création de compte, dépôt de book, informations de profil) sont strictement utilisées pour le fonctionnement du service Archiv. Vous pouvez exercer vos droits en nous contactant à l'adresse email mentionnée dans l'article 1, ou en supprimant directement votre compte depuis les paramètres de votre profil.
             </p>
           </section>
 

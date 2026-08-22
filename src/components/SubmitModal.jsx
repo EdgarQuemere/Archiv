@@ -18,6 +18,8 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     domain: 'Design Graphique',
     description: '',
     allowDownload: true,
+    orientation: 'portrait',
+    aspectRatio: 1.414
   });
 
   const [files, setFiles] = useState({
@@ -63,7 +65,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       setCoverPreviewUrl(null);
       setError('');
       setSubmitted(false);
-      
+
       api.get('/domains').then((res) => {
         setDomains(res.data.map((d) => d.name));
       }).catch((err) => {
@@ -92,8 +94,8 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
           onClose();
         }
       })
-      .to(dialogRef.current, { opacity: 0, scale: 0.95, y: 10, duration: 0.2, ease: 'power2.in' })
-      .to(backdropRef.current, { opacity: 0, duration: 0.15 }, '-=0.1');
+        .to(dialogRef.current, { opacity: 0, scale: 0.95, y: 10, duration: 0.2, ease: 'power2.in' })
+        .to(backdropRef.current, { opacity: 0, duration: 0.15 }, '-=0.1');
     } else {
       onClose();
     }
@@ -113,23 +115,27 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
         wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
       }).promise;
       const page = await pdf.getPage(1);
-      
+
       const scale = 1.5;
       const viewport = page.getViewport({ scale });
-      
+
+      const aspect = viewport.height / viewport.width;
+      const orient = viewport.width > viewport.height ? 'landscape' : 'portrait';
+      setFormData(prev => ({ ...prev, aspectRatio: aspect, orientation: orient }));
+
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      
+
       // Les PDF ont souvent un fond transparent. Lors de la conversion en JPEG,
       // la transparence devient noire, ce qui masque les dessins/textes noirs.
       // Il faut donc remplir le canvas de blanc d'abord.
       context.fillStyle = 'white';
       context.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       await page.render({ canvasContext: context, viewport }).promise;
-      
+
       canvas.toBlob((blob) => {
         if (blob) {
           const coverFile = new File([blob], "auto-cover.jpg", { type: "image/jpeg" });
@@ -168,6 +174,8 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     submitData.append('domain', formData.domain);
     submitData.append('description', formData.description);
     submitData.append('allowDownload', formData.allowDownload);
+    submitData.append('orientation', formData.orientation);
+    submitData.append('aspectRatio', formData.aspectRatio);
 
     if (files.pdf) {
       submitData.append('pdf', files.pdf);
@@ -211,7 +219,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
           onAddCover(response.data.project);
         }
       }
-      
+
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
@@ -232,7 +240,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans text-[#111111] select-none">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans text-[#111111] ">
       <div
         ref={backdropRef}
         className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs transition-opacity"
@@ -305,7 +313,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                     className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
                     <option value="Mémoire">Mémoire</option>
-                    <option value="Portfolio">Portfolio</option>
+                    <option value="Book">Book</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
                 </div>
@@ -389,7 +397,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   <label className="text-xs sm:text-sm font-medium text-[#111111] block">
                     Fichier PDF {editData ? '' : '*'}
                   </label>
-                  <span className="text-[10px] text-slate-500 font-mono">Max 30 Mo</span>
+                  <span className="text-[10px] text-slate-500 font-mono">Max 10 Mo</span>
                 </div>
                 <input
                   required={!editData}
@@ -413,10 +421,10 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                       <span className="text-xs font-medium">Génération de la couverture...</span>
                     </div>
                   ) : coverPreviewUrl || (editData && editData.coverUrl) ? (
-                    <img 
-                      src={coverPreviewUrl || editData.coverUrl} 
-                      alt="Aperçu couverture complet" 
-                      className="w-full max-h-[230px] object-contain rounded-[8px]" 
+                    <img
+                      src={coverPreviewUrl || editData.coverUrl}
+                      alt="Aperçu couverture complet"
+                      className="w-full max-h-[230px] object-contain rounded-[8px]"
                     />
                   ) : (
                     <span className="text-xs text-slate-500 font-medium px-4 text-center py-6">
@@ -432,10 +440,10 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 type="checkbox"
                 id="allowDownload"
                 checked={formData.allowDownload}
-                onChange={(e) => setFormData({ ...formData, allowDownload: e.target.checked })}
+                onChange={(e) => setFormData(prev => ({ ...prev, allowDownload: e.target.checked }))}
                 className="w-4 h-4 rounded border-[#111111] text-[#111111] focus:ring-[#111111] accent-[#111111] cursor-pointer"
               />
-              <label htmlFor="allowDownload" className="text-xs sm:text-sm font-medium text-[#111111] cursor-pointer select-none">
+              <label htmlFor="allowDownload" className="text-xs sm:text-sm font-medium text-[#111111] cursor-pointer ">
                 Autoriser le téléchargement du projet
               </label>
             </div>
@@ -448,7 +456,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                     <span>{uploadProgress}%</span>
                   </div>
                   <div className="w-full h-2 bg-slate-200 overflow-hidden border border-[#111111] rounded-full">
-                    <div 
+                    <div
                       className="h-full bg-[#111111] transition-all duration-300 rounded-full"
                       style={{ width: `${uploadProgress}%` }}
                     />

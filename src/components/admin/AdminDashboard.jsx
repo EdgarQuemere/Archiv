@@ -16,6 +16,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deletedAccounts, setDeletedAccounts] = useState([]);
 
   useEffect(() => {
     if (user && user.isAdmin) {
@@ -26,14 +27,16 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, usersRes, projectsRes] = await Promise.all([
+      const [statsRes, usersRes, projectsRes, deletedRes] = await Promise.all([
         api.get('/admin/stats'),
         api.get('/admin/users'),
-        api.get('/admin/projects')
+        api.get('/admin/projects'),
+        api.get('/admin/deleted-accounts')
       ]);
       setStats(statsRes.data);
       setUsers(usersRes.data.users || []);
       setProjects(projectsRes.data);
+      setDeletedAccounts(deletedRes.data || []);
     } catch (err) {
       console.error(err);
       setError("Impossible de charger les données administrateur.");
@@ -146,6 +149,15 @@ const AdminDashboard = () => {
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${activeTab === 'projects' ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-100'}`}
           >
             <FolderGit2 className="w-4 h-4" /> Projets
+          </button>
+          <button 
+            onClick={() => setActiveTab('deleted')}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${activeTab === 'deleted' ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            <Trash2 className="w-4 h-4" /> Comptes supprimés
+            {deletedAccounts.length > 0 && (
+              <span className="ml-auto text-[10px] font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">{deletedAccounts.length}</span>
+            )}
           </button>
         </div>
 
@@ -352,6 +364,51 @@ const AdminDashboard = () => {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* Deleted Accounts Tab */}
+          {activeTab === 'deleted' && (
+            <div>
+              <p className="text-sm text-gray-500 mb-4">{deletedAccounts.length} compte(s) supprimé(s)</p>
+              {deletedAccounts.length === 0 ? (
+                <p className="text-center text-gray-400 py-12 text-sm">Aucune suppression de compte pour l'instant.</p>
+              ) : (
+                <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-4 py-3 font-medium text-gray-500">Email</th>
+                        <th className="px-4 py-3 font-medium text-gray-500">Nom</th>
+                        <th className="px-4 py-3 font-medium text-gray-500">Rôle</th>
+                        <th className="px-4 py-3 font-medium text-gray-500">École</th>
+                        <th className="px-4 py-3 font-medium text-gray-500">Raison</th>
+                        <th className="px-4 py-3 font-medium text-gray-500">Supprimé le</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {deletedAccounts.map((d) => (
+                        <tr key={d.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-gray-700 font-mono text-xs">{d.email}</td>
+                          <td className="px-4 py-3 text-gray-700">
+                            {d.pseudo ? `@${d.pseudo}` : [d.firstName, d.lastName].filter(Boolean).join(' ') || '—'}
+                          </td>
+                          <td className="px-4 py-3 text-gray-500">{d.role || '—'}</td>
+                          <td className="px-4 py-3 text-gray-500">{d.school || '—'}</td>
+                          <td className="px-4 py-3">
+                            <span className="inline-block max-w-[220px] truncate text-gray-800 bg-red-50 border border-red-100 rounded-full px-2.5 py-0.5 text-xs" title={d.reason}>
+                              {d.reason}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">
+                            {new Date(d.deletedAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 

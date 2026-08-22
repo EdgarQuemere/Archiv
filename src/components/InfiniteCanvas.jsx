@@ -223,16 +223,24 @@ export function InfiniteCanvas({
   const itemsWithMetrics = useMemo(() => {
     if (!items || items.length === 0) return [];
     return items.map(item => {
-      let ar = 1.4;
+      let ar = 1.414;
       if (item.nativeHeight && item.nativeWidth) {
         ar = item.nativeHeight / item.nativeWidth;
       } else if (item.aspectRatio) {
         ar = item.aspectRatio;
+      } else if (item.orientation === 'landscape') {
+        ar = 0.707;
       }
-      const exactHeight = Math.round(colWidth * ar);
+
+      const isLandscape = ar < 1.1;
+      const itemWidth = isLandscape ? (colWidth * 2 + canvasGap) : colWidth;
+      const exactHeight = Math.round(itemWidth * ar);
+
       return {
         ...item,
-        scaledHeight: exactHeight
+        scaledWidth: itemWidth,
+        scaledHeight: exactHeight,
+        isLandscape
       };
     });
   }, [items, colWidth]);
@@ -280,7 +288,7 @@ export function InfiniteCanvas({
                 row: r,
                 x,
                 y,
-                width: colWidth,
+                width: baseItem.scaledWidth,
                 height: baseItem.scaledHeight
               },
               item: {
@@ -352,7 +360,7 @@ export function InfiniteCanvas({
                 col: c,
                 x: c * pitchX,
                 y: itemY,
-                width: colWidth,
+                width: item.scaledWidth,
                 height: itemH
               },
               item: {
@@ -383,9 +391,8 @@ export function InfiniteCanvas({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full overflow-hidden select-none ${
-        isDragging ? 'cursor-grabbing' : 'cursor-grab'
-      }`}
+      className={`relative w-full h-full overflow-hidden  ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
       style={containerStyle}
       onDragStart={(e) => e.preventDefault()}
       onMouseDown={handleMouseDown}
@@ -397,7 +404,7 @@ export function InfiniteCanvas({
       onTouchEnd={handleTouchEnd}
     >
       <div
-        className="absolute top-0 left-0 origin-top-left pointer-events-auto transform-gpu select-none"
+        className="absolute top-0 left-0 origin-top-left pointer-events-auto transform-gpu "
         onDragStart={(e) => e.preventDefault()}
         style={{
           transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${FIXED_ZOOM})`,
@@ -456,11 +463,10 @@ export function InfiniteCanvas({
                 style={{
                   padding: isHovered ? `${HOVER_PADDING}px` : '0px'
                 }}
-                className={`w-full h-full flex flex-col items-center justify-center transition-all duration-250 ease-out origin-center ${
-                  isHovered
+                className={`w-full h-full flex flex-col items-center justify-center transition-all duration-250 ease-out origin-center ${isHovered
                     ? 'bg-[#EEEEEE] shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
                     : 'bg-transparent shadow-none border-0'
-                }`}
+                  }`}
               >
                 <img
                   src={item.coverUrl}
@@ -473,7 +479,7 @@ export function InfiniteCanvas({
                     pointerEvents: 'none',
                     filter: isHovered ? 'brightness(1.05) contrast(1.02)' : 'brightness(0.95)'
                   }}
-                  className="w-full h-full object-cover block select-none"
+                  className="w-full h-full object-contain block "
                 />
               </div>
             </div>
@@ -488,11 +494,10 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(0)}
             title="Espacement 0px (Serré)"
-            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-base font-medium transition-colors cursor-pointer ${
-              canvasGap === 0
+            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-base font-medium transition-colors cursor-pointer ${canvasGap === 0
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-            }`}
+              }`}
           >
             <Grid className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
             <span>Serré</span>
@@ -503,11 +508,10 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(96)}
             title="Espacement 96px (Moyen)"
-            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${
-              canvasGap === 96
+            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${canvasGap === 96
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-            }`}
+              }`}
           >
             <span>Moyen</span>
           </button>
@@ -517,11 +521,10 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(300)}
             title="Espacement 300px (Large)"
-            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${
-              canvasGap >= 280
+            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${canvasGap >= 280
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-            }`}
+              }`}
           >
             <span>Large</span>
           </button>

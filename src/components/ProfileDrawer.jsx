@@ -1,3 +1,4 @@
+import { getUserDisplayName } from '../utils/userUtils';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { X, Info, User, UploadCloud } from 'lucide-react';
 import gsap from 'gsap';
@@ -223,7 +224,7 @@ export function ProfileDrawer({
   const handleConfirmDeleteAccount = async () => {
     try {
       if (deleteAccount && user) {
-        await deleteAccount();
+        await deleteAccount(deletionReason);
       } else {
         toast.success("Compte supprimé avec succès.");
       }
@@ -342,7 +343,7 @@ export function ProfileDrawer({
               onDrop={handleAvatarDrop}
             >
               <img
-                src={profileData.profilePicture || '/page-profile-test-front/edgar-avatar.jpg'}
+                src={profileData.profilePicture || '/pdp_1.webp'}
                 alt="Avatar"
                 className="w-full h-full object-cover"
               />
@@ -365,7 +366,7 @@ export function ProfileDrawer({
             {/* Name & Small Omniscient Design Logo */}
             <div className="flex items-center gap-2">
               <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
-                <span>{profileData.firstName} {profileData.lastName}</span>
+                <span>{getUserDisplayName(profileData)}</span>
                 {profileData.isOmniscient && (
                   <img
                     src="/logo-od.svg"
@@ -419,7 +420,7 @@ export function ProfileDrawer({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#111111] hover:opacity-75 transition-opacity"
-                  title="Portfolio Link"
+                  title="Book Link"
                 >
                   <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
                 </a>
@@ -428,9 +429,18 @@ export function ProfileDrawer({
 
             {/* ACTION BUTTONS ROW (User-provided Phosphor SVGs) */}
             <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 pt-1">
+              {/* Round add-document button */}
+              <button
+                onClick={() => onOpenSubmit?.()}
+                title="Ajouter mon travail"
+                className="w-9 h-9 xs:w-10 xs:h-10 border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] hover:bg-[#333] rounded-full flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
+              >
+                <IconAddDocument className="w-4 h-4 xs:w-[18px] xs:h-[18px]" />
+              </button>
+
               <button
                 onClick={() => setIsEditModalOpen(true)}
-                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-xs xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Modifier</span>
                 <IconPencil className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
@@ -438,7 +448,7 @@ export function ProfileDrawer({
 
               <button
                 onClick={() => setIsLogoutModalOpen(true)}
-                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-xs xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Se déconnecter</span>
                 <IconLogOut className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
@@ -446,7 +456,7 @@ export function ProfileDrawer({
 
               <button
                 onClick={() => setIsDeleteReasonModalOpen(true)}
-                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-xs xs:text-base font-medium text-[#FF0000] flex items-center gap-2 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base xs:text-base font-medium text-[#FF0000] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Supprimer mon compte</span>
                 <IconDelete className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-[#FF0000]" />
@@ -602,7 +612,7 @@ export function ProfileDrawer({
                           {project.title}
                         </h3>
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.author ? `${project.author} – ` : ''}{project.school} – {project.year} – {project.type || 'Portfolio'}
+                          {project.author ? `${project.author} – ` : ''}{project.school} – {project.year} – {project.type || 'Book'}
                         </p>
                         <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
                           {project.description || "Création des principes virtuel réagisse la pression et à la vitesse du stylet pour une peinture numerique organique."}

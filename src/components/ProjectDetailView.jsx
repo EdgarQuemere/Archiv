@@ -1,3 +1,4 @@
+import { getUserDisplayName } from '../utils/userUtils';
 import React, { useState, useRef, useEffect, useLayoutEffect, useContext } from 'react';
 import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Info, User, Columns, Download, Bookmark } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
@@ -255,10 +256,10 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   if (!item) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden select-none animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden  animate-in fade-in duration-200">
       <SEO
         title={item.title}
-        description={`Projet par ${item.author?.firstName || 'Anonyme'} ${item.author?.lastName || ''} - ${item.school}`}
+        description={`Projet par ${getUserDisplayName(item.author)} - ${item.school}`}
         image={item.coverUrl}
       />
 
@@ -419,7 +420,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                           renderTextLayer={false}
                           renderAnnotationLayer={true}
                           devicePixelRatio={Math.max(window.devicePixelRatio || 1, 2)}
-                          className="block select-none pointer-events-none"
+                          className="block  pointer-events-none"
                         />
                       </div>
                     ))}
@@ -503,7 +504,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs sm:text-base font-medium select-none min-w-[56px] xs:min-w-[64px] sm:min-w-[80px]">
+            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs sm:text-base font-medium  min-w-[56px] xs:min-w-[64px] sm:min-w-[80px]">
               {currentPage} sur {numPages || 1}
             </div>
           </div>

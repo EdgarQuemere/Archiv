@@ -320,14 +320,14 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
         <img
           src="/sad-spongebob.webp"
           alt="Aucun résultat"
-          className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md select-none pointer-events-none"
+          className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md  pointer-events-none"
         />
         <h3 className="text-xl font-bold text-[#111111] mb-1">Aucun résultat trouvé</h3>
         <p className="text-xs sm:text-sm text-slate-600 max-w-sm">
           Essayez de modifier vos critères de recherche<br />ou réinitialisez les filtres.
         </p>
         {onAddWork && (
-          <button 
+          <button
             onClick={onAddWork}
             className="mt-6 h-9 xs:h-10 px-5 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
           >
@@ -347,7 +347,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       style={{
         backgroundColor: '#EEEEEE',
       }}
-      className="relative w-full h-full overflow-y-auto font-sans text-[#111111] select-none scrollbar-none"
+      className="relative w-full h-full overflow-y-auto font-sans text-[#111111]  scrollbar-none"
     >
       {/* Fine Horizontal Center Line across the viewport */}
       <div className="fixed top-[38%] sm:top-1/2 left-0 right-0 h-[1.5px] -translate-y-1/2 bg-[#111111]/35 pointer-events-none z-0" />
@@ -369,14 +369,14 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             className="cursor-pointer flex flex-col items-center py-2"
           >
             {/* Clean Raw Cover Image Container */}
-            <div className="w-56 sm:w-72 h-[320px] sm:h-[420px] bg-transparent flex items-center justify-center overflow-hidden">
+            <div className={`${item.orientation === 'landscape' ? 'w-80 sm:w-[500px]' : 'w-56 sm:w-72'} h-[320px] sm:h-[420px] bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
               <img
                 src={item.coverUrl}
                 alt={item.title}
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
                 style={{ WebkitUserDrag: 'none', userSelect: 'none' }}
-                className="w-full h-full object-contain block select-none pointer-events-none hover:scale-[1.02] transition-transform"
+                className="w-full h-full object-contain block  pointer-events-none hover:scale-[1.02] transition-transform"
               />
             </div>
           </div>
@@ -392,7 +392,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             </h3>
 
             <p className="text-xs sm:text-sm font-medium mb-1 sm:mb-2">
-              par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.author)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author}</span>
+              par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author}</span>
             </p>
 
             <p className="text-[11px] sm:text-xs font-mono mb-2 sm:mb-4 text-slate-600">

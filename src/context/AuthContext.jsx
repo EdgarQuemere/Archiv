@@ -57,8 +57,8 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
-  const deleteAccount = async () => {
-    await api.delete('/users/me');
+  const deleteAccount = async (reason = '') => {
+    await api.delete('/users/me', { data: { reason } });
     setUser(null);
   };
 

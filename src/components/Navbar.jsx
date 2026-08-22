@@ -57,11 +57,10 @@ export function Navbar({
           <button
             onClick={onOpenInfo}
             title="Informations"
-            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${
-              isInfoOpen
-                ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-            }`}
+            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${isInfoOpen
+              ? 'bg-[#111111] text-[#EEEEEE]'
+              : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              }`}
           >
             <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
           </button>
@@ -70,11 +69,10 @@ export function Navbar({
           <button
             onClick={onOpenProfile}
             title={user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Mon Profil'}
-            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${
-              isProfileOpen
-                ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-            }`}
+            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${isProfileOpen
+              ? 'bg-[#111111] text-[#EEEEEE]'
+              : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              }`}
           >
             <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
@@ -85,22 +83,19 @@ export function Navbar({
           {/* Filtres Button (Icone SVG sur mobile, Texte sur Desktop) */}
           <button
             onClick={onOpenFilter}
-            className={`h-9 sm:h-11 ${
-              activeFilterCount > 0 ? 'w-auto px-2.5 sm:px-8' : 'w-9 sm:w-auto px-0 sm:px-8'
-            } border-[1.5px] border-[#111111] text-xs sm:text-base font-medium rounded-full flex items-center justify-center transition-all shadow-sm relative shrink-0 ${
-              isFilterOpen
+            className={`h-9 sm:h-11 ${activeFilterCount > 0 ? 'w-auto px-2.5 sm:px-8' : 'w-9 sm:w-auto px-0 sm:px-8'
+              } border-[1.5px] border-[#111111] text-xs sm:text-base font-medium rounded-full flex items-center justify-center transition-all shadow-sm relative shrink-0 ${isFilterOpen
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-            }`}
+              }`}
           >
             <span className="hidden sm:inline">Filtres</span>
             <span className="inline sm:hidden flex items-center justify-center">
               <FilterIconSVG className="w-3.5 h-3.5" />
             </span>
             {activeFilterCount > 0 && (
-              <span className={`ml-1.5 sm:ml-2 text-[10px] sm:text-xs font-mono px-1.5 sm:px-2 py-0.5 rounded-full font-bold ${
-                isFilterOpen ? 'bg-[#EEEEEE] text-[#111111]' : 'bg-[#111111] text-[#EEEEEE]'
-              }`}>
+              <span className={`ml-1.5 sm:ml-2 text-[10px] sm:text-xs font-mono px-1.5 sm:px-2 py-0.5 rounded-full font-bold ${isFilterOpen ? 'bg-[#EEEEEE] text-[#111111]' : 'bg-[#111111] text-[#EEEEEE]'
+                }`}>
                 {activeFilterCount}
               </span>
             )}
@@ -112,11 +107,10 @@ export function Navbar({
             <button
               onClick={() => setActiveView('canvas')}
               title="Vue Canva Infini"
-              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors ${
-                activeView === 'canvas'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-              }`}
+              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors ${activeView === 'canvas'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                }`}
             >
               <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
             </button>
@@ -127,14 +121,13 @@ export function Navbar({
             <button
               onClick={() => setActiveView('network')}
               title="Vue Graphe Relationnel"
-              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors ${
-                activeView === 'network'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-              }`}
+              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors ${activeView === 'network'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M200,152a31.84,31.84,0,0,0-19.53,6.68l-23.11-18A31.65,31.65,0,0,0,160,128c0-.74,0-1.48-.08-2.21l13.23-4.41A32,32,0,1,0,168,104c0,.74,0,1.48.08,2.21l-13.23,4.41A32,32,0,0,0,128,96a32.59,32.59,0,0,0-5.27.44L115.89,81A32,32,0,1,0,96,88a32.59,32.59,0,0,0,5.27-.44l6.84,15.4a31.92,31.92,0,0,0-8.57,39.64L73.83,165.44a32.06,32.06,0,1,0,10.63,12l25.71-22.84a31.91,31.91,0,0,0,37.36-1.24l23.11,18A31.65,31.65,0,0,0,168,184a32,32,0,1,0,32-32Zm0-64a16,16,0,1,1-16,16A16,16,0,0,1,200,88ZM80,56A16,16,0,1,1,96,72,16,16,0,0,1,80,56ZM56,208a16,16,0,1,1,16-16A16,16,0,0,1,56,208Zm56-80a16,16,0,1,1,16,16A16,16,0,0,1,112,128Zm88,72a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"></path>
+                <path d="M200,152a35.77,35.77,0,0,0-16.46,4l-21.39-16.64A35.49,35.49,0,0,0,164,128.65l10.35-3.44A36,36,0,1,0,164,100c0,1.11.06,2.21.16,3.3l-7.78,2.59A36,36,0,0,0,128,92c-1,0-1.88,0-2.81.12l-4.45-10A36,36,0,1,0,96,92c1,0,1.88,0,2.81-.12l4.45,10a35.91,35.91,0,0,0-8.59,39.7L73.39,160.49a36,36,0,1,0,15.94,17.93l21.28-18.91a35.91,35.91,0,0,0,36.8-1.21L167,173.56A36,36,0,1,0,200,152Zm0-64a12,12,0,1,1-12,12A12,12,0,0,1,200,88ZM84,56A12,12,0,1,1,96,68,12,12,0,0,1,84,56ZM56,204a12,12,0,1,1,12-12A12,12,0,0,1,56,204Zm60-76a12,12,0,1,1,12,12A12,12,0,0,1,116,128Zm84,72a12,12,0,1,1,12-12A12,12,0,0,1,200,200Z"></path>
               </svg>
             </button>
 
@@ -144,11 +137,10 @@ export function Navbar({
             <button
               onClick={() => setActiveView('list')}
               title="Vue Liste"
-              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors ${
-                activeView === 'list'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-              }`}
+              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors ${activeView === 'list'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                }`}
             >
               <List className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
             </button>

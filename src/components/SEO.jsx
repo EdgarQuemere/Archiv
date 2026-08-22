@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 
 export function SEO({ title, description, image, url }) {
   const defaultTitle = 'Artchiv\' - La plateforme des étudiants';
-  const defaultDescription = 'Découvrez les meilleurs projets des étudiants en design et création.';
+  const defaultDescription = 'La plateforme qui réunit les Books et Mémoires des étudiants en design';
   const defaultImage = 'https://artchiv.fr/archiv_logo_condesed.webp'; // Ou toute autre image par défaut
   const siteUrl = 'https://artchiv.fr';
 

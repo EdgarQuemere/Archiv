@@ -26,6 +26,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    pseudo: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -99,6 +100,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
         setFormData({
           firstName: '',
           lastName: '',
+          pseudo: '',
           email: '',
           password: '',
           confirmPassword: '',
@@ -203,19 +205,18 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
       } else if (googleToken) {
         await googleAuth(googleToken, formData);
       } else {
-        await register(formData);
-      }
-      
-      if (avatarFile) {
-        const avatarData = new FormData();
-        avatarData.append('profilePicture', avatarFile);
-        try {
-          await api.put('/users/me', avatarData, { headers: { 'Content-Type': 'multipart/form-data' } });
-        } catch (avatarErr) {
-          console.error("Erreur lors de l'upload de l'avatar", avatarErr);
+        if (avatarFile) {
+          const formDataPayload = new FormData();
+          Object.keys(formData).forEach(key => {
+            formDataPayload.append(key, formData[key]);
+          });
+          formDataPayload.append('profilePicture', avatarFile);
+          await register(formDataPayload);
+        } else {
+          await register(formData);
         }
       }
-
+      
       if (onSuccess) onSuccess();
       handleClose();
     } catch (err) {
@@ -291,7 +292,6 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => setError("La connexion avec Google a échoué.")}
-                  useOneTap
                   theme="filled_black"
                   shape="rectangular"
                   width="320"
@@ -331,6 +331,18 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                     className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
                   />
                 </div>
+              </div>
+              
+              <div>
+                <label className="text-xs sm:text-sm font-medium block mb-1">Pseudo (Optionnel)</label>
+                <input
+                  type="text"
+                  name="pseudo"
+                  value={formData.pseudo}
+                  onChange={handleChange}
+                  placeholder="Ton pseudo (min 3 caractères)"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                />
               </div>
 
               <div>
@@ -505,7 +517,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
               </div>
 
               <div>
-                <label className="text-xs sm:text-sm font-medium block mb-1">Lien Perso / Portfolio (Optionnel)</label>
+                <label className="text-xs sm:text-sm font-medium block mb-1">Lien Perso / Book (Optionnel)</label>
                 <input
                   type="url"
                   name="personalLink"

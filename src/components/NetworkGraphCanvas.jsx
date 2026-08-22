@@ -40,7 +40,7 @@ export function NetworkGraphCanvas({
       targetCamRef.current.zoom = 0.5;
       targetCamRef.current.x = cx;
       targetCamRef.current.y = cy;
-      
+
       currentCamRef.current.x = cx;
       currentCamRef.current.y = cy;
       currentCamRef.current.zoom = 0.5;
@@ -84,19 +84,19 @@ export function NetworkGraphCanvas({
       for (let j = i + 1; j < items.length; j++) {
         const a = items[i];
         const b = items[j];
-        
+
         const aWords = getWords(a.abstract);
         const bWords = getWords(b.abstract);
         let shared = [...new Set(aWords.filter(w => bWords.includes(w)))];
-        
+
         if (shared.length > 4) {
           shared = shared.slice(0, 4);
         }
-        
+
         if (shared.length > 0) {
-          links.push({ 
-            source: a.id, 
-            target: b.id, 
+          links.push({
+            source: a.id,
+            target: b.id,
             value: shared.length * 2,
             sharedTags: shared
           });
@@ -225,14 +225,14 @@ export function NetworkGraphCanvas({
       const zoomDelta = -e.deltaY * zoomSensitivity;
       let newZoom = targetCamRef.current.zoom * Math.exp(zoomDelta);
       newZoom = Math.max(0.15, Math.min(newZoom, 4.0));
-      
+
       const rect = containerRef.current.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
-      
+
       const worldX = (mouseX - targetCamRef.current.x) / targetCamRef.current.zoom;
       const worldY = (mouseY - targetCamRef.current.y) / targetCamRef.current.zoom;
-      
+
       targetCamRef.current.zoom = newZoom;
       targetCamRef.current.x = mouseX - worldX * newZoom;
       targetCamRef.current.y = mouseY - worldY * newZoom;
@@ -258,11 +258,11 @@ export function NetworkGraphCanvas({
     const newZoom = Math.min(4.0, targetCamRef.current.zoom * 1.3);
     const centerX = viewportSize.width / 2;
     const centerY = viewportSize.height / 2;
-    
+
     // Use current visual state for accurate centering
     const worldX = (centerX - currentCamRef.current.x) / currentCamRef.current.zoom;
     const worldY = (centerY - currentCamRef.current.y) / currentCamRef.current.zoom;
-    
+
     targetCamRef.current.zoom = newZoom;
     targetCamRef.current.x = centerX - worldX * newZoom;
     targetCamRef.current.y = centerY - worldY * newZoom;
@@ -272,7 +272,7 @@ export function NetworkGraphCanvas({
     const newZoom = Math.max(0.15, targetCamRef.current.zoom / 1.3);
     const centerX = viewportSize.width / 2;
     const centerY = viewportSize.height / 2;
-    
+
     // Use current visual state for accurate centering
     const worldX = (centerX - currentCamRef.current.x) / currentCamRef.current.zoom;
     const worldY = (centerY - currentCamRef.current.y) / currentCamRef.current.zoom;
@@ -361,9 +361,8 @@ export function NetworkGraphCanvas({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full overflow-hidden select-none bg-[#EEEEEE] ${
-        isDragging ? 'cursor-grabbing' : 'cursor-grab'
-      }`}
+      className={`relative w-full h-full overflow-hidden  bg-[#EEEEEE] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
       onDragStart={(e) => e.preventDefault()}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -372,7 +371,7 @@ export function NetworkGraphCanvas({
     >
 
       <div
-        className="absolute top-0 left-0 origin-top-left pointer-events-auto transform-gpu select-none"
+        className="absolute top-0 left-0 origin-top-left pointer-events-auto transform-gpu "
         style={{
           transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom || 1.0})`,
           willChange: 'transform'
@@ -395,7 +394,7 @@ export function NetworkGraphCanvas({
             const hasActiveFilter = Boolean(hoveredNodeId);
 
             const sharedCount = (link.sharedTags || []).length;
-            
+
             // Shared color scale function: 1=Blue, 2=Amber, 3=Orange, 4+=Crimson
             const getHeatColor = (count, active) => {
               if (count >= 4) return active ? '#BE123C' : '#E11D48';
@@ -470,7 +469,7 @@ export function NetworkGraphCanvas({
               }}
               className="group pointer-events-auto"
             >
-              <div 
+              <div
                 style={{
                   width: '100%',
                   height: '100%',
@@ -479,24 +478,23 @@ export function NetworkGraphCanvas({
                 }}
               >
                 {/* CLEAN NO-OUTLINE FRAME with rich high-elevation drop shadow */}
-              <div
-                className={`w-full h-full relative overflow-visible bg-[#EEEEEE] transition-all duration-300 ${
-                  isHovered
-                    ? 'shadow-[0_25px_50px_rgba(0,0,0,0.35)] border border-[#111111]'
-                    : isActiveNeighbor && hasActiveFilter
-                    ? 'shadow-[0_15px_30px_rgba(0,0,0,0.25)] border border-[#111111]/70'
-                    : 'shadow-md border border-[#111111]/20 hover:border-[#111111]/60'
-                }`}
-              >
-                <img
-                  src={node.coverUrl}
-                  alt={node.title}
-                  loading="lazy"
-                  draggable={false}
-                  onDragStart={(e) => e.preventDefault()}
-                  style={{ WebkitUserDrag: 'none', userSelect: 'none', pointerEvents: 'none' }}
-                  className="w-full h-full object-contain block select-none p-1"
-                />
+                <div
+                  className={`w-full h-full relative overflow-visible bg-[#EEEEEE] transition-all duration-300 ${isHovered
+                      ? 'shadow-[0_25px_50px_rgba(0,0,0,0.35)] border border-[#111111]'
+                      : isActiveNeighbor && hasActiveFilter
+                        ? 'shadow-[0_15px_30px_rgba(0,0,0,0.25)] border border-[#111111]/70'
+                        : 'shadow-md border border-[#111111]/20 hover:border-[#111111]/60'
+                    }`}
+                >
+                  <img
+                    src={node.coverUrl}
+                    alt={node.title}
+                    loading="lazy"
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
+                    style={{ WebkitUserDrag: 'none', userSelect: 'none', pointerEvents: 'none' }}
+                    className="w-full h-full object-contain block  p-1"
+                  />
                 </div>
               </div>
             </div>
@@ -619,7 +617,7 @@ export function NetworkGraphCanvas({
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
           {/* Zoom Percentage Display */}
-          <div className="h-full px-2.5 xs:px-3.5 flex items-center justify-center bg-[#EEEEEE] text-[#111111] text-xs sm:text-base font-medium select-none min-w-[48px] sm:min-w-[56px]">
+          <div className="h-full px-2.5 xs:px-3.5 flex items-center justify-center bg-[#EEEEEE] text-[#111111] text-xs sm:text-base font-medium  min-w-[48px] sm:min-w-[56px]">
             {currentZoomPercent}%
           </div>
 
