@@ -14,6 +14,7 @@ import { LoginModal } from './components/auth/LoginModal';
 import { RegisterModal } from './components/auth/RegisterModal';
 import { ResetPassword } from './components/auth/ResetPassword';
 import { OmniscientCallback } from './components/auth/OmniscientCallback';
+import SEO from './components/SEO';
 import AdminDashboard from './components/admin/AdminDashboard';
 import { MentionsLegales } from './components/MentionsLegales';
 import { AuthContext } from './context/AuthContext';
@@ -325,11 +326,21 @@ export function App() {
 
   if (window.location.pathname.startsWith('/reset-password/')) {
     const token = window.location.pathname.split('/').pop();
-    return <ResetPassword token={token} />;
+    return (
+      <>
+        <SEO title="Nouveau mot de passe" description="Réinitialisez votre mot de passe Archiv." />
+        <ResetPassword token={token} />
+      </>
+    );
   }
 
   if (window.location.pathname === '/admin') {
-    return <AdminDashboard />;
+    return (
+      <>
+        <SEO title="Administration" />
+        <AdminDashboard />
+      </>
+    );
   }
 
   if (window.location.pathname === '/mentions-legales') {
@@ -337,7 +348,8 @@ export function App() {
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden relative font-sans select-none bg-[#EEEEEE] text-[#111111]">
+    <div className="font-sans text-[#111111] bg-[#EEEEEE] min-h-screen relative overflow-hidden h-screen" onMouseMove={handleMouseMove}>
+      <SEO />
       
       {/* Top Navbar */}
       <Navbar

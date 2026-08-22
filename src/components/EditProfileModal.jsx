@@ -189,17 +189,17 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
             
             <div className="space-y-3">
               <div>
-                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-[#111111]" /> Adresse e-mail *
+                <label className="text-xs sm:text-sm font-medium text-slate-500 block mb-1 flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5" /> Adresse e-mail (Non modifiable)
                 </label>
                 <input 
                   type="email" 
                   name="email" 
                   value={formData.email} 
-                  onChange={handleChange}
-                  required
-                  placeholder="votre.email@exemple.com"
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                  disabled
+                  readOnly
+                  title="Vous ne pouvez pas modifier votre adresse e-mail."
+                  className="w-full h-10 sm:h-11 bg-slate-100 border-[1.5px] border-slate-300 text-slate-500 rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none cursor-not-allowed"
                 />
               </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useContext } from 'react';
 import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Info, User, Columns, Download, Bookmark } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import SEO from './SEO';
 import api from '../api/axios';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -255,6 +256,11 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
   return (
     <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden select-none animate-in fade-in duration-200">
+      <SEO 
+        title={item.title} 
+        description={`Projet par ${item.author?.firstName || 'Anonyme'} ${item.author?.lastName || ''} - ${item.school}`}
+        image={item.coverUrl}
+      />
       
       {/* TOP LEFT BUTTONS */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
