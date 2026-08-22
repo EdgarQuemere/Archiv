@@ -6,6 +6,9 @@ import { AuthContext } from '../context/AuthContext';
 import { toast } from 'sonner';
 import { AvatarCropperModal } from './AvatarCropperModal';
 import { EditProfileModal } from './EditProfileModal';
+import { LogoutConfirmModal } from './LogoutConfirmModal';
+import { DeleteAccountReasonModal } from './DeleteAccountReasonModal';
+import { DeleteAccountConfirmModal } from './DeleteAccountConfirmModal';
 import { MOCK_USER_PROFILE, MOCK_USER_PROJECTS, MOCK_SAVED_PROJECTS } from '../data/mockProfile';
 
 /* Custom Phosphor Profile User SVG provided by USER */
@@ -36,31 +39,31 @@ const IconInstagram = ({ className = "w-6 h-6" }) => (
 
 const IconDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
-    <path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z" />
+    <path d="M216.49,79.52l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.52ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Z" />
   </svg>
 );
 
 const IconBookmark = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
-    <path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z" />
+    <path d="M184,28H72A20,20,0,0,0,52,48V224a12,12,0,0,0,18.36,10.18l57.63-36,57.65,36A12,12,0,0,0,204,224V48A20,20,0,0,0,184,28Zm-4,174.35-45.65-28.53a12,12,0,0,0-12.72,0L76,202.35V52H180Z" />
   </svg>
 );
 
 const IconPencil = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
-    <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z" />
+    <path d="M230.14,70.54,185.46,25.85a20,20,0,0,0-28.29,0L33.86,149.17A19.85,19.85,0,0,0,28,163.31V208a20,20,0,0,0,20,20H92.69a19.86,19.86,0,0,0,14.14-5.86L230.14,98.82a20,20,0,0,0,0-28.28ZM91,204H52V165l84-84,39,39ZM192,103,153,64l18.34-18.34,39,39Z" />
   </svg>
 );
 
 const IconLogOut = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
-    <path d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z" />
+    <path d="M124,216a12,12,0,0,1-12,12H48a12,12,0,0,1-12-12V40A12,12,0,0,1,48,28h64a12,12,0,0,1,0,24H60V204h52A12,12,0,0,1,124,216Zm108.49-96.49-40-40a12,12,0,0,0-17,17L195,116H112a12,12,0,0,0,0,24h83l-19.52,19.51a12,12,0,0,0,17,17l40-40A12,12,0,0,0,232.49,119.51Z" />
   </svg>
 );
 
 const IconDelete = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
-    <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z" />
+    <path d="M216,48H180V36A28,28,0,0,0,152,8H104A28,28,0,0,0,76,36V48H40a12,12,0,0,0,0,24h4V208a20,20,0,0,0,20,20H192a20,20,0,0,0,20-20V72h4a12,12,0,0,0,0-24ZM100,36a4,4,0,0,1,4-4h48a4,4,0,0,1,4,4V48H100Zm88,168H68V72H188ZM116,104v64a12,12,0,0,1-24,0V104a12,12,0,0,1,24,0Zm48,0v64a12,12,0,0,1-24,0V104a12,12,0,0,1,24,0Z" />
   </svg>
 );
 
@@ -71,7 +74,8 @@ export function ProfileDrawer({
   logout,
   covers = [],
   onEditProject,
-  onDeleteProject
+  onDeleteProject,
+  onOpenInfo
 }) {
   const { deleteAccount, setUser } = useContext(AuthContext);
   const containerRef = useRef(null);
@@ -95,6 +99,10 @@ export function ProfileDrawer({
   const [activeTab, setActiveTab] = useState('documents'); // 'documents' | 'enregistrements'
   const [deletingId, setDeletingId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isDeleteReasonModalOpen, setIsDeleteReasonModalOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
+  const [deletionReason, setDeletionReason] = useState('');
 
   // Local Mock Projects & Saved Projects
   const [userProjects, setUserProjects] = useState(() => {
@@ -204,25 +212,23 @@ export function ProfileDrawer({
     }
   };
 
-  const handleLogout = async () => {
+  const handleConfirmLogout = async () => {
     if (logout) await logout();
     toast.success("Déconnexion réussie");
     handleClose();
   };
 
-  const handleDeleteAccount = async () => {
-    if (window.confirm("Es-tu sûr de vouloir supprimer définitivement ton compte et tous tes projets associés ? Cette action est irréversible.")) {
-      try {
-        if (deleteAccount && user) {
-          await deleteAccount();
-        } else {
-          toast.success("Compte fictif réinitialisé.");
-        }
-        handleClose();
-      } catch (err) {
-        console.error("Erreur suppression compte:", err);
-        alert("Impossible de supprimer le compte.");
+  const handleConfirmDeleteAccount = async () => {
+    try {
+      if (deleteAccount && user) {
+        await deleteAccount();
+      } else {
+        toast.success("Compte supprimé avec succès.");
       }
+      handleClose();
+    } catch (err) {
+      console.error("Erreur suppression compte:", err);
+      toast.error("Impossible de supprimer le compte.");
     }
   };
 
@@ -286,10 +292,20 @@ export function ProfileDrawer({
           className="h-12 sm:h-15 w-auto object-contain cursor-pointer transition-opacity hover:opacity-80 mr-0.5" 
           onClick={handleClose}
         />
-        <button className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors">
+        <button 
+          onClick={() => {
+            handleClose();
+            onOpenInfo?.();
+          }}
+          title="Informations"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors cursor-pointer"
+        >
           <Info className="w-4 h-4 stroke-[2.25]" />
         </button>
-        <button className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm">
+        <button 
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm"
+          title="Mon Profil"
+        >
           <IconUserProfile className="w-4 h-4" />
         </button>
       </div>
@@ -314,7 +330,7 @@ export function ProfileDrawer({
           <div className="max-w-md space-y-4">
             {/* Avatar (NO stroke/border) */}
             <div 
-              className="relative w-24 h-24 bg-[#111111] rounded-2xl overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]" 
+              className="relative w-24 h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]" 
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
               onDrop={handleAvatarDrop}
@@ -409,7 +425,7 @@ export function ProfileDrawer({
               </button>
 
               <button 
-                onClick={handleLogout}
+                onClick={() => setIsLogoutModalOpen(true)}
                 className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer"
               >
                 <span>Se déconnecter</span>
@@ -417,7 +433,7 @@ export function ProfileDrawer({
               </button>
 
               <button 
-                onClick={handleDeleteAccount}
+                onClick={() => setIsDeleteReasonModalOpen(true)}
                 className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
               >
                 <span>Supprimer mon compte</span>
@@ -602,6 +618,31 @@ export function ProfileDrawer({
           onComplete={handleCropComplete}
         />
       )}
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleConfirmLogout}
+      />
+
+      {/* Delete Account Step 1: Reason Modal */}
+      <DeleteAccountReasonModal
+        isOpen={isDeleteReasonModalOpen}
+        onClose={() => setIsDeleteReasonModalOpen(false)}
+        onNext={(reason) => {
+          setDeletionReason(reason);
+          setIsDeleteReasonModalOpen(false);
+          setIsDeleteConfirmModalOpen(true);
+        }}
+      />
+
+      {/* Delete Account Step 2: Final Confirmation Modal */}
+      <DeleteAccountConfirmModal
+        isOpen={isDeleteConfirmModalOpen}
+        onClose={() => setIsDeleteConfirmModalOpen(false)}
+        onConfirm={handleConfirmDeleteAccount}
+      />
     </div>
   );
 }

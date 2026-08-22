@@ -36,16 +36,26 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/80 flex flex-col items-center justify-center p-4">
-      <div className="bg-[#EEEEEE] w-full max-w-lg border-2 border-[#111111] overflow-hidden flex flex-col">
-        <div className="p-4 border-b-2 border-[#111111] flex justify-between items-center bg-white">
-          <h3 className="font-bold text-[#111111]">Recadrer la photo</h3>
-          <button onClick={onClose} className="p-1 hover:bg-slate-100 border-2 border-transparent hover:border-[#111111] transition-all">
-            <X className="w-5 h-5" />
-          </button>
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 font-sans text-[#111111] select-none">
+      <div className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs" onClick={onClose} />
+      
+      <div className="relative bg-[#EEEEEE] w-full max-w-lg border-[1.5px] border-[#111111] rounded-[14px] shadow-2xl overflow-hidden z-10 flex flex-col p-6 sm:p-8 transform-gpu">
+        <button 
+          onClick={onClose} 
+          title="Fermer"
+          className="absolute top-4 right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm z-20"
+        >
+          <X className="w-4 h-4 stroke-[2.25]" />
+        </button>
+
+        <div className="flex items-center gap-2.5 mb-1 pr-10">
+          <h2 className="text-xl font-bold text-[#111111]">Recadrer la photo</h2>
         </div>
+        <p className="text-xs sm:text-sm text-slate-600 mb-4">
+          Ajustez le cadrage de votre photo de profil.
+        </p>
         
-        <div className="relative w-full h-[400px] bg-slate-100">
+        <div className="relative w-full h-[320px] bg-[#E2E2E2] border-[1.5px] border-[#111111] rounded-[14px] overflow-hidden my-2">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -59,9 +69,9 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
           />
         </div>
         
-        <div className="p-6 bg-white border-t-2 border-[#111111] flex flex-col gap-6">
+        <div className="pt-4 flex flex-col gap-4">
           <div className="flex items-center gap-4">
-            <ZoomOut className="w-5 h-5 text-slate-500" />
+            <ZoomOut className="w-4 h-4 text-[#111111]" />
             <input
               type="range"
               value={zoom}
@@ -72,16 +82,29 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
               onChange={(e) => setZoom(e.target.value)}
               className="w-full accent-[#111111] cursor-pointer"
             />
-            <ZoomIn className="w-5 h-5 text-slate-500" />
+            <ZoomIn className="w-4 h-4 text-[#111111]" />
           </div>
           
-          <button 
-            onClick={handleSave}
-            disabled={isProcessing}
-            className="w-full py-3 bg-[#111111] text-[#EEEEEE] font-bold border-2 border-[#111111] flex items-center justify-center gap-2 hover:bg-[#EEEEEE] hover:text-[#111111] transition-colors disabled:opacity-50"
-          >
-            {isProcessing ? 'Traitement...' : 'Enregistrer'} <Check className="w-4 h-4" />
-          </button>
+          <div className="pt-3 border-t-[1.5px] border-[#111111] flex justify-end gap-3 mt-2">
+            <button 
+              onClick={onClose}
+              className="h-10 sm:h-11 px-5 bg-[#EEEEEE] text-[#111111] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+            >
+              Annuler
+            </button>
+            <button 
+              onClick={handleSave}
+              disabled={isProcessing}
+              className="h-10 sm:h-11 px-6 bg-[#111111] text-[#EEEEEE] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm disabled:opacity-50"
+            >
+              {isProcessing ? (
+                <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Check className="w-4 h-4 stroke-[2.25]" />
+              )}
+              <span>{isProcessing ? 'Traitement...' : 'Enregistrer'}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

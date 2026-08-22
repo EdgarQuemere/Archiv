@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Upload, CheckCircle2, Sparkles } from 'lucide-react';
+import { X, Upload, CheckCircle2, Sparkles, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { pdfjs } from 'react-pdf';
 import { SCHOOLS_LIST } from '../data/coversData';
@@ -228,22 +228,23 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 overflow-y-auto font-sans text-[#111111]">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans text-[#111111] select-none">
       <div
         ref={backdropRef}
-        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs transition-opacity"
         onClick={handleClose}
       />
 
       <div
         ref={dialogRef}
-        className="relative bg-[#EEEEEE] rounded-none shadow-2xl max-w-lg w-full overflow-hidden z-10 my-auto border-2 border-[#111111] p-6 sm:p-8 transform-gpu"
+        className="relative bg-[#EEEEEE] rounded-[14px] shadow-2xl max-w-lg w-full overflow-hidden z-10 my-auto border-[1.5px] border-[#111111] p-6 sm:p-8 transform-gpu max-h-[90vh] flex flex-col"
       >
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-[#111111] hover:opacity-60 p-1.5 rounded-none"
+          title="Fermer"
+          className="absolute top-4 right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm z-20"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 stroke-[2.25]" />
         </button>
 
         {submitted ? (
@@ -252,30 +253,30 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
             <h2 className="text-xl font-bold text-[#111111] mb-1">
               {editData ? 'Projet mis à jour !' : 'Projet publié !'}
             </h2>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs sm:text-sm text-slate-600">
               Votre travail fait désormais partie de l'archive.
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-[#111111]" />
-              <h2 className="text-lg font-bold text-[#111111]">
+          <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto pr-1 flex-1">
+            <div className="flex items-center gap-2.5 mb-1 pr-10">
+              <Sparkles className="w-5 h-5 stroke-[2.25] text-[#111111]" />
+              <h2 className="text-xl font-bold text-[#111111]">
                 {editData ? 'Modifier le projet' : 'Ajouter un projet'}
               </h2>
             </div>
-            <p className="text-xs text-slate-600 mb-4">
+            <p className="text-xs sm:text-sm text-slate-600 mb-4">
               {editData ? 'Mettez à jour les informations de votre projet.' : 'Rejoignez l\'archive visuelle des étudiants en art et design.'}
             </p>
 
             {error && (
-              <div className="p-3 bg-red-100 border border-red-400 text-red-700 text-xs font-semibold">
+              <div className="p-3 bg-red-100 border-[1.5px] border-red-400 text-red-700 text-xs font-medium rounded-full text-center mb-3">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="text-xs font-semibold text-[#111111] block mb-1">
+              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                 Titre du travail *
               </label>
               <input
@@ -284,65 +285,74 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 placeholder="ex: L'archéologie des machines"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="text-xs font-semibold text-[#111111] block mb-1">
+                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                   Type *
                 </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
-                >
-                  <option value="Mémoire">Mémoire</option>
-                  <option value="Portfolio">Portfolio</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="Mémoire">Mémoire</option>
+                    <option value="Portfolio">Portfolio</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
+                </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#111111] block mb-1">
+                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                   Domaine *
                 </label>
-                <select
-                  required
-                  value={formData.domain}
-                  onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
-                >
-                  <option value="" disabled>Sélectionner un domaine</option>
-                  {domains.map((dom) => (
-                    <option key={dom} value={dom}>
-                      {dom}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    required
+                    value={formData.domain}
+                    onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Sélectionner un domaine</option>
+                    {domains.map((dom) => (
+                      <option key={dom} value={dom}>
+                        {dom}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="text-xs font-semibold text-[#111111] block mb-1">
+                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                   École / Institution *
                 </label>
-                <select
-                  value={formData.school}
-                  onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
-                >
-                  {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
-                    <option key={sch} value={sch}>
-                      {sch}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={formData.school}
+                    onChange={(e) => setFormData({ ...formData, school: e.target.value })}
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                  >
+                    {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
+                      <option key={sch} value={sch}>
+                        {sch}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
+                </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#111111] block mb-1">
+                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                   Année *
                 </label>
                 <input
@@ -351,13 +361,13 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   max="2027"
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-[#111111] block mb-1">
+              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                 Résumé succinct
               </label>
               <textarea
@@ -365,14 +375,14 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 placeholder="Décrivez les thématiques principales abordées..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-3 py-2 text-xs focus:outline-none"
+                className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-3">
               <div>
                 <div className="flex justify-between items-baseline mb-1">
-                  <label className="text-xs font-semibold text-[#111111] block">
+                  <label className="text-xs sm:text-sm font-medium text-[#111111] block">
                     Fichier PDF {editData ? '' : '*'}
                   </label>
                   <span className="text-[10px] text-slate-500 font-mono">Max 30 Mo</span>
@@ -383,29 +393,29 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   name="pdf"
                   accept="application/pdf"
                   onChange={handleFileChange}
-                  className="w-full bg-[#EEEEEE] border-2 border-[#111111] rounded-none px-2 py-1 text-[10px] focus:outline-none file:mr-2 file:py-1 file:px-2 file:border-0 file:text-[10px] file:bg-[#111111] file:text-white cursor-pointer"
+                  className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-3.5 py-1.5 text-xs focus:outline-none file:mr-2 file:py-1 file:px-3 file:border-0 file:rounded-full file:text-xs file:bg-[#111111] file:text-white cursor-pointer"
                 />
-                {editData && <div className="text-[9px] text-slate-500 mt-1">Laissez vide pour conserver le PDF actuel.</div>}
+                {editData && <div className="text-[10px] text-slate-500 mt-1">Laissez vide pour conserver le PDF actuel.</div>}
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#111111] block mb-1">
+                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                   Aperçu de la Couverture
                 </label>
-                <div className="w-full h-24 bg-slate-200 border-2 border-[#111111] flex flex-col items-center justify-center overflow-hidden relative">
+                <div className="w-full min-h-[160px] max-h-[260px] bg-[#E2E2E2] border-[1.5px] border-[#111111] rounded-[14px] flex flex-col items-center justify-center overflow-hidden relative shadow-sm p-3">
                   {extractingCover ? (
-                    <div className="flex flex-col items-center text-slate-500">
-                      <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mb-1" />
-                      <span className="text-[9px] font-semibold">Génération...</span>
+                    <div className="flex flex-col items-center text-slate-500 py-6">
+                      <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mb-2" />
+                      <span className="text-xs font-medium">Génération de la couverture...</span>
                     </div>
                   ) : coverPreviewUrl || (editData && editData.coverUrl) ? (
                     <img 
                       src={coverPreviewUrl || editData.coverUrl} 
-                      alt="Aperçu couverture" 
-                      className="w-full h-full object-cover" 
+                      alt="Aperçu couverture complet" 
+                      className="w-full max-h-[230px] object-contain rounded-[8px]" 
                     />
                   ) : (
-                    <span className="text-[10px] text-slate-500 font-semibold px-4 text-center">
+                    <span className="text-xs text-slate-500 font-medium px-4 text-center py-6">
                       Sélectionnez un PDF pour générer la couverture.
                     </span>
                   )}
@@ -413,35 +423,35 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
               </div>
             </div>
 
-            <div className="pt-3 border-t-2 border-[#111111]">
+            <div className="pt-3 border-t-[1.5px] border-[#111111] mt-4">
               {loading && uploadProgress > 0 && (
                 <div className="mb-4">
-                  <div className="flex justify-between text-xs font-semibold text-[#111111] mb-1 font-mono">
+                  <div className="flex justify-between text-xs font-medium text-[#111111] mb-1 font-mono">
                     <span>{editData ? 'Mise à jour en cours...' : 'Envoi en cours...'}</span>
                     <span>{uploadProgress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-200 overflow-hidden border border-[#111111]">
+                  <div className="w-full h-2 bg-slate-200 overflow-hidden border border-[#111111] rounded-full">
                     <div 
-                      className="h-full bg-[#111111] transition-all duration-300"
+                      className="h-full bg-[#111111] transition-all duration-300 rounded-full"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
                 </div>
               )}
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={handleClose}
                   disabled={loading}
-                  className="px-4 py-2 border-2 border-[#111111] bg-[#EEEEEE] text-[#111111] rounded-none text-xs font-semibold hover:bg-[#dddddd] transition-colors disabled:opacity-50"
+                  className="h-10 sm:h-11 px-5 bg-[#EEEEEE] text-[#111111] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm disabled:opacity-50"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 bg-[#111111] text-[#EEEEEE] rounded-none text-xs font-semibold hover:opacity-90 transition-colors flex items-center gap-1.5 disabled:opacity-50 min-w-[160px] justify-center"
+                  className="h-10 sm:h-11 px-6 bg-[#111111] text-[#EEEEEE] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm disabled:opacity-50 min-w-[160px]"
                 >
                   {loading ? (
                     <>
@@ -450,7 +460,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                     </>
                   ) : (
                     <>
-                      <Upload className="w-3.5 h-3.5" />
+                      <Upload className="w-4 h-4 stroke-[2.25]" />
                       <span>{editData ? 'Mettre à jour' : 'Publier le projet'}</span>
                     </>
                   )}

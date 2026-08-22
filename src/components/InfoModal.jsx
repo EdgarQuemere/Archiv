@@ -19,6 +19,12 @@ const InstagramSVG = () => (
   </svg>
 );
 
+const IconUserProfile = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
+  </svg>
+);
+
 export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, onOpenMentions }) {
   if (!isOpen) return null;
 
@@ -26,11 +32,11 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
     <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans overflow-hidden select-none animate-in fade-in duration-200 h-screen w-screen">
       
       {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
-      <div className="fixed top-6 left-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto">
+      <div className="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto">
         <img
           src="/Artchiv-logo.webp"
           alt="Artchiv"
-          className="h-12 sm:h-15 w-auto object-contain cursor-pointer mr-0.5"
+          className="h-12 sm:h-15 w-auto object-contain cursor-pointer transition-opacity hover:opacity-80 mr-0.5"
           onClick={onClose}
         />
         {/* Info Button - Active Solid Black */}
@@ -45,24 +51,25 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         <button
           onClick={() => {
             if (user) {
+              onClose();
               onOpenProfile?.();
             } else {
               onOpenLogin?.();
             }
           }}
-          title={user ? user.name || 'Profil' : 'Se connecter'}
+          title={user ? `${user.firstName || user.name || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Se connecter'}
           className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <User className="w-4 h-4 stroke-[2.25]" />
+          <IconUserProfile className="w-4 h-4" />
         </button>
       </div>
 
       {/* TOP RIGHT CLOSE BUTTON */}
-      <div className="fixed top-6 right-6 z-50 pointer-events-auto">
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-auto">
         <button
           onClick={onClose}
           title="Fermer"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#EEEEEE] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
         >
           <X className="w-4 h-4 stroke-[2.25]" />
         </button>
@@ -71,24 +78,24 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
       {/* MAIN CONTENT CONTAINER - 24PX MARGINS FROM SCREEN EDGES */}
       <div className="absolute top-28 bottom-6 left-6 right-6 flex flex-row justify-between items-end overflow-hidden">
         
-        {/* LEFT COLUMN: ABOUT ARTCHIV (Width 352px: multiple of 4 closest to 350) */}
-        <div className="w-[352px] max-w-[352px] text-[#111111] flex flex-col justify-end gap-5">
+        {/* LEFT COLUMN: ABOUT ARTCHIV (Width max-w-[480px], overflow-hidden, no scrolling) */}
+        <div className="w-full max-w-[480px] text-[#111111] flex flex-col justify-end gap-5 overflow-hidden">
           <div className="space-y-3">
             <h1 className="text-xl sm:text-2xl font-bold italic mb-3">Artchiv’</h1>
 
-            <p className="text-xs sm:text-sm leading-relaxed font-normal">
+            <p className="text-sm sm:text-base leading-relaxed font-normal">
               Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les portfolios et les mémoires de fin d’études.
             </p>
 
-            <p className="text-xs sm:text-sm leading-relaxed font-normal">
+            <p className="text-sm sm:text-base leading-relaxed font-normal">
               D’un côté, il y a les books. On a tous vu les mêmes appels à l’aide sur les réseaux au moment des recherches pour les écoles : la constitution du portfolio, c’est le sujet qui prend la tête à tout le monde. Artchiv’ permet de partager simplement ses projets et d’aller fouiller dans ceux des autres. C’est l’endroit idéal pour découvrir l’univers créatif des futurs designers et trouver l’inspiration pour ses propres rendus.
             </p>
 
-            <p className="text-xs sm:text-sm leading-relaxed font-normal">
+            <p className="text-sm sm:text-base leading-relaxed font-normal">
               De l’autre, il y a les mémoires. Ce sont des travaux de recherche denses qui demandent des mois d’investissement. L’objectif est de conserver la trace de tous ces écrits précieux et de les valoriser, dans le respect total du travail de chaque auteur. Sans ça, ces mémoires finiraient, pour la plupart, tout simplement perdus à tout jamais dans les méandres d’une clé USB ou sur le disque dur d’un ordi poussiéreux.
             </p>
 
-            <p className="text-xs sm:text-sm leading-relaxed font-normal pt-1">
+            <p className="text-sm sm:text-base leading-relaxed font-normal pt-1">
               Partage ton travail sur Artchiv’ et laisse une trace de tes études en design.
             </p>
           </div>
@@ -97,14 +104,14 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           <div className="space-y-2 pt-1">
             <a
               href="mailto:contact@archiv.fr"
-              className="block text-xs sm:text-sm italic font-medium hover:underline text-[#111111]"
+              className="block text-sm sm:text-base italic font-medium hover:underline text-[#111111]"
             >
               contact@archiv.fr
             </a>
 
             <button
               onClick={() => onOpenMentions && onOpenMentions()}
-              className="block text-xs sm:text-sm italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
+              className="block text-sm sm:text-base italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
             >
               mentions légales
             </button>

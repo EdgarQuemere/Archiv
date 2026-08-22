@@ -424,10 +424,10 @@ export function App() {
         user={user}
         logout={logout}
         covers={covers}
+        onOpenInfo={() => setIsInfoOpen(true)}
         onEditProject={(project) => {
           setEditProjectData(project);
           setIsSubmitOpen(true);
-          setIsProfileOpen(false);
         }}
         onDeleteProject={(projectId) => {
           setCovers(prev => prev.filter(c => c.id !== projectId));
