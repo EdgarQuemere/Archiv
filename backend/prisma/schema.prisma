@@ -7,72 +7,67 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  password       String
-  firstName      String?  // Prénom
-  lastName       String?  // Nom
-  role           String?  // Etudiant / Enseignant / Autre
-  currentSchool  String?  // École actuelle
-  behanceLink    String?
-  instaLink      String?
-  personalLink   String?
-  profilePicture String?
-  projects       Project[] // Relation: Un utilisateur peut avoir plusieurs projets (créés)
-  savedProjects  SavedProject[] // Relation: Projets enregistrés par l'utilisateur
-  isOmniscient         Boolean   @default(false)
-  isAdmin              Boolean   @default(false)
-  isBanned             Boolean   @default(false)
-  resetPasswordToken   String?
-  resetPasswordExpires DateTime?
-  isEmailVerified      Boolean   @default(false)
-  emailVerificationToken String?
+  id                       String         @id @default(uuid())
+  email                    String         @unique
+  password                 String
+  firstName                String?
+  role                     String?
+  currentSchool            String?
+  behanceLink              String?
+  instaLink                String?
+  personalLink             String?
+  profilePicture           String?
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  lastName                 String?
+  isOmniscient             Boolean        @default(false)
+  isAdmin                  Boolean        @default(false)
+  resetPasswordExpires     DateTime?
+  resetPasswordToken       String?
   emailVerificationExpires DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  emailVerificationToken   String?
+  isEmailVerified          Boolean        @default(false)
+  isBanned                 Boolean        @default(false)
+  projects                 Project[]
+  savedProjects            SavedProject[]
 }
 
 model Project {
-  id          String   @id @default(uuid())
-  title       String   // Titre
-  description String?  // Description
-  type        String   // "Portfolio" ou "Mémoire"
-  school      String   // Ecole
-  year        Int      // Année
-  domainId    String   // Relation vers Domain
-  domain      Domain   @relation(fields: [domainId], references: [id])
-  pdfUrl      String   // Lien vers le PDF uploadé
-  pdfSize     String?  // Poids du PDF en Mo (ex: "1.2 Mo")
-  coverUrl    String?  // Lien vers la couverture (optionnel)
-  
-  allowDownload  Boolean @default(false)
-  downloadsCount Int     @default(0)
-  
-  // Relation avec l'utilisateur (Auteur)
-  userId      String
-  author      User     @relation(fields: [userId], references: [id])
-  
-  savedBy     SavedProject[] // Relation: Utilisateurs ayant enregistré ce projet
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String         @id @default(uuid())
+  title          String
+  description    String?
+  type           String
+  school         String
+  year           Int
+  pdfUrl         String
+  pdfSize        String?
+  coverUrl       String?
+  userId         String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  domainId       String
+  allowDownload  Boolean        @default(false)
+  downloadsCount Int            @default(0)
+  domain         Domain         @relation(fields: [domainId], references: [id])
+  author         User           @relation(fields: [userId], references: [id])
+  savedBy        SavedProject[]
 }
 
 model Domain {
   id        String    @id @default(uuid())
   name      String    @unique
-  projects  Project[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  projects  Project[]
 }
 
 model SavedProject {
   id        String   @id @default(uuid())
   userId    String
   projectId String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, projectId]) // Un utilisateur ne peut enregistrer un projet qu'une seule fois
+  @@unique([userId, projectId])
 }

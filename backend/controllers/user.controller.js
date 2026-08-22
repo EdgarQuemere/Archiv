@@ -41,7 +41,7 @@ exports.updateProfile = async (req, res) => {
 
     // Si une image a été uploadée, on met à jour l'URL
     if (req.file) {
-      updateData.profilePicture = `/uploads/${req.file.filename}`;
+      updateData.profilePicture = req.file.location;
     }
 
     const user = await prisma.user.update({

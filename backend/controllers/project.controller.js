@@ -56,12 +56,12 @@ exports.createProject = async (req, res) => {
         type,
         school,
         year: parseInt(year),
-        domain,
+        domain: { connectOrCreate: { where: { name: domain }, create: { name: domain } } },
         pdfUrl,
         pdfSize,
         coverUrl,
         allowDownload: isDownloadAllowed,
-        userId: req.userId 
+        author: { connect: { id: req.userId } } 
       }
     });
 
@@ -102,6 +102,9 @@ exports.getProjects = async (req, res) => {
         coverUrl: true,
         userId: true,
         createdAt: true,
+        pdfSize: true,
+        pdfUrl: true,
+        allowDownload: true,
         author: {
           select: { firstName: true, lastName: true, profilePicture: true, isOmniscient: true }
         }
@@ -138,7 +141,10 @@ exports.updateProject = async (req, res) => {
       return res.status(403).json({ error: 'Action non autorisée. Vous n\'êtes pas le créateur de ce projet.' });
     }
 
-    let updateData = { title, description, type, school, domain };
+    let updateData = { title, description, type, school };
+    if (domain) {
+      updateData.domain = { connectOrCreate: { where: { name: domain }, create: { name: domain } } };
+    }
     if (year) updateData.year = parseInt(year);
     if (req.body.allowDownload !== undefined) {
       updateData.allowDownload = req.body.allowDownload === 'true' || req.body.allowDownload === true;
