@@ -348,7 +348,7 @@ export function App() {
   }
 
   return (
-    <div className="font-sans text-[#111111] bg-[#EEEEEE] min-h-screen relative overflow-hidden h-screen" onMouseMove={handleMouseMove}>
+    <div className="w-screen h-screen overflow-hidden relative font-sans select-none bg-[#EEEEEE] text-[#111111]">
       <SEO />
       
       {/* Top Navbar */}
