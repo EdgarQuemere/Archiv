@@ -3,6 +3,7 @@ import { X, LogIn } from 'lucide-react';
 import gsap from 'gsap';
 import { AuthContext } from '../../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import api from '../../api/axios';
 
 const IconEye = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>

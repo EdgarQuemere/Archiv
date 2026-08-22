@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Upload, CheckCircle2, Sparkles, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { pdfjs } from 'react-pdf';
-import { SCHOOLS_LIST } from '../data/coversData';
+import { SCHOOLS_LIST } from '../utils/constants';
 import api from '../api/axios'; // Import de l'instance axios avec credentials
 
 // Configuration du worker avec un fichier local (.js) pour éviter l'erreur MIME .mjs sur Coolify
@@ -17,6 +17,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     type: 'Mémoire',
     domain: 'Design Graphique',
     description: '',
+    allowDownload: true,
   });
 
   const [files, setFiles] = useState({
@@ -44,6 +45,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
           type: editData.type || 'Mémoire',
           domain: editData.field || '',
           description: editData.description || '',
+          allowDownload: editData.allowDownload !== undefined ? editData.allowDownload : true,
         });
       } else {
         setFormData({
@@ -53,6 +55,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
           type: 'Mémoire',
           domain: 'Design Graphique',
           description: '',
+          allowDownload: true,
         });
       }
       setUploadProgress(0);
@@ -164,6 +167,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     submitData.append('year', formData.year);
     submitData.append('domain', formData.domain);
     submitData.append('description', formData.description);
+    submitData.append('allowDownload', formData.allowDownload);
 
     if (files.pdf) {
       submitData.append('pdf', files.pdf);
@@ -421,6 +425,19 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   )}
                 </div>
               </div>
+            </div>
+
+            <div className="flex items-center gap-2 mt-4">
+              <input
+                type="checkbox"
+                id="allowDownload"
+                checked={formData.allowDownload}
+                onChange={(e) => setFormData({ ...formData, allowDownload: e.target.checked })}
+                className="w-4 h-4 rounded border-[#111111] text-[#111111] focus:ring-[#111111] accent-[#111111] cursor-pointer"
+              />
+              <label htmlFor="allowDownload" className="text-xs sm:text-sm font-medium text-[#111111] cursor-pointer select-none">
+                Autoriser le téléchargement du projet
+              </label>
             </div>
 
             <div className="pt-3 border-t-[1.5px] border-[#111111] mt-4">

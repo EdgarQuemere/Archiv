@@ -54,6 +54,19 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   
   const isSaved = user?.savedProjects?.some(sp => sp.projectId === item?.id);
 
+  const handleDownload = async () => {
+    try {
+      if (!item.allowDownload) return alert("Le téléchargement n'est pas autorisé par l'auteur.");
+      const res = await api.post(`/projects/${item.id}/download`);
+      if (res.data && res.data.pdfUrl) {
+        window.open(res.data.pdfUrl, '_blank');
+      }
+    } catch (error) {
+      console.error("Erreur de téléchargement", error);
+      alert(error.response?.data?.error || "Erreur lors du téléchargement.");
+    }
+  };
+
   const toggleSave = async () => {
     if (!user) return alert("Vous devez être connecté pour enregistrer un projet.");
     try {
@@ -135,19 +148,25 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     return () => el.removeEventListener('scroll', handleScroll);
   }, [numPages]);
 
-  useLayoutEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    const targetRef = pageRefs.current[currentPage - 1];
+  useEffect(() => {
     const container = scrollContainerRef.current;
-    if (targetRef && targetRef.current && container) {
-      const activeElem = targetRef.current;
-      const targetScrollTop = activeElem.offsetTop + focalRatioRef.current * activeElem.clientHeight - container.clientHeight / 2;
-      container.scrollTop = targetScrollTop;
-    }
-  }, [zoomLevel, viewMode]);
+    const content = container?.firstElementChild;
+    if (!container || !content) return;
+
+    const observer = new ResizeObserver(() => {
+      if (isNavigatingRef.current) return;
+      
+      const targetRef = pageRefs.current[currentPage - 1];
+      if (targetRef && targetRef.current) {
+        const activeElem = targetRef.current;
+        const targetScrollTop = activeElem.offsetTop + focalRatioRef.current * activeElem.clientHeight - container.clientHeight / 2;
+        container.scrollTop = targetScrollTop;
+      }
+    });
+
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [currentPage]);
 
   const scrollToPage = (pageNumber) => {
     isNavigatingRef.current = true;
@@ -324,17 +343,16 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             </button>
 
             {/* Download Button */}
-            <a
-              href={item.pdfUrl}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-9 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
-              title={`Télécharger le PDF (${item.pdfSize || '12.0 mo'})`}
-            >
-              <span>Télécharger</span>
-              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
-            </a>
+            {item.allowDownload && (
+              <button
+                onClick={handleDownload}
+                className="h-9 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
+                title={`Télécharger le PDF`}
+              >
+                <span>Télécharger {item.pdfSize ? `(${item.pdfSize})` : ''}</span>
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+              </button>
+            )}
 
             {/* Bookmark / Save Button */}
             <button
@@ -373,18 +391,18 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             ref={scrollContainerRef}
             className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] py-20 sm:py-28 pb-32 px-3 sm:px-8"
           >
-            <div className="w-max min-w-full mx-auto flex flex-col items-center space-y-6 sm:space-y-8 transition-all duration-300 ease-out">
+            <div className="w-max min-w-full mx-auto flex flex-col items-center space-y-6 sm:space-y-8">
               {spreads.map((pages, spreadIdx) => {
                 return (
                   <div
                     key={spreadIdx}
-                    className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0 transition-all duration-300 ease-out`}
+                    className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0`}
                   >
                     {pages.map((pageNum) => (
                       <div
                         key={pageNum}
                         ref={pageRefs.current[pageNum - 1]}
-                        className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0 transition-all duration-300 ease-out`}
+                        className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0`}
                       >
                         <Page
                           pageNumber={pageNum}

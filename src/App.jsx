@@ -12,8 +12,10 @@ import { ProjectDetailView } from './components/ProjectDetailView';
 import { SubmitModal } from './components/SubmitModal';
 import { LoginModal } from './components/auth/LoginModal';
 import { RegisterModal } from './components/auth/RegisterModal';
+import { ResetPassword } from './components/auth/ResetPassword';
 import { OmniscientCallback } from './components/auth/OmniscientCallback';
 import AdminDashboard from './components/admin/AdminDashboard';
+import { MentionsLegales } from './components/MentionsLegales';
 import { AuthContext } from './context/AuthContext';
 import axios from './api/axios';
 import { Toaster } from 'sonner';
@@ -303,7 +305,7 @@ export function App() {
   const dynamicYears = useMemo(() => {
     const years = new Set(covers.map(c => c.year).filter(Boolean));
     // Sort years descending (newest first)
-    return ['Toutes', ...Array.from(years).sort((a, b) => b.localeCompare(a))];
+    return ['Toutes', ...Array.from(years).sort((a, b) => String(b).localeCompare(String(a)))];
   }, [covers]);
 
   const dynamicTypes = useMemo(() => {
@@ -321,8 +323,17 @@ export function App() {
     return <OmniscientCallback />;
   }
 
+  if (window.location.pathname.startsWith('/reset-password/')) {
+    const token = window.location.pathname.split('/').pop();
+    return <ResetPassword token={token} />;
+  }
+
   if (window.location.pathname === '/admin') {
     return <AdminDashboard />;
+  }
+
+  if (window.location.pathname === '/mentions-legales') {
+    return <MentionsLegales />;
   }
 
   return (
@@ -345,7 +356,10 @@ export function App() {
           }
         }}
         onOpenLogin={() => setIsLoginOpen(true)}
-        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenProfile={() => {
+          if (user) setIsProfileOpen(true);
+          else setIsLoginOpen(true);
+        }}
         isProfileOpen={isProfileOpen}
         user={user}
         logout={logout}
@@ -436,7 +450,10 @@ export function App() {
         <ProjectDetailView
           item={selectedCard}
           onClose={() => setSelectedCard(null)}
-          onOpenProfile={() => setIsProfileOpen(true)}
+          onOpenProfile={() => {
+          if (user) setIsProfileOpen(true);
+          else setIsLoginOpen(true);
+        }}
           onOpenLogin={() => setIsLoginOpen(true)}
           onOpenInfo={() => setIsInfoOpen(true)}
           onOpenPublicProfile={(userId) => {
@@ -451,8 +468,12 @@ export function App() {
         isOpen={isInfoOpen}
         onClose={() => setIsInfoOpen(false)}
         user={user}
-        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenProfile={() => {
+          if (user) setIsProfileOpen(true);
+          else setIsLoginOpen(true);
+        }}
         onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenMentions={() => window.location.href = '/mentions-legales'}
       />
 
       {/* Profile Drawer (Own Profile) */}
@@ -481,7 +502,10 @@ export function App() {
         user={user}
         covers={covers}
         onOpenInfo={() => setIsInfoOpen(true)}
-        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenProfile={() => {
+          if (user) setIsProfileOpen(true);
+          else setIsLoginOpen(true);
+        }}
         onOpenLogin={() => setIsLoginOpen(true)}
         onSelectProject={(project) => {
           setSelectedCard(project);

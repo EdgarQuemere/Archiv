@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Save, User, Globe, Mail, Lock, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
-import { SCHOOLS_LIST } from '../data/coversData';
+import { SCHOOLS_LIST } from '../utils/constants';
 import { toast } from 'sonner';
 
 /* Phosphor SVG Icon Components matching ProfileDrawer */

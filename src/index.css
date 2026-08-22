@@ -5,7 +5,7 @@
 @layer base {
   body {
     background-color: #EEEEEE;
-    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 500;
     color: #111111;
     user-select: none;
@@ -79,7 +79,7 @@
   border: 1.5px solid #111111 !important;
   border-radius: 14px !important;
   box-shadow: 0 4px 16px rgba(17, 17, 17, 0.12) !important;
-  font-family: 'Satoshi', 'Inter', -apple-system, sans-serif !important;
+  font-family: 'Satoshi', -apple-system, sans-serif !important;
   font-size: 15px !important;
   font-weight: 500 !important;
   padding: 14px 20px !important;

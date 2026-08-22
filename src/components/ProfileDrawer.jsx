@@ -9,7 +9,6 @@ import { EditProfileModal } from './EditProfileModal';
 import { LogoutConfirmModal } from './LogoutConfirmModal';
 import { DeleteAccountReasonModal } from './DeleteAccountReasonModal';
 import { DeleteAccountConfirmModal } from './DeleteAccountConfirmModal';
-import { MOCK_USER_PROFILE, MOCK_USER_PROJECTS, MOCK_SAVED_PROJECTS } from '../data/mockProfile';
 
 /* Custom Phosphor Profile User SVG provided by USER */
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
@@ -86,19 +85,16 @@ export function ProfileDrawer({
 }) {
   const { deleteAccount, setUser } = useContext(AuthContext);
   const containerRef = useRef(null);
-  
+
   // Profile Data State (Fallback to Mock profile if user is null)
-  const [profileData, setProfileData] = useState(user || MOCK_USER_PROFILE);
+  const [profileData, setProfileData] = useState(user || {});
 
   // Sync profileData when live user changes
   useEffect(() => {
     if (user) {
-      setProfileData({
-        ...MOCK_USER_PROFILE,
-        ...user
-      });
+      setProfileData(user);
     } else {
-      setProfileData(MOCK_USER_PROFILE);
+      setProfileData({});
     }
   }, [user]);
 
@@ -114,26 +110,25 @@ export function ProfileDrawer({
   // Local Mock Projects & Saved Projects
   const [userProjects, setUserProjects] = useState(() => {
     if (user) {
-      const liveProjects = covers.filter(c => c.userId === user.id);
-      return liveProjects.length > 0 ? liveProjects : MOCK_USER_PROJECTS;
+      return covers.filter(c => c.userId === user.id);
     }
-    return MOCK_USER_PROJECTS;
+    return [];
   });
 
   const [savedProjects, setSavedProjects] = useState(() => {
-    if (user?.savedProjects) {
-      const liveSaved = user.savedProjects.map(sp => sp.project).filter(Boolean);
-      return liveSaved.length > 0 ? liveSaved : MOCK_SAVED_PROJECTS;
+    if (user) {
+      return user.savedProjects ? user.savedProjects.map(sp => sp.project).filter(Boolean) : [];
     }
-    return MOCK_SAVED_PROJECTS;
+    return [];
   });
 
   useEffect(() => {
     if (user) {
-      const liveProjects = covers.filter(c => c.userId === user.id);
-      setUserProjects(liveProjects.length > 0 ? liveProjects : MOCK_USER_PROJECTS);
-      const liveSaved = user?.savedProjects ? user.savedProjects.map(sp => sp.project).filter(Boolean) : [];
-      setSavedProjects(liveSaved.length > 0 ? liveSaved : MOCK_SAVED_PROJECTS);
+      setUserProjects(covers.filter(c => c.userId === user.id));
+      setSavedProjects(user?.savedProjects ? user.savedProjects.map(sp => sp.project).filter(Boolean) : []);
+    } else {
+      setUserProjects([]);
+      setSavedProjects([]);
     }
   }, [user, covers]);
 
@@ -173,7 +168,7 @@ export function ProfileDrawer({
       const formData = new FormData();
       formData.append('profilePicture', croppedFile);
       setIsUploadingAvatar(true);
-      
+
       toast.promise(
         api.put('/users/me', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
         {
@@ -208,9 +203,9 @@ export function ProfileDrawer({
 
   const handleClose = () => {
     if (containerRef.current) {
-      gsap.to(containerRef.current, { 
-        opacity: 0, 
-        duration: 0.2, 
+      gsap.to(containerRef.current, {
+        opacity: 0,
+        duration: 0.2,
         ease: 'power2.in',
         onComplete: () => onClose()
       });
@@ -290,18 +285,18 @@ export function ProfileDrawer({
 
   return (
     <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
-      
+
       {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={handleClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
-          <img 
-            src="/artchiv-logo.webp" 
-            alt="Artchiv" 
-            className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block" 
+          <img
+            src="/artchiv-logo.webp"
+            alt="Artchiv"
+            className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
           />
         </picture>
-        <button 
+        <button
           onClick={() => {
             handleClose();
             onOpenInfo?.();
@@ -311,7 +306,7 @@ export function ProfileDrawer({
         >
           <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>
-        <button 
+        <button
           className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm"
           title="Mon Profil"
         >
@@ -320,7 +315,7 @@ export function ProfileDrawer({
       </div>
 
       {/* TOP RIGHT CLOSE BUTTON (Matching Navbar.jsx position) */}
-      <button 
+      <button
         onClick={handleClose}
         className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center hover:bg-[#111111] hover:text-[#EEEEEE] transition-colors shadow-sm"
         title="Fermer"
@@ -333,34 +328,34 @@ export function ProfileDrawer({
 
       {/* MAIN CONTENT AREA: SCROLLABLE ON MOBILE, 2-COLUMN LAYOUT ON DESKTOP */}
       <div className="flex flex-col md:flex-row h-full w-full overflow-y-auto md:overflow-hidden">
-        
+
         {/* LEFT COLUMN - USER PROFILE INFO */}
         <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-4 xs:p-6 md:p-6 md:pl-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
-          
+
           <div className="max-w-md space-y-5 xs:space-y-6 sm:space-y-7">
             {/* Avatar (NO stroke/border) */}
-            <div 
-              className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]" 
+            <div
+              className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]"
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
               onDrop={handleAvatarDrop}
             >
-              <img 
-                src={profileData.profilePicture || '/page-profile-test-front/edgar-avatar.jpg'} 
-                alt="Avatar" 
-                className="w-full h-full object-cover" 
+              <img
+                src={profileData.profilePicture || '/page-profile-test-front/edgar-avatar.jpg'}
+                alt="Avatar"
+                className="w-full h-full object-cover"
               />
-              
+
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
                 <UploadCloud className="w-5 h-5 mb-0.5" />
                 <span className="text-[9px] font-bold uppercase text-center leading-tight">Glisser / Modifier</span>
               </div>
-              
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/*" 
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
                 onChange={handleAvatarSelect}
                 disabled={isUploadingAvatar}
               />
@@ -371,11 +366,11 @@ export function ProfileDrawer({
               <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
                 <span>{profileData.firstName} {profileData.lastName}</span>
                 {profileData.isOmniscient && (
-                  <img 
-                    src="/logo-od.svg" 
-                    alt="Omniscient Design" 
-                    className="h-5 w-auto inline-block align-middle shrink-0 ml-0.5" 
-                    title="Membre Omniscient Design" 
+                  <img
+                    src="/logo-od.svg"
+                    alt="Omniscient Design"
+                    className="h-5 w-auto inline-block align-middle shrink-0 ml-0.5"
+                    title="Membre Omniscient Design"
                   />
                 )}
               </h1>
@@ -396,9 +391,9 @@ export function ProfileDrawer({
             {/* Social Links (User-provided Phosphor SVGs) */}
             <div className="flex items-center gap-5 pt-1">
               {profileData.behanceLink && profileData.behanceLink !== '#' && (
-                <a 
-                  href={profileData.behanceLink} 
-                  target="_blank" 
+                <a
+                  href={profileData.behanceLink}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#111111] hover:opacity-75 transition-opacity"
                   title="Behance"
@@ -407,9 +402,9 @@ export function ProfileDrawer({
                 </a>
               )}
               {profileData.instaLink && profileData.instaLink !== '#' && (
-                <a 
-                  href={profileData.instaLink} 
-                  target="_blank" 
+                <a
+                  href={profileData.instaLink}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#111111] hover:opacity-75 transition-opacity"
                   title="Instagram"
@@ -418,9 +413,9 @@ export function ProfileDrawer({
                 </a>
               )}
               {profileData.personalLink && profileData.personalLink !== '#' && (
-                <a 
-                  href={profileData.personalLink} 
-                  target="_blank" 
+                <a
+                  href={profileData.personalLink}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#111111] hover:opacity-75 transition-opacity"
                   title="Portfolio Link"
@@ -432,7 +427,7 @@ export function ProfileDrawer({
 
             {/* ACTION BUTTONS ROW (User-provided Phosphor SVGs) */}
             <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 pt-1">
-              <button 
+              <button
                 onClick={() => setIsEditModalOpen(true)}
                 className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-xs xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
@@ -440,7 +435,7 @@ export function ProfileDrawer({
                 <IconPencil className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
               </button>
 
-              <button 
+              <button
                 onClick={() => setIsLogoutModalOpen(true)}
                 className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-xs xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
@@ -448,7 +443,7 @@ export function ProfileDrawer({
                 <IconLogOut className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
               </button>
 
-              <button 
+              <button
                 onClick={() => setIsDeleteReasonModalOpen(true)}
                 className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-xs xs:text-base font-medium text-[#FF0000] flex items-center gap-2 transition-colors cursor-pointer"
               >
@@ -462,17 +457,16 @@ export function ProfileDrawer({
 
         {/* RIGHT COLUMN - DOCUMENTS / ENREGISTREMENTS */}
         <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col pt-8 md:pt-28 pb-10 md:pb-0 px-4 xs:px-6 md:pl-6 md:pr-14 md:overflow-hidden bg-[#EEEEEE]">
-          
+
           {/* SEGMENTED SWITCH CONTROL */}
           <div className="mb-5 xs:mb-6 flex items-center justify-start shrink-0">
             <div className="h-9 xs:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] inline-flex items-center rounded-full overflow-hidden p-0 shadow-sm">
-              <button 
+              <button
                 onClick={() => setActiveTab('documents')}
-                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${
-                  activeTab === 'documents' 
-                    ? 'bg-[#111111] text-[#EEEEEE]' 
+                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'documents'
+                    ? 'bg-[#111111] text-[#EEEEEE]'
                     : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-                }`}
+                  }`}
               >
                 <span className="inline sm:hidden">Documents ({userProjects.length})</span>
                 <span className="hidden sm:inline">Mes documents ({userProjects.length})</span>
@@ -481,16 +475,15 @@ export function ProfileDrawer({
 
               <div className="w-[1.5px] h-full bg-[#111111]" />
 
-              <button 
+              <button
                 onClick={() => setActiveTab('enregistrements')}
-                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${
-                  activeTab === 'enregistrements' 
-                    ? 'bg-[#111111] text-[#EEEEEE]' 
+                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'enregistrements'
+                    ? 'bg-[#111111] text-[#EEEEEE]'
                     : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-                }`}
+                  }`}
               >
-                <span className="inline sm:hidden">Enregistrements ({savedProjects.length || 34})</span>
-                <span className="hidden sm:inline">Mes enregistrements ({savedProjects.length || 34})</span>
+                <span className="inline sm:hidden">Enregistrements ({savedProjects.length || 0})</span>
+                <span className="hidden sm:inline">Mes enregistrements ({savedProjects.length || 0})</span>
                 <IconBookmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
@@ -499,7 +492,7 @@ export function ProfileDrawer({
           {/* CTA "AJOUTER MON TRAVAIL" */}
           {activeTab === 'documents' && (
             <div className="mb-6 xs:mb-8 flex items-center justify-start shrink-0">
-              <button 
+              <button
                 onClick={() => onOpenSubmit?.()}
                 className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
               >
@@ -522,16 +515,16 @@ export function ProfileDrawer({
                     {/* Cover Thumbnail (No stroke/border) */}
                     <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
                       {project.coverUrl ? (
-                        <img 
-                          src={project.coverUrl} 
-                          alt={project.title} 
-                          className="w-full h-auto object-contain block" 
+                        <img
+                          src={project.coverUrl}
+                          alt={project.title}
+                          className="w-full h-auto object-contain block"
                         />
                       ) : (
                         <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
                       )}
                     </div>
-                    
+
                     {/* Cover Details */}
                     <div className="flex-1 flex flex-col justify-end py-1">
                       <div>
@@ -550,13 +543,13 @@ export function ProfileDrawer({
                       <div className="flex items-center gap-3">
                         {deletingId === project.id ? (
                           <div className="flex items-center gap-2">
-                            <button 
+                            <button
                               onClick={() => handleDeleteProjectItem(project.id)}
                               className="h-10 px-5 rounded-full bg-red-600 text-white text-base font-medium border border-[#111111] hover:bg-red-700"
                             >
                               Confirmer
                             </button>
-                            <button 
+                            <button
                               onClick={() => setDeletingId(null)}
                               className="h-10 px-5 rounded-full bg-[#EEEEEE] text-[#111111] text-base font-medium border border-[#111111] hover:bg-[#E2E2E2]"
                             >
@@ -565,14 +558,14 @@ export function ProfileDrawer({
                           </div>
                         ) : (
                           <>
-                            <button 
+                            <button
                               onClick={() => onEditProject && onEditProject(project)}
                               className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer"
                             >
                               <span>Modifier</span>
                               <IconPencil className="w-4 h-4" />
                             </button>
-                            <button 
+                            <button
                               onClick={() => setDeletingId(project.id)}
                               className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
                             >
@@ -601,7 +594,7 @@ export function ProfileDrawer({
                         <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 flex flex-col justify-end py-1">
                       <div>
                         <h3 className="text-xl font-bold text-[#111111] mb-2 leading-snug">
@@ -616,7 +609,7 @@ export function ProfileDrawer({
                       </div>
 
                       <div>
-                        <button 
+                        <button
                           onClick={() => handleRemoveSavedProject(project.id)}
                           className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
                         >
@@ -632,7 +625,7 @@ export function ProfileDrawer({
           </div>
         </div>
       </div>
-      
+
       {/* Edit Profile Modal */}
       <EditProfileModal
         isOpen={isEditModalOpen}

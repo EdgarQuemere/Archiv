@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { AuthContext } from '../../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { SCHOOLS_LIST } from '../../data/coversData';
+import { SCHOOLS_LIST } from '../../utils/constants';
 
 const IconEye = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
