@@ -40,7 +40,7 @@ export function Navbar({
 
   return (
     <>
-      <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-40 flex items-center justify-between gap-2 sm:gap-3.5 pointer-events-none font-sans max-w-full">
+      <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-50 flex items-center justify-between gap-2 sm:gap-3.5 pointer-events-none font-sans max-w-full">
         {/* Top Left Buttons Group */}
         <div className="flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto shrink-0">
           {/* Logo (Condensé sur mobile, Grand sur desktop) */}

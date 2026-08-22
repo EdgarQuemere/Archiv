@@ -101,11 +101,11 @@ export function FilterDrawer({
     : ['Toutes', '2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018'];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden font-sans flex justify-center sm:justify-end items-center sm:items-start p-3 sm:p-6 pointer-events-none">
-      {/* Backdrop Overlay */}
+    <div className="fixed inset-0 z-40 overflow-hidden font-sans flex justify-center sm:justify-end items-center sm:items-start p-3 sm:p-6 pointer-events-none">
+      {/* Backdrop Overlay (Behind Navbar at z-30) */}
       <div
         ref={backdropRef}
-        className="fixed inset-0 bg-black/20 backdrop-blur-xs transition-opacity pointer-events-auto"
+        className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm transition-opacity pointer-events-auto"
         onClick={handleClose}
       />
 
