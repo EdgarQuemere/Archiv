@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { toast } from 'sonner';
+import api from '../../api/axios';
 import { 
   Users, FolderGit2, Globe, TrendingUp, Search, 
-  Trash2, ChevronRight, Activity, LogOut, ArrowLeft 
+  Trash2, ChevronRight, Activity, LogOut, ArrowLeft, Ban 
 } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -26,29 +27,43 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       const [statsRes, usersRes, projectsRes] = await Promise.all([
-        axios.get('http://localhost:3000/api/admin/stats', { withCredentials: true }),
-        axios.get('http://localhost:3000/api/admin/users', { withCredentials: true }),
-        axios.get('http://localhost:3000/api/admin/projects', { withCredentials: true })
+        api.get('/admin/stats'),
+        api.get('/admin/users'),
+        api.get('/admin/projects')
       ]);
       setStats(statsRes.data);
-      setUsers(usersRes.data);
+      setUsers(usersRes.data.users || []);
       setProjects(projectsRes.data);
     } catch (err) {
       console.error(err);
       setError("Impossible de charger les données administrateur.");
+      toast.error("Erreur lors du chargement des données.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteUser = async (id) => {
-    if (!window.confirm("Supprimer cet utilisateur ? Tous ses projets seront perdus !")) return;
+    if (!window.confirm("Voulez-vous vraiment supprimer cet utilisateur ? Tous ses projets seront perdus.")) return;
     try {
-      await axios.delete(`http://localhost:3000/api/admin/users/${id}`, { withCredentials: true });
+      await api.delete(`/admin/users/${id}`);
       setUsers(users.filter(u => u.id !== id));
       setStats(prev => ({ ...prev, totalUsers: prev.totalUsers - 1 }));
+      toast.success("Utilisateur supprimé avec succès.");
     } catch (err) {
-      alert("Erreur lors de la suppression");
+      toast.error("Erreur lors de la suppression de l'utilisateur.");
+    }
+  };
+
+  const handleToggleBan = async (id, currentStatus) => {
+    const action = currentStatus ? 'débannir' : 'bannir';
+    if (!window.confirm(`Voulez-vous vraiment ${action} cet utilisateur ?`)) return;
+    try {
+      const res = await api.patch(`/admin/users/${id}/ban`);
+      setUsers(users.map(u => u.id === id ? { ...u, isBanned: res.data.isBanned } : u));
+      toast.success(`Utilisateur ${res.data.isBanned ? 'banni' : 'débanni'} avec succès.`);
+    } catch (err) {
+      toast.error(`Erreur lors du ${currentStatus ? 'débannissement' : 'bannissement'}.`);
     }
   };
 
@@ -71,13 +86,14 @@ const AdminDashboard = () => {
   }
 
   const handleDeleteProject = async (id) => {
-    if (!window.confirm("Supprimer ce projet définitivement ?")) return;
+    if (!window.confirm("Voulez-vous vraiment supprimer ce projet définitivement ?")) return;
     try {
-      await axios.delete(`http://localhost:3000/api/admin/projects/${id}`, { withCredentials: true });
+      await api.delete(`/admin/projects/${id}`);
       setProjects(projects.filter(p => p.id !== id));
       setStats(prev => ({ ...prev, totalProjects: prev.totalProjects - 1 }));
+      toast.success("Projet supprimé avec succès.");
     } catch (err) {
-      alert("Erreur lors de la suppression");
+      toast.error("Erreur lors de la suppression du projet.");
     }
   };
 
@@ -220,6 +236,7 @@ const AdminDashboard = () => {
                       <th className="px-6 py-4 font-medium">Email</th>
                       <th className="px-6 py-4 font-medium">École</th>
                       <th className="px-6 py-4 font-medium text-center">Projets</th>
+                      <th className="px-6 py-4 font-medium text-center">Statut</th>
                       <th className="px-6 py-4 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
@@ -243,15 +260,36 @@ const AdminDashboard = () => {
                             {u._count?.projects || 0}
                           </span>
                         </td>
+                        <td className="px-6 py-4 text-center">
+                          {u.isBanned ? (
+                            <span className="inline-flex px-2 py-1 text-[10px] rounded-full bg-red-100 text-red-600 font-bold uppercase tracking-wider">
+                              Banni
+                            </span>
+                          ) : (
+                            <span className="inline-flex px-2 py-1 text-[10px] rounded-full bg-emerald-100 text-emerald-600 font-bold uppercase tracking-wider">
+                              Actif
+                            </span>
+                          )}
+                        </td>
                         <td className="px-6 py-4 text-right">
-                          <button 
-                            onClick={() => handleDeleteUser(u.id)}
-                            disabled={u.isAdmin}
-                            className={`p-2 rounded-md transition-colors ${u.isAdmin ? 'opacity-30 cursor-not-allowed' : 'text-red-600 hover:bg-red-50'}`}
-                            title="Supprimer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            <button 
+                              onClick={() => handleToggleBan(u.id, u.isBanned)}
+                              disabled={u.isAdmin}
+                              className={`p-2 rounded-md transition-colors ${u.isAdmin ? 'opacity-30 cursor-not-allowed' : (u.isBanned ? 'text-emerald-600 hover:bg-emerald-50' : 'text-orange-600 hover:bg-orange-50')}`}
+                              title={u.isBanned ? "Débannir" : "Bannir"}
+                            >
+                              <Ban className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteUser(u.id)}
+                              disabled={u.isAdmin}
+                              className={`p-2 rounded-md transition-colors ${u.isAdmin ? 'opacity-30 cursor-not-allowed' : 'text-red-600 hover:bg-red-50'}`}
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

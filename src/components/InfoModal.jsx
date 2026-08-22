@@ -105,7 +105,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           {/* Edgar Quéméré */}
           <div className="flex flex-col items-start w-[30%]">
             <img
-              src="/page_info/photo_Edgar.webp"
+              src="/page_info/photo_edgar.webp"
               alt="Edgar Quéméré"
               className="w-full aspect-square object-cover rounded-[10px] grayscale border-0 shadow-sm"
             />
@@ -137,7 +137,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           {/* Thomas Riquier */}
           <div className="flex flex-col items-start w-[30%]">
             <img
-              src="/page_info/Photo_Thomas.webp"
+              src="/page_info/photo_thomas.webp"
               alt="Thomas Riquier"
               className="w-full aspect-square object-cover rounded-[10px] grayscale border-0 shadow-sm"
             />
@@ -215,7 +215,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               className="hover:opacity-80 transition-opacity"
             >
               <img
-                src="/page_info/Logo_Omniscient_project_gauche.png"
+                src="/page_info/logo_omniscient_project_gauche.png"
                 alt="Omniscient Project"
                 className="h-8 w-auto object-contain"
               />
@@ -284,7 +284,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               className="hover:opacity-80 transition-opacity"
             >
               <img
-                src="/page_info/Logo_Omniscient_project_gauche.png"
+                src="/page_info/logo_omniscient_project_gauche.png"
                 alt="Omniscient Project"
                 className="h-9 w-auto object-contain"
               />
@@ -311,7 +311,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         {/* Edgar Quéméré */}
         <div className="flex flex-col items-start">
           <img
-            src="/page_info/photo_Edgar.webp"
+            src="/page_info/photo_edgar.webp"
             alt="Edgar Quéméré"
             className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
           />
@@ -343,7 +343,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         {/* Thomas Riquier */}
         <div className="flex flex-col items-start">
           <img
-            src="/page_info/Photo_Thomas.webp"
+            src="/page_info/photo_thomas.webp"
             alt="Thomas Riquier"
             className="w-32 h-32 object-cover rounded-[10px] grayscale border-0 shadow-sm"
           />
