@@ -45,9 +45,9 @@ export function Navbar({
         <div className="flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto shrink-0">
           {/* Logo (Condensé sur mobile, Grand sur desktop) */}
           <picture onClick={() => setActiveView && setActiveView('canvas')} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
-            <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
+            <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
             <img
-              src="/Artchiv-logo.webp"
+              src="/artchiv-logo.webp"
               alt="Artchiv"
               className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
             />

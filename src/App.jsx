@@ -58,7 +58,7 @@ export function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isPublicProfileOpen, setIsPublicProfileOpen] = useState(false);
-  const [publicProfileAuthor, setPublicProfileAuthor] = useState(null);
+  const [publicProfileUserId, setPublicProfileUserId] = useState(null);
 
   useEffect(() => {
     if (window.location.search.includes('complete_profile=true')) {
@@ -412,8 +412,8 @@ export function App() {
           onOpenProfile={() => setIsProfileOpen(true)}
           onOpenLogin={() => setIsLoginOpen(true)}
           onOpenInfo={() => setIsInfoOpen(true)}
-          onOpenPublicProfile={(authorName) => {
-            setPublicProfileAuthor(authorName);
+          onOpenPublicProfile={(userId) => {
+            setPublicProfileUserId(userId);
             setIsPublicProfileOpen(true);
           }}
         />
@@ -449,7 +449,7 @@ export function App() {
       <PublicProfileDrawer
         isOpen={isPublicProfileOpen}
         onClose={() => setIsPublicProfileOpen(false)}
-        authorName={publicProfileAuthor}
+        userId={publicProfileUserId}
         user={user}
         covers={covers}
         onOpenInfo={() => setIsInfoOpen(true)}

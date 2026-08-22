@@ -287,9 +287,9 @@ export function ProfileDrawer({
       {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={handleClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
-          <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
+          <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
           <img 
-            src="/Artchiv-logo.webp" 
+            src="/artchiv-logo.webp" 
             alt="Artchiv" 
             className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block" 
           />
@@ -388,33 +388,39 @@ export function ProfileDrawer({
 
             {/* Social Links (User-provided Phosphor SVGs) */}
             <div className="flex items-center gap-5 pt-1">
-              <a 
-                href={profileData.behanceLink || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#111111] hover:opacity-75 transition-opacity"
-                title="Behance"
-              >
-                <IconBehance className="w-5 h-5 xs:w-6 xs:h-6" />
-              </a>
-              <a 
-                href={profileData.instaLink || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#111111] hover:opacity-75 transition-opacity"
-                title="Instagram"
-              >
-                <IconInstagram className="w-5 h-5 xs:w-6 xs:h-6" />
-              </a>
-              <a 
-                href={profileData.personalLink || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#111111] hover:opacity-75 transition-opacity"
-                title="Portfolio Link"
-              >
-                <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
-              </a>
+              {profileData.behanceLink && profileData.behanceLink !== '#' && (
+                <a 
+                  href={profileData.behanceLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#111111] hover:opacity-75 transition-opacity"
+                  title="Behance"
+                >
+                  <IconBehance className="w-5 h-5 xs:w-6 xs:h-6" />
+                </a>
+              )}
+              {profileData.instaLink && profileData.instaLink !== '#' && (
+                <a 
+                  href={profileData.instaLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#111111] hover:opacity-75 transition-opacity"
+                  title="Instagram"
+                >
+                  <IconInstagram className="w-5 h-5 xs:w-6 xs:h-6" />
+                </a>
+              )}
+              {profileData.personalLink && profileData.personalLink !== '#' && (
+                <a 
+                  href={profileData.personalLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#111111] hover:opacity-75 transition-opacity"
+                  title="Portfolio Link"
+                >
+                  <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
+                </a>
+              )}
             </div>
 
             {/* ACTION BUTTONS ROW (User-provided Phosphor SVGs) */}

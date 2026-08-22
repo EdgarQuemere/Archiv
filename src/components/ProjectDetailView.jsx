@@ -240,9 +240,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       {/* TOP LEFT BUTTONS */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={onClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
-          <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
+          <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
           <img
-            src="/Artchiv-logo.webp"
+            src="/artchiv-logo.webp"
             alt="Artchiv"
             className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
           />
@@ -293,7 +293,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               </h1>
 
               <p className="text-xs sm:text-base font-medium mb-1 sm:mb-2 text-[#111111]">
-                par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(item.author)} className="underline cursor-pointer hover:opacity-80 font-bold">{item.author}</span>
+                par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(item.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{item.author}</span>
               </p>
 
               <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">

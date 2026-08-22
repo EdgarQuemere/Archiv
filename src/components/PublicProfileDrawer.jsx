@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Info } from 'lucide-react';
 import gsap from 'gsap';
-import { MOCK_USER_PROFILE, MOCK_USER_PROJECTS } from '../data/mockProfile';
+import api from '../api/axios';
 
 /* Custom Phosphor Profile User SVG provided by USER */
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
@@ -38,37 +38,18 @@ const IconDocument = ({ className = "w-4 h-4" }) => (
 export function PublicProfileDrawer({
   isOpen,
   onClose,
-  authorName,
+  userId,
   user,
   covers = [],
   onOpenInfo,
   onOpenProfile,
-  onOpenLogin
+  onOpenLogin,
+  onSelectProject
 }) {
   const containerRef = useRef(null);
-
-  // Derive author name and profile data (identical structure to ProfileDrawer)
-  const name = authorName || "Auteur";
-  const firstName = name.split(' ')[0] || name;
-  const lastName = name.split(' ').slice(1).join(' ') || '';
-
-  // Filter projects created by this author from covers or fallback to mock
-  const authorProjects = covers.filter(
-    c => c.author === name || (c.author && typeof c.author === 'object' && (c.author.name === name || `${c.author.firstName} ${c.author.lastName}` === name))
-  );
-  const userProjects = authorProjects.length > 0 ? authorProjects : MOCK_USER_PROJECTS;
-
-  const profileData = {
-    firstName: firstName,
-    lastName: lastName,
-    role: 'Enseignant',
-    currentSchool: userProjects[0]?.school || 'HEAR – Strasbourg',
-    profilePicture: userProjects[0]?.coverUrl || '/page-profile-test-front/edgar-avatar.jpg',
-    behanceLink: '#',
-    instaLink: '#',
-    personalLink: '#',
-    isOmniscient: false
-  };
+  
+  const [profileData, setProfileData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
@@ -77,8 +58,31 @@ export function PublicProfileDrawer({
         { opacity: 0 },
         { opacity: 1, duration: 0.25, ease: 'power2.out' }
       );
+      
+      if (userId) {
+        setIsLoading(true);
+        api.get(`/users/${userId}`)
+          .then(res => {
+            setProfileData(res.data);
+          })
+          .catch(err => {
+            console.error("Erreur lors du chargement du profil public :", err);
+            setProfileData(null); // Ensure it's null on error
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      } else {
+        setIsLoading(false);
+      }
+    } else {
+       // Reset state when closed
+       setTimeout(() => {
+         setProfileData(null);
+         setIsLoading(true); // reset loading for next time
+       }, 300);
     }
-  }, [isOpen]);
+  }, [isOpen, userId]);
 
   const handleClose = () => {
     if (containerRef.current) {
@@ -95,15 +99,44 @@ export function PublicProfileDrawer({
 
   if (!isOpen) return null;
 
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111] flex items-center justify-center" ref={containerRef}>
+        <span className="font-medium text-lg">Chargement du profil...</span>
+        <button onClick={handleClose} className="fixed top-6 right-6 z-50 p-2 hover:bg-[#E2E2E2] rounded-full transition-colors cursor-pointer border-[1.5px] border-[#111111]">
+          <X className="w-4 h-4 stroke-[2.25]" />
+        </button>
+      </div>
+    );
+  }
+
+  if (!profileData) {
+    return (
+      <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111] flex flex-col items-center justify-center" ref={containerRef}>
+        <span className="font-medium text-lg mb-4 text-red-500">Profil introuvable ou erreur de chargement.</span>
+        <button onClick={handleClose} className="px-6 py-2 border-[1.5px] border-[#111111] rounded-full hover:bg-[#E2E2E2] transition-colors font-medium">
+          Fermer
+        </button>
+        <button onClick={handleClose} className="fixed top-6 right-6 z-50 p-2 hover:bg-[#E2E2E2] rounded-full transition-colors cursor-pointer border-[1.5px] border-[#111111]">
+          <X className="w-4 h-4 stroke-[2.25]" />
+        </button>
+      </div>
+    );
+  }
+
+  const userProjects = profileData.projects || [];
+  const firstName = profileData.firstName || profileData.name?.split(' ')[0] || 'Auteur';
+  const lastName = profileData.lastName || profileData.name?.split(' ').slice(1).join(' ') || '';
+
   return (
     <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
       
       {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={handleClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
-          <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
+          <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
           <img 
-            src="/Artchiv-logo.webp" 
+            src="/artchiv-logo.webp" 
             alt="Artchiv" 
             className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block" 
           />
@@ -163,7 +196,7 @@ export function PublicProfileDrawer({
             {/* Name & Small Omniscient Design Logo */}
             <div className="flex items-center gap-2">
               <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
-                <span>{profileData.firstName} {profileData.lastName}</span>
+                <span>{firstName} {lastName}</span>
                 {profileData.isOmniscient && (
                   <img 
                     src="/logo-od.svg" 
@@ -183,33 +216,39 @@ export function PublicProfileDrawer({
 
             {/* Social Links (User-provided Phosphor SVGs) */}
             <div className="flex items-center gap-5 pt-1">
-              <a 
-                href={profileData.behanceLink || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#111111] hover:opacity-75 transition-opacity"
-                title="Behance"
-              >
-                <IconBehance className="w-5 h-5 xs:w-6 xs:h-6" />
-              </a>
-              <a 
-                href={profileData.instaLink || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#111111] hover:opacity-75 transition-opacity"
-                title="Instagram"
-              >
-                <IconInstagram className="w-5 h-5 xs:w-6 xs:h-6" />
-              </a>
-              <a 
-                href={profileData.personalLink || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#111111] hover:opacity-75 transition-opacity"
-                title="Portfolio Link"
-              >
-                <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
-              </a>
+              {profileData.behanceLink && profileData.behanceLink !== '#' && (
+                <a 
+                  href={profileData.behanceLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#111111] hover:opacity-75 transition-opacity"
+                  title="Behance"
+                >
+                  <IconBehance className="w-5 h-5 xs:w-6 xs:h-6" />
+                </a>
+              )}
+              {profileData.instaLink && profileData.instaLink !== '#' && (
+                <a 
+                  href={profileData.instaLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#111111] hover:opacity-75 transition-opacity"
+                  title="Instagram"
+                >
+                  <IconInstagram className="w-5 h-5 xs:w-6 xs:h-6" />
+                </a>
+              )}
+              {profileData.personalLink && profileData.personalLink !== '#' && (
+                <a 
+                  href={profileData.personalLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#111111] hover:opacity-75 transition-opacity"
+                  title="Portfolio Link"
+                >
+                  <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
+                </a>
+              )}
             </div>
 
           </div>
@@ -238,7 +277,30 @@ export function PublicProfileDrawer({
               userProjects.map((project) => (
                 <div key={project.id} className="flex flex-col sm:flex-row gap-8 items-end">
                   {/* Cover Thumbnail */}
-                  <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
+                  <div 
+                    className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => {
+                      if (onSelectProject) {
+                         const domainName = project.domain ? (project.domain.name || project.domain) : 'Inconnu';
+                         onSelectProject({
+                           id: project.id,
+                           title: project.title,
+                           author: `${firstName} ${lastName}`.trim(),
+                           school: project.school || profileData.currentSchool,
+                           year: project.year?.toString() || new Date(project.createdAt).getFullYear().toString(),
+                           type: project.type,
+                           field: domainName,
+                           description: project.description,
+                           coverUrl: project.coverUrl,
+                           imageUrl: project.coverUrl,
+                           pdfUrl: project.pdfUrl,
+                           pdfSize: project.pdfSize || 'Inconnu',
+                           userId: profileData.id,
+                           tags: []
+                         });
+                      }
+                    }}
+                  >
                     {project.coverUrl ? (
                       <img 
                         src={project.coverUrl} 
@@ -253,14 +315,37 @@ export function PublicProfileDrawer({
                   {/* Cover Details */}
                   <div className="flex-1 flex flex-col justify-end py-1">
                     <div>
-                      <h3 className="text-xl font-bold text-[#111111] mb-2 leading-snug">
+                      <h3 
+                        className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
+                        onClick={() => {
+                          if (onSelectProject) {
+                             const domainName = project.domain ? (project.domain.name || project.domain) : 'Inconnu';
+                             onSelectProject({
+                               id: project.id,
+                               title: project.title,
+                               author: `${firstName} ${lastName}`.trim(),
+                               school: project.school || profileData.currentSchool,
+                               year: project.year?.toString() || new Date(project.createdAt).getFullYear().toString(),
+                               type: project.type,
+                               field: domainName,
+                               description: project.description,
+                               coverUrl: project.coverUrl,
+                               imageUrl: project.coverUrl,
+                               pdfUrl: project.pdfUrl,
+                               pdfSize: project.pdfSize || 'Inconnu',
+                               userId: profileData.id,
+                               tags: []
+                             });
+                          }
+                        }}
+                      >
                         {project.title}
                       </h3>
                       <p className="text-base font-medium text-[#111111] mb-4">
-                        {project.school} – {project.year} – {project.type || 'Illustration'}
+                        {project.school || profileData.currentSchool} – {project.year?.toString() || new Date(project.createdAt).getFullYear()} – {project.type || (project.domain ? (project.domain.name || project.domain) : 'Illustration')}
                       </p>
-                      <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
-                        {project.description || "Création des principes virtuel réagisse la pression et à la vitesse du stylet pour une peinture numerique organique."}
+                      <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md line-clamp-3">
+                        {project.description || "Aucune description fournie."}
                       </p>
                     </div>
                   </div>
