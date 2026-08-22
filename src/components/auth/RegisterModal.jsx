@@ -73,10 +73,28 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
     if (isOpen) {
       const token = localStorage.getItem('omni_token');
       const partial = localStorage.getItem('omni_partial');
+      const storedGoogleToken = localStorage.getItem('google_token');
+
       if (token && partial) {
         const data = JSON.parse(partial);
         setFormData(prev => ({ ...prev, ...data }));
         setStep(2);
+      } else if (storedGoogleToken) {
+        try {
+          const decoded = jwtDecode(storedGoogleToken);
+          setGoogleToken(storedGoogleToken);
+          setFormData(prev => ({
+            ...prev,
+            firstName: decoded.given_name || '',
+            lastName: decoded.family_name || '',
+            email: decoded.email
+          }));
+          setStep(2);
+        } catch (e) {
+          console.error("Invalid stored google token", e);
+          setStep(1);
+        }
+        localStorage.removeItem('google_token');
       } else {
         setFormData({
           firstName: '',

@@ -90,6 +90,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
       handleClose();
     } catch (err) {
       if (err.response && err.response.data && err.response.data.requireMoreInfo) {
+        localStorage.setItem('google_token', credentialResponse.credential);
         onClose();
         onOpenRegister();
       } else if (err.response && err.response.data && err.response.data.error) {

@@ -2,7 +2,7 @@ import React from 'react';
 
 export function MentionsLegales() {
   const handleBack = () => {
-    window.history.back();
+    window.location.href = '/';
   };
 
   return (
