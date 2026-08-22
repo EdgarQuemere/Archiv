@@ -603,23 +603,23 @@ export function NetworkGraphCanvas({
         </div>
       </div>
 
-      {/* BOTTOM RIGHT CONTROLS: MATCHING NAVBAR DA (h-10/h-11, border-[1.5px] border-[#111111], rounded-full, bg-[#EEEEEE]) */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2.5 sm:gap-3.5 pointer-events-auto font-sans">
-        {/* 1. Zoom Control Segmented Block (White #EEEEEE + Pill rounded-full + 1.5px border) */}
-        <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+      {/* Network Graph Floating Bottom Controls */}
+      <div className="fixed bottom-3 left-3 right-3 sm:bottom-6 sm:right-6 sm:left-auto flex items-center justify-between sm:justify-end gap-2.5 sm:gap-3.5 z-50 pointer-events-none font-sans">
+        {/* 1. Zoom Control Block (A gauche sur mobile, A droite cote a cote sur desktop) */}
+        <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm pointer-events-auto">
           {/* Zoom Out (-) */}
           <button
             onClick={handleZoomOut}
             title="Dézoomer (-)"
-            className="w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+            className="w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
           >
-            <ZoomOut className="w-4 h-4 stroke-[2.25]" />
+            <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
           </button>
 
           <div className="w-[1.5px] h-full bg-[#111111]" />
 
           {/* Zoom Percentage Display */}
-          <div className="h-full px-3.5 flex items-center justify-center bg-[#EEEEEE] text-[#111111] text-sm sm:text-base font-medium select-none min-w-[56px]">
+          <div className="h-full px-2.5 xs:px-3.5 flex items-center justify-center bg-[#EEEEEE] text-[#111111] text-xs sm:text-base font-medium select-none min-w-[48px] sm:min-w-[56px]">
             {currentZoomPercent}%
           </div>
 
@@ -629,13 +629,13 @@ export function NetworkGraphCanvas({
           <button
             onClick={handleZoomIn}
             title="Zoomer (+)"
-            className="w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+            className="w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
           >
-            <ZoomIn className="w-4 h-4 stroke-[2.25]" />
+            <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
           </button>
         </div>
 
-        {/* 2. Recenter Button (White #EEEEEE + Pill rounded-full + 1.5px border) */}
+        {/* 2. Recenter Button */}
         <button
           onClick={() => {
             const cx = viewportSize.width / 2;
@@ -648,9 +648,9 @@ export function NetworkGraphCanvas({
               ease: 'power2.out'
             });
           }}
-          className="h-10 sm:h-11 px-5 sm:px-6 bg-[#EEEEEE] border-[1.5px] border-[#111111] hover:bg-[#E2E2E2] text-[#111111] text-sm sm:text-base font-medium rounded-full flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+          className="h-9 sm:h-11 px-4 sm:px-6 bg-[#EEEEEE] border-[1.5px] border-[#111111] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-base font-medium rounded-full flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm pointer-events-auto"
         >
-          <Compass className="w-4 h-4 text-[#111111] stroke-[2.25]" />
+          <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#111111] stroke-[2.25]" />
           <span>Recentrer</span>
         </button>
       </div>

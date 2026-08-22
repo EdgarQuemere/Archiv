@@ -63,6 +63,8 @@ export function InfiniteCanvas({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+
+
   // GSAP Ticker for smooth velocity decay & momentum panning
   useEffect(() => {
     const updatePhysics = () => {
@@ -473,19 +475,19 @@ export function InfiniteCanvas({
       </div>
 
       {/* BOTTOM CONTROL BAR (SPACING GAP TOGGLE - Centered on mobile, Right-aligned on desktop) */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50 flex items-center gap-3 pointer-events-auto font-sans max-w-[95vw] sm:max-w-none">
+      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-50 flex items-center gap-3 pointer-events-auto font-sans max-w-[95vw] sm:max-w-none">
         {/* Segmented Cover Spacing Selector (0px, 96px, 300px) */}
-        <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+        <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
           <button
             onClick={() => setCanvasGap(0)}
             title="Espacement 0px (Serré)"
-            className={`h-full px-4.5 sm:px-6 flex items-center gap-2 text-sm sm:text-base font-medium transition-colors cursor-pointer ${
+            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-base font-medium transition-colors cursor-pointer ${
               canvasGap === 0
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
             }`}
           >
-            <Grid className="w-4 h-4 stroke-[2.25]" />
+            <Grid className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
             <span>Serré</span>
           </button>
 
@@ -494,7 +496,7 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(96)}
             title="Espacement 96px (Moyen)"
-            className={`h-full px-4.5 sm:px-6 flex items-center text-sm sm:text-base font-medium transition-colors cursor-pointer ${
+            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${
               canvasGap === 96
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -508,7 +510,7 @@ export function InfiniteCanvas({
           <button
             onClick={() => setCanvasGap(300)}
             title="Espacement 300px (Large)"
-            className={`h-full px-4.5 sm:px-6 flex items-center text-sm sm:text-base font-medium transition-colors cursor-pointer ${
+            className={`h-full px-2.5 xs:px-3.5 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${
               canvasGap >= 280
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'

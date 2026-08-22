@@ -101,7 +101,7 @@ export function FilterDrawer({
     : ['Toutes', '2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018'];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden font-sans flex justify-center sm:justify-end p-2 xs:p-4 sm:p-6 pointer-events-none">
+    <div className="fixed inset-0 z-50 overflow-hidden font-sans flex justify-center sm:justify-end items-center sm:items-start p-3 sm:p-6 pointer-events-none">
       {/* Backdrop Overlay */}
       <div
         ref={backdropRef}
@@ -110,10 +110,10 @@ export function FilterDrawer({
       />
 
       {/* Filter Modal / Card Popover */}
-      <div className="relative z-50 w-full sm:w-[562px] max-w-full sm:max-w-[calc(100vw-2rem)] pointer-events-auto mt-14 sm:mt-20 md:mt-22 self-end sm:self-start">
+      <div className="relative z-50 w-full sm:w-[562px] max-w-full sm:max-w-[calc(100vw-2rem)] pointer-events-auto my-auto sm:mt-20 md:mt-22 self-center sm:self-start">
         <div
           ref={panelRef}
-          className="bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-t-[16px] sm:rounded-[10px] p-5 sm:p-7 shadow-2xl text-[#111111] space-y-5 sm:space-y-6 max-h-[85vh] sm:max-h-[82vh] overflow-y-auto"
+          className="bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[16px] sm:rounded-[10px] p-5 sm:p-7 shadow-2xl text-[#111111] space-y-5 sm:space-y-6 max-h-[82vh] overflow-y-auto"
         >
           {/* Header Count */}
           <div className="flex items-center justify-between">

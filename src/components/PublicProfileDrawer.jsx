@@ -99,7 +99,7 @@ export function PublicProfileDrawer({
     <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
       
       {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-2 sm:gap-3.5 pointer-events-auto">
+      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={handleClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
           <img 
@@ -144,16 +144,15 @@ export function PublicProfileDrawer({
       </button>
 
       {/* VERTICAL SEPARATOR LINE */}
-      <div className="hidden md:block absolute top-28 bottom-0 left-1/2 w-[1.5px] bg-[#111111] z-10 pointer-events-none" />
-
-      <div className="flex flex-col md:flex-row h-full w-full">
+      <div className="hidden md:block absolute top-28 bottom-0 left-1/2 w-[1.5px] bg-[#111111] z-10 pointer-events-none" />      {/* MAIN CONTENT AREA: SCROLLABLE ON MOBILE, 2-COLUMN LAYOUT ON DESKTOP */}
+      <div className="flex flex-col md:flex-row h-full w-full overflow-y-auto md:overflow-hidden">
         
-        {/* LEFT COLUMN - USER PROFILE INFO (Identical to ProfileDrawer without private email/password/modifier/logout) */}
-        <div className="w-full md:w-1/2 h-full flex flex-col justify-end p-6 md:p-6 pl-6 pb-6 pt-32 overflow-y-auto">
+        {/* LEFT COLUMN - USER PROFILE INFO */}
+        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-4 xs:p-6 md:p-6 md:pl-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
           
           <div className="max-w-md space-y-4">
             {/* Avatar (10px border-radius matching ProfileDrawer) */}
-            <div className="relative w-24 h-24 bg-[#111111] rounded-[10px] overflow-hidden shadow-sm">
+            <div className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden shadow-sm">
               <img 
                 src={profileData.profilePicture || '/page-profile-test-front/edgar-avatar.jpg'} 
                 alt="Avatar" 
@@ -163,7 +162,7 @@ export function PublicProfileDrawer({
 
             {/* Name & Small Omniscient Design Logo */}
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
+              <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
                 <span>{profileData.firstName} {profileData.lastName}</span>
                 {profileData.isOmniscient && (
                   <img 
@@ -177,10 +176,10 @@ export function PublicProfileDrawer({
             </div>
 
             {/* Role */}
-            <p className="text-base font-medium text-[#111111]">{profileData.role || 'Enseignant'}</p>
+            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.role || 'Enseignant'}</p>
 
             {/* School */}
-            <p className="text-base font-medium text-[#111111]">{profileData.currentSchool || 'HEAR – Strasbourg'}</p>
+            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.currentSchool || 'HEAR – Strasbourg'}</p>
 
             {/* Social Links (User-provided Phosphor SVGs) */}
             <div className="flex items-center gap-5 pt-1">
@@ -191,7 +190,7 @@ export function PublicProfileDrawer({
                 className="text-[#111111] hover:opacity-75 transition-opacity"
                 title="Behance"
               >
-                <IconBehance className="w-6 h-6" />
+                <IconBehance className="w-5 h-5 xs:w-6 xs:h-6" />
               </a>
               <a 
                 href={profileData.instaLink || '#'} 
@@ -200,7 +199,7 @@ export function PublicProfileDrawer({
                 className="text-[#111111] hover:opacity-75 transition-opacity"
                 title="Instagram"
               >
-                <IconInstagram className="w-6 h-6" />
+                <IconInstagram className="w-5 h-5 xs:w-6 xs:h-6" />
               </a>
               <a 
                 href={profileData.personalLink || '#'} 
@@ -209,15 +208,15 @@ export function PublicProfileDrawer({
                 className="text-[#111111] hover:opacity-75 transition-opacity"
                 title="Portfolio Link"
               >
-                <IconLink className="w-6 h-6" />
+                <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
               </a>
             </div>
 
           </div>
         </div>
 
-        {/* RIGHT COLUMN - DOCUMENTS (Identical layout to ProfileDrawer Documents section) */}
-        <div className="w-full md:w-1/2 h-full flex flex-col pt-28 pb-0 pl-6 md:pl-6 pr-6 md:pr-14 overflow-hidden bg-[#EEEEEE]">
+        {/* RIGHT COLUMN - DOCUMENTS */}
+        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col pt-8 md:pt-28 pb-10 px-4 xs:px-6 md:pl-6 md:pr-14 md:overflow-hidden bg-[#EEEEEE]">
           
           {/* SINGLE DOCUMENTS PILL HEADER */}
           <div className="mb-10 flex items-center justify-start shrink-0">

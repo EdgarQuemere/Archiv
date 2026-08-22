@@ -285,7 +285,7 @@ export function ProfileDrawer({
     <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
       
       {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-2 sm:gap-3.5 pointer-events-auto">
+      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={handleClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
           <img 
@@ -324,15 +324,16 @@ export function ProfileDrawer({
       {/* VERTICAL SEPARATOR LINE */}
       <div className="hidden md:block absolute top-28 bottom-0 left-1/2 w-[1.5px] bg-[#111111] z-10 pointer-events-none" />
 
-      <div className="flex flex-col md:flex-row h-full w-full">
+      {/* MAIN CONTENT AREA: SCROLLABLE ON MOBILE, 2-COLUMN LAYOUT ON DESKTOP */}
+      <div className="flex flex-col md:flex-row h-full w-full overflow-y-auto md:overflow-hidden">
         
         {/* LEFT COLUMN - USER PROFILE INFO */}
-        <div className="w-full md:w-1/2 h-full flex flex-col justify-end p-6 md:p-6 pl-6 pb-6 pt-32 overflow-y-auto">
+        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-4 xs:p-6 md:p-6 md:pl-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
           
-          <div className="max-w-md space-y-4">
+          <div className="max-w-md space-y-5 xs:space-y-6 sm:space-y-7">
             {/* Avatar (NO stroke/border) */}
             <div 
-              className="relative w-24 h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]" 
+              className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]" 
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
               onDrop={handleAvatarDrop}
@@ -360,7 +361,7 @@ export function ProfileDrawer({
 
             {/* Name & Small Omniscient Design Logo */}
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
+              <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
                 <span>{profileData.firstName} {profileData.lastName}</span>
                 {profileData.isOmniscient && (
                   <img 
@@ -374,16 +375,16 @@ export function ProfileDrawer({
             </div>
 
             {/* Role */}
-            <p className="text-base font-medium text-[#111111]">{profileData.role || 'Enseignant'}</p>
+            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.role || 'Enseignant'}</p>
 
             {/* School */}
-            <p className="text-base font-medium text-[#111111]">{profileData.currentSchool || 'HEAR – Strasbourg'}</p>
+            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.currentSchool || 'HEAR – Strasbourg'}</p>
 
             {/* Email */}
-            <p className="text-base font-medium text-[#111111]">{profileData.email}</p>
+            <p className="text-sm xs:text-base font-medium text-[#111111] break-all">{profileData.email}</p>
 
             {/* Password */}
-            <p className="text-base font-medium text-[#111111] tracking-widest">**************</p>
+            <p className="text-sm xs:text-base font-medium text-[#111111] tracking-widest">**************</p>
 
             {/* Social Links (User-provided Phosphor SVGs) */}
             <div className="flex items-center gap-5 pt-1">
@@ -394,7 +395,7 @@ export function ProfileDrawer({
                 className="text-[#111111] hover:opacity-75 transition-opacity"
                 title="Behance"
               >
-                <IconBehance className="w-6 h-6" />
+                <IconBehance className="w-5 h-5 xs:w-6 xs:h-6" />
               </a>
               <a 
                 href={profileData.instaLink || '#'} 
@@ -403,7 +404,7 @@ export function ProfileDrawer({
                 className="text-[#111111] hover:opacity-75 transition-opacity"
                 title="Instagram"
               >
-                <IconInstagram className="w-6 h-6" />
+                <IconInstagram className="w-5 h-5 xs:w-6 xs:h-6" />
               </a>
               <a 
                 href={profileData.personalLink || '#'} 
@@ -412,34 +413,34 @@ export function ProfileDrawer({
                 className="text-[#111111] hover:opacity-75 transition-opacity"
                 title="Portfolio Link"
               >
-                <IconLink className="w-6 h-6" />
+                <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
               </a>
             </div>
 
             {/* ACTION BUTTONS ROW (User-provided Phosphor SVGs) */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 pt-1">
               <button 
                 onClick={() => setIsEditModalOpen(true)}
-                className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-xs xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Modifier</span>
-                <IconPencil className="w-4 h-4" />
+                <IconPencil className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
               </button>
 
               <button 
                 onClick={() => setIsLogoutModalOpen(true)}
-                className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-xs xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Se déconnecter</span>
-                <IconLogOut className="w-4 h-4" />
+                <IconLogOut className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
               </button>
 
               <button 
                 onClick={() => setIsDeleteReasonModalOpen(true)}
-                className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-xs xs:text-base font-medium text-[#FF0000] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Supprimer mon compte</span>
-                <IconDelete className="w-4 h-4 text-[#FF0000]" />
+                <IconDelete className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-[#FF0000]" />
               </button>
             </div>
 
@@ -447,35 +448,37 @@ export function ProfileDrawer({
         </div>
 
         {/* RIGHT COLUMN - DOCUMENTS / ENREGISTREMENTS */}
-        <div className="w-full md:w-1/2 h-full flex flex-col pt-28 pb-0 pl-6 md:pl-6 pr-6 md:pr-14 overflow-hidden bg-[#EEEEEE]">
+        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col pt-8 md:pt-28 pb-10 px-4 xs:px-6 md:pl-6 md:pr-14 md:overflow-hidden bg-[#EEEEEE]">
           
           {/* SEGMENTED SWITCH CONTROL */}
-          <div className="mb-10 flex items-center justify-start shrink-0">
-            <div className="h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] inline-flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+          <div className="mb-8 xs:mb-10 flex items-center justify-start shrink-0">
+            <div className="h-9 xs:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] inline-flex items-center rounded-full overflow-hidden p-0 shadow-sm">
               <button 
                 onClick={() => setActiveTab('documents')}
-                className={`h-full px-6 flex items-center gap-2.5 text-base font-medium transition-colors cursor-pointer ${
+                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${
                   activeTab === 'documents' 
                     ? 'bg-[#111111] text-[#EEEEEE]' 
                     : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                 }`}
               >
-                <span>Mes documents ({userProjects.length})</span>
-                <IconDocument className="w-4 h-4" />
+                <span className="inline sm:hidden">Documents ({userProjects.length})</span>
+                <span className="hidden sm:inline">Mes documents ({userProjects.length})</span>
+                <IconDocument className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
 
               <div className="w-[1.5px] h-full bg-[#111111]" />
 
               <button 
                 onClick={() => setActiveTab('enregistrements')}
-                className={`h-full px-6 flex items-center gap-2.5 text-base font-medium transition-colors cursor-pointer ${
+                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${
                   activeTab === 'enregistrements' 
                     ? 'bg-[#111111] text-[#EEEEEE]' 
                     : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                 }`}
               >
-                <span>Mes enregistrement ({savedProjects.length || 34})</span>
-                <IconBookmark className="w-4 h-4" />
+                <span className="inline sm:hidden">Enregistrements ({savedProjects.length || 34})</span>
+                <span className="hidden sm:inline">Mes enregistrements ({savedProjects.length || 34})</span>
+                <IconBookmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
@@ -489,7 +492,7 @@ export function ProfileDrawer({
                 </div>
               ) : (
                 userProjects.map((project) => (
-                  <div key={project.id} className="flex flex-col sm:flex-row gap-8 items-end">
+                  <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-end">
                     {/* Cover Thumbnail (No stroke/border) */}
                     <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
                       {project.coverUrl ? (
@@ -529,7 +532,7 @@ export function ProfileDrawer({
                             </button>
                             <button 
                               onClick={() => setDeletingId(null)}
-                              className="h-10 px-5 rounded-full bg-[#EEEEEE] text-[#111111] text-base font-medium border border-[#111111]"
+                              className="h-10 px-5 rounded-full bg-[#EEEEEE] text-[#111111] text-base font-medium border border-[#111111] hover:bg-[#E2E2E2]"
                             >
                               Annuler
                             </button>
@@ -564,7 +567,7 @@ export function ProfileDrawer({
                 </div>
               ) : (
                 savedProjects.map((project) => (
-                  <div key={project.id} className="flex flex-col sm:flex-row gap-8 items-end">
+                  <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-end">
                     <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
                       {project.coverUrl ? (
                         <img src={project.coverUrl} alt={project.title} className="w-full h-auto object-contain block" />

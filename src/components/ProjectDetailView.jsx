@@ -77,9 +77,13 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const [zoomLevel, setZoomLevel] = useState(isPortrait ? 36 : 50);
+  };  const [zoomLevel, setZoomLevel] = useState(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    if (isMobile) {
+      return isPortrait ? 24 : 28;
+    }
+    return isPortrait ? 36 : 50;
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'double'
   const [numPages, setNumPages] = useState(0);
@@ -139,35 +143,36 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     const targetRef = pageRefs.current[currentPage - 1];
     const container = scrollContainerRef.current;
     if (targetRef && targetRef.current && container) {
-      isNavigatingRef.current = true;
-      const targetElem = targetRef.current;
-
-      const ratio = focalRatioRef.current || 0.5;
-      const newFocalY = targetElem.offsetTop + ratio * targetElem.clientHeight;
-      const newScrollTop = newFocalY - container.clientHeight / 2;
-
-      container.scrollTop = Math.max(0, newScrollTop);
-
-      if (navTimerRef.current) clearTimeout(navTimerRef.current);
-      navTimerRef.current = setTimeout(() => {
-        isNavigatingRef.current = false;
-      }, 200);
+      const activeElem = targetRef.current;
+      const targetScrollTop = activeElem.offsetTop + focalRatioRef.current * activeElem.clientHeight - container.clientHeight / 2;
+      container.scrollTop = targetScrollTop;
     }
   }, [zoomLevel, viewMode]);
 
-  const scrollToPage = (pageIndex) => {
-    const targetRef = pageRefs.current[pageIndex - 1];
-    if (targetRef && targetRef.current && scrollContainerRef.current) {
-      isNavigatingRef.current = true;
-      focalRatioRef.current = 0.5;
-      setCurrentPage(pageIndex);
-      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const scrollToPage = (pageNumber) => {
+    isNavigatingRef.current = true;
+    setCurrentPage(pageNumber);
 
-      if (navTimerRef.current) clearTimeout(navTimerRef.current);
-      navTimerRef.current = setTimeout(() => {
-        isNavigatingRef.current = false;
-      }, 450);
+    if (navTimerRef.current) clearTimeout(navTimerRef.current);
+
+    const targetRef = pageRefs.current[pageNumber - 1];
+    const container = scrollContainerRef.current;
+
+    if (targetRef && targetRef.current && container) {
+      const pageTop = targetRef.current.offsetTop;
+      const pageHeight = targetRef.current.clientHeight;
+      const containerHeight = container.clientHeight;
+      const targetScroll = pageTop - (containerHeight / 2 - pageHeight / 2);
+
+      container.scrollTo({
+        top: Math.max(0, targetScroll),
+        behavior: 'smooth'
+      });
     }
+
+    navTimerRef.current = setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 600);
   };
 
   const handleNextPage = () => {
@@ -191,7 +196,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   };
 
   const handleZoomOut = () => {
-    setZoomLevel((z) => Math.max(25, Math.round(z / 1.25)));
+    setZoomLevel((z) => Math.max(15, Math.round(z / 1.25)));
   };
 
   useEffect(() => {
@@ -233,7 +238,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden select-none animate-in fade-in duration-200">
       
       {/* TOP LEFT BUTTONS */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-2 sm:gap-3.5 pointer-events-auto">
+      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={onClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcset="/Archiv_logo_condesed.webp" />
           <img
@@ -282,17 +287,17 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         {/* BOTTOM LEFT PROJECT INFORMATION PANEL */}
         <div className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-1.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
           {showInfo && (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 bg-[#EEEEEE]/90 backdrop-blur-md sm:bg-transparent p-3.5 sm:p-0 rounded-2xl sm:rounded-none border border-[#111111]/20 sm:border-0 shadow-lg sm:shadow-none">
-              <h1 className="text-lg sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-4 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none">
+              <h1 className="text-base sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
                 {item.title}
               </h1>
 
-              <p className="text-sm sm:text-base font-semibold mb-1 text-[#111111]">
-                par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(item.author)} className="underline cursor-pointer hover:opacity-80">{item.author}</span>
+              <p className="text-xs sm:text-base font-medium mb-1 sm:mb-2 text-[#111111]">
+                par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(item.author)} className="underline cursor-pointer hover:opacity-80 font-bold">{item.author}</span>
               </p>
 
-              <p className="text-xs sm:text-base font-medium text-[#111111]/80 mb-2 sm:mb-3">
-                {item.school} — {item.year} — {item.type || item.field}
+              <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
+                {item.school} — {item.year} • {item.type || item.field}
               </p>
 
               {(item.description || item.abstract) && (
@@ -402,8 +407,8 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           </div>
         </Document>
 
-        {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR (3 Segmented Pill Containers) */}
-        <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto font-sans max-w-full overflow-x-auto no-scrollbar">
+        {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR (3 Segmented Pill Containers stacked vertically on mobile) */}
+        <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end sm:flex-row sm:items-center gap-2 sm:gap-3.5 pointer-events-auto font-sans max-w-full">
           
           {/* Segment 1: View Mode Switcher (Single / Double) */}
           <div className="flex h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
@@ -435,7 +440,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           </div>
 
           {/* Segment 2: Zoom Controls (- / +) */}
-          <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+          <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handleZoomOut}
               title="Dézoomer (-)"
@@ -456,7 +461,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           </div>
 
           {/* Segment 3: Page Navigation (^ / v) & Counter (1 sur 12) */}
-          <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm">
+          <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handlePrevPage}
               title="Page précédente"
@@ -477,7 +482,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs sm:text-base font-medium select-none min-w-[64px] sm:min-w-[80px]">
+            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs sm:text-base font-medium select-none min-w-[56px] xs:min-w-[64px] sm:min-w-[80px]">
               {currentPage} sur {numPages || 1}
             </div>
           </div>

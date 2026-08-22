@@ -41,12 +41,16 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     return { infiniteItems: repeated, setLength: expandedItems.length };
   }, [items]);
 
+  // Calculate center ratio: 38% from top on mobile to clear bottom info card, 50% on desktop
+  const getCenterRatio = () => (typeof window !== 'undefined' && window.innerWidth < 640 ? 0.38 : 0.50);
+
   // Find the closest cover element to the viewport center and return its scroll offset
   const findSnapTarget = useCallback(() => {
     const el = containerRef.current;
     if (!el) return null;
 
-    const viewportCenter = el.getBoundingClientRect().top + el.clientHeight / 2;
+    const centerRatio = getCenterRatio();
+    const viewportCenter = el.getBoundingClientRect().top + el.clientHeight * centerRatio;
     let closestEl = null;
     let closestDist = Infinity;
     let closestItem = null;
@@ -65,8 +69,8 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
     if (!closestEl) return null;
 
-    // Calculate the scrollTop that would place this item's center at viewport center
-    const targetScrollTop = closestEl.offsetTop - el.clientHeight / 2 + closestEl.offsetHeight / 2;
+    // Calculate the scrollTop that would place this item's center at viewport center line
+    const targetScrollTop = closestEl.offsetTop - el.clientHeight * centerRatio + closestEl.offsetHeight / 2;
     return { scrollTop: targetScrollTop, item: closestItem, distance: closestDist };
   }, [infiniteItems]);
 
@@ -75,7 +79,8 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
     const el = containerRef.current;
     if (!el || infiniteItems.length === 0) return;
 
-    const viewportCenter = el.getBoundingClientRect().top + el.clientHeight / 2;
+    const centerRatio = getCenterRatio();
+    const viewportCenter = el.getBoundingClientRect().top + el.clientHeight * centerRatio;
     const scrollTop = el.scrollTop;
 
     // Exact vertical distance of 1 full set of items measured between Set 0 Item 0 and Set 1 Item 0
@@ -86,7 +91,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
     if (el0 && el1 && !isWrappingRef.current) {
       const singleSetHeight = el1.offsetTop - el0.offsetTop;
-      const middleSetStartScrollTop = el1.offsetTop - el.clientHeight / 2 + el1.offsetHeight / 2;
+      const middleSetStartScrollTop = el1.offsetTop - el.clientHeight * centerRatio + el1.offsetHeight / 2;
       const diff = scrollTop - middleSetStartScrollTop;
 
       // Wrap symmetrically whenever scroll strays too far into Set 0 or Set 2
@@ -239,7 +244,8 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       const targetEl = itemMapRef.current.get(targetLoopKey);
       if (targetEl) {
         const containerRect = el.getBoundingClientRect();
-        const offset = targetEl.offsetTop - containerRect.height / 2 + targetEl.offsetHeight / 2;
+        const centerRatio = getCenterRatio();
+        const offset = targetEl.offsetTop - containerRect.height * centerRatio + targetEl.offsetHeight / 2;
         el.style.scrollBehavior = 'auto';
         el.scrollTop = offset;
         updateScrollPhysics();
@@ -329,10 +335,10 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       className="relative w-full h-full overflow-y-auto font-sans text-[#111111] select-none scrollbar-none"
     >
       {/* Fine Horizontal Center Line across the viewport */}
-      <div className="fixed top-1/2 left-0 right-0 h-[1.5px] -translate-y-1/2 bg-[#111111]/35 pointer-events-none z-0" />
+      <div className="fixed top-[38%] sm:top-1/2 left-0 right-0 h-[1.5px] -translate-y-1/2 bg-[#111111]/35 pointer-events-none z-0" />
 
       {/* Centered Covers Column */}
-      <div className="relative z-10 max-w-md mx-auto py-[42vh] px-4 flex flex-col items-center gap-16">
+      <div className="relative z-10 max-w-md mx-auto py-[38vh] sm:py-[42vh] px-4 flex flex-col items-center gap-12 sm:gap-16">
         {infiniteItems.map((item) => (
           <div
             key={item.loopKey}
@@ -348,7 +354,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             className="cursor-pointer flex flex-col items-center py-2"
           >
             {/* Clean Raw Cover Image Container */}
-            <div className="w-64 sm:w-72 h-[380px] sm:h-[420px] bg-transparent flex items-center justify-center overflow-hidden">
+            <div className="w-56 sm:w-72 h-[320px] sm:h-[420px] bg-transparent flex items-center justify-center overflow-hidden">
               <img
                 src={item.coverUrl}
                 alt={item.title}
@@ -364,8 +370,8 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
       {/* Fixed Bottom-Right Information Card (Right-aligned text style) */}
       {currentInfoItem && (
-        <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-12 sm:right-12 z-30 sm:w-[400px] max-w-[calc(100vw-2rem)] text-center sm:text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
-          <div className="flex flex-col items-center sm:items-end gap-1 pointer-events-auto bg-[#EEEEEE]/85 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-2xl sm:rounded-none border border-[#111111]/15 sm:border-0 shadow-lg sm:shadow-none">
+        <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 z-30 sm:w-[400px] max-w-[calc(100vw-2rem)] text-center sm:text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
+          <div className="flex flex-col items-center sm:items-end gap-1 pointer-events-auto bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-4 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none">
             <h3 className="text-base sm:text-xl font-bold leading-tight mb-0.5 sm:mb-1">
               {currentInfoItem.title}
             </h3>

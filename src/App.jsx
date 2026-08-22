@@ -36,8 +36,8 @@ export function App() {
   
   // Camera state locked at 1.0 zoom
   const [camera, setCamera] = useState({
-    x: typeof window !== 'undefined' ? window.innerWidth / 2 - 125 : 0,
-    y: typeof window !== 'undefined' ? window.innerHeight / 2 - 177 : 0,
+    x: typeof window !== 'undefined' ? Math.round(window.innerWidth / 2 - 110) : 0,
+    y: typeof window !== 'undefined' ? Math.round(window.innerHeight / 2 - 130) : 0,
     zoom: 1.0
   });
 
