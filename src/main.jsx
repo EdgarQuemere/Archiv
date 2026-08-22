@@ -7,7 +7,6 @@ import Success from './components/auth/Success.jsx'
 import './fonts.css'
 import './index.css'
 import { AuthProvider } from './context/AuthContext'
-import { Toaster } from 'react-hot-toast'
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { HelmetProvider } from 'react-helmet-async';
@@ -18,17 +17,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy_client_id'}>
         <AuthProvider>
           <App />
-          <Toaster 
-            position="top-center" 
-            toastOptions={{
-              className: 'font-sans text-sm border-[1.5px] border-[#111111] shadow-xl',
-              style: {
-                background: '#EEEEEE',
-                color: '#111111',
-                borderRadius: '8px',
-              },
-            }}
-          />
         </AuthProvider>
       </GoogleOAuthProvider>
     </HelmetProvider>
