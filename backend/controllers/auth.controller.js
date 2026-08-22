@@ -54,11 +54,26 @@ exports.register = async (req, res) => {
       from: `"Artchiv" <${process.env.SMTP_USER}>`,
       to: user.email,
       subject: 'Vérification de votre adresse email Artchiv',
-      html: `<p>Bonjour ${user.firstName},</p>
-             <p>Merci de vous être inscrit sur Artchiv ! Veuillez cliquer sur le lien ci-dessous pour vérifier votre adresse email :</p>
-             <p><a href="${verifyUrl}">${verifyUrl}</a></p>
-             <p>Ce lien est valide pendant 24 heures.</p>
-             <p>L'équipe Artchiv</p>`
+      html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #EEEEEE; color: #111111; text-align: center; border-radius: 8px;">
+      <div style="background-color: #111111; padding: 20px; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #EEEEEE; margin: 0; font-size: 24px; letter-spacing: 1px;">ARCHIV</h1>
+      </div>
+      <div style="background-color: #FFFFFF; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h2 style="margin-top: 0; color: #111111;">Bienvenue, ${user.firstName} !</h2>
+        <p style="color: #555555; line-height: 1.6; font-size: 16px;">
+          Merci de vous être inscrit sur Archiv ! Cliquez sur le bouton ci-dessous pour vérifier votre adresse e-mail et activer votre compte. Ce lien est valide pendant 24 heures.
+        </p>
+        <a href="${verifyUrl}" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #111111; color: #EEEEEE; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
+          Vérifier mon e-mail
+        </a>
+        <p style="margin-top: 30px; font-size: 12px; color: #999999;">
+          Si le bouton ne fonctionne pas, copiez-collez ce lien : <br/>
+          <a href="${verifyUrl}" style="color: #111111;">${verifyUrl}</a>
+        </p>
+      </div>
+    </div>
+  `
     };
 
     transporter.sendMail(mailOptions).catch(err => console.error("Erreur d'envoi d'email de vérification:", err));
@@ -305,12 +320,27 @@ exports.forgotPassword = async (req, res) => {
       from: `"Artchiv" <${process.env.SMTP_USER}>`,
       to: user.email,
       subject: 'Réinitialisation de votre mot de passe Artchiv',
-      html: `<p>Bonjour,</p>
-             <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le lien ci-dessous pour créer un nouveau mot de passe :</p>
-             <p><a href="${resetUrl}">${resetUrl}</a></p>
-             <p>Ce lien est valide pendant 1 heure.</p>
-             <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.</p>
-             <p>L'équipe Artchiv'</p>`
+      html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #EEEEEE; color: #111111; text-align: center; border-radius: 8px;">
+      <div style="background-color: #111111; padding: 20px; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #EEEEEE; margin: 0; font-size: 24px; letter-spacing: 1px;">ARCHIV</h1>
+      </div>
+      <div style="background-color: #FFFFFF; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h2 style="margin-top: 0; color: #111111;">Réinitialisation de mot de passe</h2>
+        <p style="color: #555555; line-height: 1.6; font-size: 16px;">
+          Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe. Ce lien est valide pendant 1 heure.
+        </p>
+        <a href="${resetUrl}" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #111111; color: #EEEEEE; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
+          Réinitialiser le mot de passe
+        </a>
+        <p style="margin-top: 30px; font-size: 12px; color: #999999;">
+          Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.<br/><br/>
+          Si le bouton ne fonctionne pas, copiez-collez ce lien : <br/>
+          <a href="${resetUrl}" style="color: #111111;">${resetUrl}</a>
+        </p>
+      </div>
+    </div>
+  `
     };
 
     await transporter.sendMail(mailOptions);

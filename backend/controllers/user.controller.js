@@ -36,6 +36,10 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
+    if (req.body.email) {
+      return res.status(400).json({ error: "La modification de l'adresse e-mail n'est pas autorisée." });
+    }
+
     const { name, role, currentSchool, behanceLink, instaLink, personalLink } = req.body;
     let updateData = { name, role, currentSchool, behanceLink, instaLink, personalLink };
 
