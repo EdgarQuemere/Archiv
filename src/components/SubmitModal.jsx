@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Upload, CheckCircle2, Sparkles, ChevronDown } from 'lucide-react';
+import { X, Upload, CheckCircle2, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { pdfjs } from 'react-pdf';
 import { SCHOOLS_LIST } from '../utils/constants';
 import api from '../api/axios'; // Import de l'instance axios avec credentials
+
+const IconAddDocument = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M216.49,79.51l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.51ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm104-60a12,12,0,0,1-12,12H140v12a12,12,0,0,1-24,0V164H104a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,164,152Z" />
+  </svg>
+);
 
 // Configuration du worker avec un fichier local (.js) pour éviter l'erreur MIME .mjs sur Coolify
 // et avec type: 'module' car pdfjs v4 utilise des modules ES.
@@ -272,7 +278,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto pr-1 flex-1">
             <div className="flex items-center gap-2.5 mb-1 pr-10">
-              <Sparkles className="w-5 h-5 stroke-[2.25] text-[#111111]" />
+              <IconAddDocument className="w-5 h-5 stroke-[2.25] text-[#111111]" />
               <h2 className="text-xl font-bold text-[#111111]">
                 {editData ? 'Modifier le projet' : 'Ajouter un projet'}
               </h2>

@@ -26,7 +26,13 @@ const IconUserProfile = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
-export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, onOpenMentions }) {
+const IconAddDocument = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M216.49,79.51l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.51ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm104-60a12,12,0,0,1-12,12H140v12a12,12,0,0,1-24,0V164H104a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,164,152Z" />
+  </svg>
+);
+
+export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, onOpenMentions, onOpenSubmit }) {
   if (!isOpen) return null;
 
   return (
@@ -65,6 +71,14 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         >
           <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
+
+        <button
+          onClick={() => onOpenSubmit?.()}
+          className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] hover:bg-[#E2E2E2] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm`}
+          title="Ajouter mon travail"
+        >
+          <IconAddDocument className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        </button>
       </div>
 
       {/* TOP RIGHT CLOSE BUTTON */}
@@ -72,7 +86,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         <button
           onClick={onClose}
           title="Fermer"
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#EEEEEE] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-sm"
         >
           <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>

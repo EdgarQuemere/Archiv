@@ -387,7 +387,7 @@ export function App() {
         isInfoOpen={isInfoOpen}
         onOpenSubmit={() => {
           if (user) {
-            setEditProjectData(null); // Ensure it's not in edit mode
+            setEditProjectData(null);
             setIsSubmitOpen(true);
           } else {
             setIsLoginOpen(true);
@@ -509,6 +509,14 @@ export function App() {
         onOpenProfile={() => {
           if (user) setIsProfileOpen(prev => !prev);
           else setIsLoginOpen(true);
+        }}
+        onOpenSubmit={() => {
+          if (user) {
+            setEditProjectData(null);
+            setIsSubmitOpen(true);
+          } else {
+            setIsLoginOpen(true);
+          }
         }}
         onOpenLogin={() => setIsLoginOpen(true)}
         onOpenMentions={() => window.location.href = '/mentions-legales'}

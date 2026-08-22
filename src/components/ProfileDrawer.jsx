@@ -18,6 +18,7 @@ const IconUserProfile = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
+
 /* Phosphor SVG Icon Components provided by USER */
 const IconBehance = ({ className = "w-6 h-6" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -314,13 +315,21 @@ export function ProfileDrawer({
         >
           <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
+
+        <button
+          onClick={() => onOpenSubmit?.()}
+          className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] hover:bg-[#E2E2E2] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm`}
+          title="Ajouter mon travail"
+        >
+          <IconAddDocument className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        </button>
       </div>
 
       {/* TOP RIGHT CLOSE BUTTON (Matching Navbar.jsx position) */}
       <button
         onClick={handleClose}
-        className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center hover:bg-[#111111] hover:text-[#EEEEEE] transition-colors shadow-sm"
         title="Fermer"
+        className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-sm"
       >
         <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
       </button>
@@ -430,13 +439,6 @@ export function ProfileDrawer({
             {/* ACTION BUTTONS ROW (User-provided Phosphor SVGs) */}
             <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 pt-1">
               {/* Round add-document button */}
-              <button
-                onClick={() => onOpenSubmit?.()}
-                title="Ajouter mon travail"
-                className="w-9 h-9 xs:w-10 xs:h-10 border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] hover:bg-[#333] rounded-full flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
-              >
-                <IconAddDocument className="w-4 h-4 xs:w-[18px] xs:h-[18px]" />
-              </button>
 
               <button
                 onClick={() => setIsEditModalOpen(true)}
