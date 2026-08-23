@@ -14,26 +14,32 @@ const projectValidation = [
   body('domain').optional().trim().escape()
 ];
 
+// Création d'un projet
 router.post('/', requireAuth, upload.fields([
   { name: 'pdf', maxCount: 1 },
   { name: 'cover', maxCount: 1 }
 ]), projectValidation, projectController.createProject);
 
+// Mise à jour d'un projet
 router.put('/:id', requireAuth, upload.fields([
   { name: 'pdf', maxCount: 1 },
   { name: 'cover', maxCount: 1 }
 ]), projectValidation, projectController.updateProject);
 
+// Suppression d'un projet
 router.delete('/:id', requireAuth, projectController.deleteProject);
 
-// Saved projects routes
+// Projets enregistrés / favoris
 router.post('/:id/save', requireAuth, projectController.saveProject);
 router.delete('/:id/save', requireAuth, projectController.unsaveProject);
 
+// Liste paginée de tous les projets
 router.get('/', projectController.getProjects);
 
+// Téléchargement du PDF
 router.post('/:id/download', projectController.downloadProject);
 
-router.get('/:id', projectController.getProjectById);
+// Récupération d'un projet unique (par Slug ou par ID)
+router.get('/:identifier', projectController.getProject);
 
 module.exports = router;

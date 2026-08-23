@@ -31,6 +31,7 @@ const projectRoutes = require('./routes/project.routes');
 const domainRoutes = require('./routes/domain.routes');
 const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
+const sitemapRoutes = require('./routes/sitemap.routes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
@@ -41,6 +42,8 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/domains', domainRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/', sitemapRoutes);
+
 
 
 // --- LANCEMENT DU SERVEUR ---
