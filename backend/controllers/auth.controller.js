@@ -68,21 +68,21 @@ exports.register = async (req, res) => {
             ],
             Subject: 'Vérification de votre adresse email Artchiv',
             HTMLPart: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #EEEEEE; color: #111111; text-align: center; border-radius: 8px;">
-      <div style="background-color: #111111; padding: 20px; border-radius: 8px 8px 0 0;">
-        <h1 style="color: #EEEEEE; margin: 0; font-size: 24px; letter-spacing: 1px;">ARCHIV</h1>
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #111111; text-align: center;">
+      <div style="background-color: #111111; padding: 40px 20px; border-radius: 12px 12px 0 0;">
+        <img src="${process.env.FRONTEND_URL || 'http://localhost:3000'}/artchiv-logo.webp" alt="Artchiv" style="height: 40px; margin-bottom: 0;" />
       </div>
-      <div style="background-color: #FFFFFF; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <h2 style="margin-top: 0; color: #111111;">Bienvenue, ${user.firstName} !</h2>
-        <p style="color: #555555; line-height: 1.6; font-size: 16px;">
-          Merci de vous être inscrit sur Archiv ! Cliquez sur le bouton ci-dessous pour vérifier votre adresse e-mail et activer votre compte. Ce lien est valide pendant 24 heures.
+      <div style="background-color: #FFFFFF; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h2 style="margin-top: 0; font-size: 24px; color: #111111; font-weight: 600;">Bienvenue, ${user.firstName} !</h2>
+        <p style="color: #666666; line-height: 1.6; font-size: 16px; margin-bottom: 30px;">
+          Merci de vous être inscrit sur <strong style="color: #111111;">Artchiv</strong>. Cliquez sur le bouton ci-dessous pour vérifier votre adresse e-mail et activer votre compte. Ce lien est valide pendant 24 heures.
         </p>
-        <a href="${verifyUrl}" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #111111; color: #EEEEEE; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
+        <a href="${verifyUrl}" style="display: inline-block; margin-top: 10px; padding: 14px 28px; background-color: #111111; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px;">
           Vérifier mon e-mail
         </a>
-        <p style="margin-top: 30px; font-size: 12px; color: #999999;">
+        <p style="margin-top: 40px; font-size: 13px; color: #999999; line-height: 1.5;">
           Si le bouton ne fonctionne pas, copiez-collez ce lien : <br/>
-          <a href="${verifyUrl}" style="color: #111111;">${verifyUrl}</a>
+          <a href="${verifyUrl}" style="color: #666666; word-break: break-all;">${verifyUrl}</a>
         </p>
       </div>
     </div>
@@ -343,22 +343,22 @@ exports.forgotPassword = async (req, res) => {
             ],
             Subject: 'Réinitialisation de votre mot de passe Artchiv',
             HTMLPart: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #EEEEEE; color: #111111; text-align: center; border-radius: 8px;">
-      <div style="background-color: #111111; padding: 20px; border-radius: 8px 8px 0 0;">
-        <h1 style="color: #EEEEEE; margin: 0; font-size: 24px; letter-spacing: 1px;">ARCHIV</h1>
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #111111; text-align: center;">
+      <div style="background-color: #111111; padding: 40px 20px; border-radius: 12px 12px 0 0;">
+        <img src="${process.env.FRONTEND_URL || 'http://localhost:3000'}/artchiv-logo.webp" alt="Artchiv" style="height: 40px; margin-bottom: 0;" />
       </div>
-      <div style="background-color: #FFFFFF; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <h2 style="margin-top: 0; color: #111111;">Réinitialisation de mot de passe</h2>
-        <p style="color: #555555; line-height: 1.6; font-size: 16px;">
-          Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe. Ce lien est valide pendant 1 heure.
+      <div style="background-color: #FFFFFF; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h2 style="margin-top: 0; font-size: 24px; color: #111111; font-weight: 600;">Réinitialisation de mot de passe</h2>
+        <p style="color: #666666; line-height: 1.6; font-size: 16px; margin-bottom: 30px;">
+          Vous avez demandé la réinitialisation de votre mot de passe sur <strong style="color: #111111;">Artchiv</strong>. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe. Ce lien est valide pendant 1 heure.
         </p>
-        <a href="${resetUrl}" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #111111; color: #EEEEEE; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
+        <a href="${resetUrl}" style="display: inline-block; margin-top: 10px; padding: 14px 28px; background-color: #111111; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px;">
           Réinitialiser le mot de passe
         </a>
-        <p style="margin-top: 30px; font-size: 12px; color: #999999;">
+        <p style="margin-top: 40px; font-size: 13px; color: #999999; line-height: 1.5;">
           Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.<br/><br/>
           Si le bouton ne fonctionne pas, copiez-collez ce lien : <br/>
-          <a href="${resetUrl}" style="color: #111111;">${resetUrl}</a>
+          <a href="${resetUrl}" style="color: #666666; word-break: break-all;">${resetUrl}</a>
         </p>
       </div>
     </div>
@@ -446,5 +446,86 @@ exports.verifyEmail = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erreur lors de la vérification de l'email" });
+  }
+};
+
+exports.resendVerification = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { email } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ error: "Utilisateur non trouvé avec cet email." });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ error: "Votre email est déjà vérifié." });
+    }
+
+    const crypto = require('crypto');
+    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+    const emailVerificationExpires = new Date(Date.now() + 24 * 3600000); // 24 hours
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerificationToken,
+        emailVerificationExpires
+      }
+    });
+
+    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email/${emailVerificationToken}`;
+
+    try {
+      await mailjet.post('send', { version: 'v3.1' }).request({
+        Messages: [
+          {
+            From: {
+              Email: process.env.MAILJET_SENDER_EMAIL,
+              Name: 'Artchiv',
+            },
+            To: [
+              {
+                Email: user.email,
+                Name: user.firstName || user.email,
+              },
+            ],
+            Subject: 'Vérification de votre adresse email Artchiv',
+            HTMLPart: `
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #111111; text-align: center;">
+      <div style="background-color: #111111; padding: 40px 20px; border-radius: 12px 12px 0 0;">
+        <img src="${process.env.FRONTEND_URL || 'http://localhost:3000'}/artchiv-logo.webp" alt="Artchiv" style="height: 40px; margin-bottom: 0;" />
+      </div>
+      <div style="background-color: #FFFFFF; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h2 style="margin-top: 0; font-size: 24px; color: #111111; font-weight: 600;">Bienvenue, ${user.firstName} !</h2>
+        <p style="color: #666666; line-height: 1.6; font-size: 16px; margin-bottom: 30px;">
+          Merci de vous être inscrit sur <strong style="color: #111111;">Artchiv</strong>. Cliquez sur le bouton ci-dessous pour vérifier votre adresse e-mail et activer votre compte. Ce lien est valide pendant 24 heures.
+        </p>
+        <a href="${verifyUrl}" style="display: inline-block; margin-top: 10px; padding: 14px 28px; background-color: #111111; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px;">
+          Vérifier mon e-mail
+        </a>
+        <p style="margin-top: 40px; font-size: 13px; color: #999999; line-height: 1.5;">
+          Si le bouton ne fonctionne pas, copiez-collez ce lien : <br/>
+          <a href="${verifyUrl}" style="color: #666666; word-break: break-all;">${verifyUrl}</a>
+        </p>
+      </div>
+    </div>
+            `,
+          },
+        ],
+      });
+    } catch (mailError) {
+      console.error("Erreur d'envoi d'email de vérification Mailjet:", mailError.statusCode, mailError.message);
+    }
+
+    res.status(200).json({ message: "L'email de vérification a été renvoyé avec succès." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur lors du renvoi de l'email de vérification." });
   }
 };

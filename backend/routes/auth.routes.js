@@ -57,4 +57,8 @@ router.post('/reset-password/:token', emailLimiter, [
 
 router.post('/verify-email/:token', emailLimiter, authController.verifyEmail);
 
+router.post("/resend-verification", emailLimiter, [
+  body("email").isEmail().normalizeEmail().withMessage("Veuillez fournir un email valide")
+], authController.resendVerification);
+
 module.exports = router;

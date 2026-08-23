@@ -44,8 +44,8 @@ exports.createProject = async (req, res) => {
     }
 
     const pdfUrl = req.files['pdf'][0].location;
-    const pdfSizeRaw = req.files['pdf'][0].size;
-    const pdfSize = (pdfSizeRaw / (1024 * 1024)).toFixed(1) + ' Mo';
+    const pdfSizeRaw = req.files['pdf'][0].size || 0;
+    const pdfSize = req.body.pdfSizeStr || (pdfSizeRaw ? (pdfSizeRaw / (1024 * 1024)).toFixed(1) + ' Mo' : 'Inconnu');
     const coverUrl = req.files['cover'] ? req.files['cover'][0].location : null;
     const isDownloadAllowed = req.body.allowDownload === 'true' || req.body.allowDownload === true;
 
@@ -155,7 +155,7 @@ exports.updateProject = async (req, res) => {
     if (req.files && req.files['pdf']) {
       await deleteFile(project.pdfUrl);
       updateData.pdfUrl = req.files['pdf'][0].location;
-      updateData.pdfSize = (req.files['pdf'][0].size / (1024 * 1024)).toFixed(1) + ' Mo';
+      updateData.pdfSize = req.body.pdfSizeStr || (req.files['pdf'][0].size ? (req.files['pdf'][0].size / (1024 * 1024)).toFixed(1) + ' Mo' : 'Inconnu');
     }
 
     if (req.files && req.files['cover']) {
