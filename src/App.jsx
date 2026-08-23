@@ -38,10 +38,35 @@ const IconAddDocument = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
+// Fonction de formatage d'un projet brut venant de l'API
+const formatProjectData = (p) => ({
+  id: p.id,
+  slug: p.slug,
+  title: p.title,
+  author: p.author ? `${p.author.firstName || ''} ${p.author.lastName || ''}`.trim() : 'Unknown',
+  authorProfilePicture: p.author ? p.author.profilePicture : null,
+  isOmniscient: p.author ? p.author.isOmniscient : false,
+  school: p.school,
+  year: p.year ? p.year.toString() : '',
+  type: p.type,
+  field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
+  description: p.description,
+  coverUrl: p.coverUrl,
+  imageUrl: p.coverUrl,
+  pdfUrl: p.pdfUrl,
+  pdfSize: p.pdfSize || 'Inconnu',
+  orientation: p.orientation,
+  aspectRatio: p.aspectRatio,
+  allowDownload: p.allowDownload,
+  userId: p.userId,
+  tags: [],
+  date: p.createdAt
+});
+
 export function App() {
   const [covers, setCovers] = useState([]);
   const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'network' | 'list'
-  const [focusedCoverId, setFocusedCoverId] = useState(null); // Keeps track of last viewed cover in List mode
+  const [focusedCoverId, setFocusedCoverId] = useState(null);
   const mainContainerRef = useRef(null);
 
   // Camera state locked at 1.0 zoom
@@ -70,93 +95,151 @@ export function App() {
   const [isPublicProfileOpen, setIsPublicProfileOpen] = useState(false);
   const [publicProfileUserId, setPublicProfileUserId] = useState(null);
 
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [editProjectData, setEditProjectData] = useState(null);
+
+  const { user, logout } = useContext(AuthContext);
+
+  // 🚀 1. Détection initiale des URLs directes au chargement
   useEffect(() => {
+    const pathname = window.location.pathname;
+
+    if (pathname === '/info') {
+      setIsInfoOpen(true);
+    } else if (pathname === '/connexion' || pathname === '/login') {
+      setIsLoginOpen(true);
+    } else if (pathname === '/inscription' || pathname === '/register') {
+      setIsRegisterOpen(true);
+    } else if (pathname.startsWith('/projet/')) {
+      // Chargement direct d'un projet par son slug ou son id (/projet/mon-slug)
+      const identifier = pathname.replace('/projet/', '').trim();
+      if (identifier) {
+        axios.get(`/projects/${identifier}`)
+          .then((res) => {
+            if (res.data && res.data.project) {
+              setSelectedCard(formatProjectData(res.data.project));
+            }
+          })
+          .catch((err) => console.error("Erreur chargement direct projet:", err));
+      }
+    }
+
     if (window.location.search.includes('complete_profile=true')) {
       setIsRegisterOpen(true);
     }
   }, []);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [editProjectData, setEditProjectData] = useState(null); // Used to pass data to SubmitModal for editing
 
-  const { user, logout } = useContext(AuthContext);
+  // --- Handlers de navigation / synchronisation URL ---
 
-  // Deep Linking: Update URL when a project is selected/closed
-  useEffect(() => {
-    const url = new URL(window.location);
-    const currentProject = url.searchParams.get('project');
-
-    if (selectedCard && currentProject !== selectedCard.id) {
-      url.searchParams.set('project', selectedCard.id);
-      window.history.pushState({}, '', url);
-    } else if (!selectedCard && currentProject) {
-      url.searchParams.delete('project');
-      window.history.pushState({}, '', url);
+  // Modal Info
+  const handleOpenInfo = () => {
+    setIsInfoOpen(true);
+    if (window.location.pathname !== '/info') {
+      window.history.pushState(null, '', '/info');
     }
-  }, [selectedCard]);
+  };
 
-  // Listen to browser Back button for deep linked projects
+  const handleCloseInfo = () => {
+    setIsInfoOpen(false);
+    if (window.location.pathname === '/info') {
+      window.history.pushState(null, '', '/');
+    }
+  };
+
+  // Modal Connexion
+  const handleOpenLogin = () => {
+    setIsRegisterOpen(false);
+    setIsLoginOpen(true);
+    if (window.location.pathname !== '/connexion') {
+      window.history.pushState(null, '', '/connexion');
+    }
+  };
+
+  const handleCloseLogin = () => {
+    setIsLoginOpen(false);
+    if (window.location.pathname === '/connexion' || window.location.pathname === '/login') {
+      window.history.pushState(null, '', '/');
+    }
+  };
+
+  // Modal Inscription
+  const handleOpenRegister = () => {
+    setIsLoginOpen(false);
+    setIsRegisterOpen(true);
+    if (window.location.pathname !== '/inscription') {
+      window.history.pushState(null, '', '/inscription');
+    }
+  };
+
+  const handleCloseRegister = () => {
+    setIsRegisterOpen(false);
+    if (window.location.pathname === '/inscription' || window.location.pathname === '/register') {
+      window.history.pushState(null, '', '/');
+    }
+  };
+
+  // 🚀 Clic sur un projet (Met l'URL à jour en /projet/:slug)
+  const handleCardClick = async (item) => {
+    const projectSlug = item.slug || item.id;
+    window.history.pushState(null, '', `/projet/${projectSlug}`);
+
+    if (item.pdfUrl) {
+      setSelectedCard(item);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`/projects/${projectSlug}`);
+      if (response.data && response.data.project) {
+        const formatted = formatProjectData(response.data.project);
+        setCovers(prev => prev.map(c => c.id === item.id ? formatted : c));
+        setSelectedCard(formatted);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la récupération des détails:", err);
+      setSelectedCard(item);
+    }
+  };
+
+  // Fermeture du projet
+  const handleCloseProject = () => {
+    setSelectedCard(null);
+    if (window.location.pathname.startsWith('/projet/')) {
+      window.history.pushState(null, '', '/');
+    }
+  };
+
+  // 🚀 Écoute du bouton Retour / Précédent du navigateur
   useEffect(() => {
     const handlePopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      const projectId = params.get('project');
+      const pathname = window.location.pathname;
 
-      // If we went back to a state without a project, close the modal
-      if (!projectId) {
+      if (!pathname.startsWith('/projet/')) {
         setSelectedCard(null);
+      } else {
+        const identifier = pathname.replace('/projet/', '').trim();
+        if (identifier) {
+          axios.get(`/projects/${identifier}`)
+            .then(res => {
+              if (res.data?.project) setSelectedCard(formatProjectData(res.data.project));
+            })
+            .catch(() => setSelectedCard(null));
+        }
       }
 
-      // Close other modals if they are open (best effort for mobile back button)
+      setIsInfoOpen(pathname === '/info');
+      setIsLoginOpen(pathname === '/connexion' || pathname === '/login');
+      setIsRegisterOpen(pathname === '/inscription' || pathname === '/register');
+
       setIsFilterOpen(false);
-      setIsInfoOpen(false);
       setIsProfileOpen(false);
       setIsSubmitOpen(false);
-      setIsLoginOpen(false);
-      setIsRegisterOpen(false);
       setIsPublicProfileOpen(false);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
-
-  // Deep Linking: Check URL on mount and fetch specific project
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const projectId = params.get('project');
-
-    if (projectId) {
-      const fetchSpecificProject = async () => {
-        try {
-          const response = await axios.get(`/projects/${projectId}`);
-          if (response.data && response.data.project) {
-            const p = response.data.project;
-            const formatted = {
-              id: p.id,
-              title: p.title,
-              author: p.author ? p.author.name : 'Unknown',
-              authorProfilePicture: p.author ? p.author.profilePicture : null,
-              school: p.school,
-              year: p.year.toString(),
-              type: p.type,
-              field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
-              description: p.description,
-              coverUrl: p.coverUrl,
-              imageUrl: p.coverUrl,
-              pdfUrl: p.pdfUrl,
-              pdfSize: p.pdfSize || 'Inconnu',
-              userId: p.userId,
-              tags: [],
-              date: p.createdAt
-            };
-            setSelectedCard(formatted);
-          }
-        } catch (err) {
-          console.error("Erreur lors de la récupération du projet spécifique (Deep Link):", err);
-        }
-      };
-      fetchSpecificProject();
-    }
-  }, []); // Run once on mount
 
   // GSAP View Transition Animation on activeView change
   useEffect(() => {
@@ -176,42 +259,20 @@ export function App() {
     const fetchProjectsProgressively = async (page = 1) => {
       if (isCancelled) return;
       try {
-        // Load 40 projects per batch
         const response = await axios.get(`/projects?limit=40&page=${page}`);
         if (response.data && response.data.projects) {
-          const formattedProjects = response.data.projects.map(p => ({
-            id: p.id,
-            title: p.title,
-            author: p.author ? `${p.author.firstName || ''} ${p.author.lastName || ''}`.trim() : 'Unknown',
-            authorProfilePicture: p.author ? p.author.profilePicture : null,
-            isOmniscient: p.author ? p.author.isOmniscient : false,
-            school: p.school,
-            year: p.year.toString(),
-            type: p.type,
-            field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
-            coverUrl: p.coverUrl,
-            imageUrl: p.coverUrl,
-            orientation: p.orientation,
-            aspectRatio: p.aspectRatio,
-            userId: p.userId,
-            tags: [],
-            date: p.createdAt
-          }));
+          const formattedProjects = response.data.projects.map(formatProjectData);
 
           setCovers(prev => {
-            // Deduplicate by ID to prevent duplicate keys in Strict Mode
             const prevIds = new Set(prev.map(p => p.id));
             const uniqueNew = formattedProjects.filter(p => !prevIds.has(p.id));
             if (uniqueNew.length === 0) return prev;
 
-            // Append new projects and shuffle the whole set to blend them in seamlessly
             const newSet = [...prev, ...uniqueNew];
             return shuffleArray(newSet);
           });
 
-          // If there are more pages, fetch the next one progressively in the background
           if (page < response.data.totalPages) {
-            // Small delay to allow browser to breathe and render images without blocking UI
             setTimeout(() => {
               fetchProjectsProgressively(page + 1);
             }, 300);
@@ -240,7 +301,6 @@ export function App() {
     setSearchQuery('');
   };
 
-  // Active filter count for badge
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.type !== 'Tous') count++;
@@ -251,19 +311,13 @@ export function App() {
     return count;
   }, [filters, searchQuery]);
 
-  // Filtered dataset
   const filteredCovers = useMemo(() => {
     return covers.filter((item) => {
-      // Type filter
       if (filters.type !== 'Tous' && item.type !== filters.type) return false;
-      // School filter
       if (filters.school !== 'Toutes les écoles' && item.school !== filters.school) return false;
-      // Field filter
       if (filters.field !== 'Tous les domaines' && item.field !== filters.field) return false;
-      // Year filter
       if (filters.year !== 'Toutes' && item.year !== filters.year) return false;
 
-      // Search query filter
       if (searchQuery.trim().length > 0) {
         const q = searchQuery.toLowerCase();
         const matchesTitle = item.title.toLowerCase().includes(q);
@@ -280,47 +334,6 @@ export function App() {
     });
   }, [covers, filters, searchQuery]);
 
-  // Fetch full details on card click
-  const handleCardClick = async (item) => {
-    // If we already fetched the heavy fields (e.g. from Deep Linking), open it directly
-    if (item.pdfUrl) {
-      setSelectedCard(item);
-      return;
-    }
-
-    try {
-      const response = await axios.get(`/projects/${item.id}`);
-      if (response.data && response.data.project) {
-        const p = response.data.project;
-        const formatted = {
-          id: p.id,
-          title: p.title,
-          author: p.author ? `${p.author.firstName || ''} ${p.author.lastName || ''}`.trim() : 'Unknown',
-          authorProfilePicture: p.author ? p.author.profilePicture : null,
-          school: p.school,
-          year: p.year.toString(),
-          type: p.type,
-          field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
-          description: p.description,
-          coverUrl: p.coverUrl,
-          imageUrl: p.coverUrl,
-          pdfUrl: p.pdfUrl,
-          pdfSize: p.pdfSize || 'Inconnu',
-          userId: p.userId,
-          tags: [],
-          date: p.createdAt
-        };
-        // Update it in the local state so we don't re-fetch later
-        setCovers(prev => prev.map(c => c.id === item.id ? formatted : c));
-        setSelectedCard(formatted);
-      }
-    } catch (err) {
-      console.error("Erreur lors de la récupération des détails:", err);
-      setSelectedCard(item); // Fallback
-    }
-  };
-
-  // Extract dynamic unique values for filters based on fetched data
   const dynamicSchools = useMemo(() => {
     const schools = new Set(covers.map(c => c.school).filter(Boolean));
     return ['Toutes les écoles', ...Array.from(schools).sort()];
@@ -333,7 +346,6 @@ export function App() {
 
   const dynamicYears = useMemo(() => {
     const years = new Set(covers.map(c => c.year).filter(Boolean));
-    // Sort years descending (newest first)
     return ['Toutes', ...Array.from(years).sort((a, b) => String(b).localeCompare(String(a)))];
   }, [covers]);
 
@@ -342,12 +354,11 @@ export function App() {
     return ['Tous', ...Array.from(types).sort()];
   }, [covers]);
 
-  // Handle adding new cover submission
   const handleAddCover = (newCover) => {
     setCovers((prev) => [newCover, ...prev]);
   };
 
-  // Handle OAuth Callbacks simply by checking path
+  // Traitement des routes statiques
   if (window.location.pathname === '/auth/omniscient/callback') {
     return <OmniscientCallback />;
   }
@@ -386,7 +397,7 @@ export function App() {
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden relative font-sans  bg-[#EEEEEE] text-[#111111]">
+    <div className="w-screen h-screen overflow-hidden relative font-sans bg-[#EEEEEE] text-[#111111]">
       <SEO />
 
       {/* Top Navbar */}
@@ -395,20 +406,23 @@ export function App() {
         setActiveView={setActiveView}
         onOpenFilter={() => setIsFilterOpen(prev => !prev)}
         isFilterOpen={isFilterOpen}
-        onOpenInfo={() => setIsInfoOpen(prev => !prev)}
+        onOpenInfo={() => {
+          if (isInfoOpen) handleCloseInfo();
+          else handleOpenInfo();
+        }}
         isInfoOpen={isInfoOpen}
         onOpenSubmit={() => {
           if (user) {
             setEditProjectData(null);
             setIsSubmitOpen(true);
           } else {
-            setIsLoginOpen(true);
+            handleOpenLogin();
           }
         }}
-        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenLogin={handleOpenLogin}
         onOpenProfile={() => {
           if (user) setIsProfileOpen(prev => !prev);
-          else setIsLoginOpen(true);
+          else handleOpenLogin();
         }}
         isProfileOpen={isProfileOpen}
         user={user}
@@ -425,7 +439,7 @@ export function App() {
             <img
               src="/sad-spongebob.webp"
               alt="Aucun résultat"
-              className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md  pointer-events-none"
+              className="w-24 h-24 sm:w-28 sm:h-28 object-contain mb-4 filter drop-shadow-md pointer-events-none"
             />
             <h3 className="text-xl font-bold text-[#111111] mb-1">Aucun résultat trouvé</h3>
             <p className="text-xs sm:text-sm text-slate-600 max-w-sm">
@@ -436,7 +450,7 @@ export function App() {
                 if (user) {
                   setIsSubmitOpen(true);
                 } else {
-                  setIsLoginOpen(true);
+                  handleOpenLogin();
                 }
               }}
               className="mt-6 h-9 xs:h-10 px-5 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
@@ -453,7 +467,7 @@ export function App() {
             onCardClick={handleCardClick}
             onAddWork={() => {
               if (user) setIsSubmitOpen(true);
-              else setIsLoginOpen(true);
+              else handleOpenLogin();
             }}
           />
         ) : activeView === 'network' ? (
@@ -475,7 +489,7 @@ export function App() {
             }}
             onAddWork={() => {
               if (user) setIsSubmitOpen(true);
-              else setIsLoginOpen(true);
+              else handleOpenLogin();
             }}
           />
         )}
@@ -499,19 +513,19 @@ export function App() {
       {selectedCard && (
         <ProjectDetailView
           item={selectedCard}
-          onClose={() => setSelectedCard(null)}
+          onClose={handleCloseProject}
           onOpenProfile={() => {
             if (user) setIsProfileOpen(prev => !prev);
-            else setIsLoginOpen(true);
+            else handleOpenLogin();
           }}
-          onOpenLogin={() => setIsLoginOpen(true)}
-          onOpenInfo={() => setIsInfoOpen(true)}
+          onOpenLogin={handleOpenLogin}
+          onOpenInfo={handleOpenInfo}
           onOpenSubmit={() => {
             if (user) {
               setEditProjectData(null);
               setIsSubmitOpen(true);
             } else {
-              setIsLoginOpen(true);
+              handleOpenLogin();
             }
           }}
           onOpenPublicProfile={(userId) => {
@@ -524,35 +538,35 @@ export function App() {
       {/* Info Modal */}
       <InfoModal
         isOpen={isInfoOpen}
-        onClose={() => setIsInfoOpen(false)}
+        onClose={handleCloseInfo}
         user={user}
         onOpenProfile={() => {
           if (user) setIsProfileOpen(prev => !prev);
-          else setIsLoginOpen(true);
+          else handleOpenLogin();
         }}
         onOpenSubmit={() => {
           if (user) {
             setEditProjectData(null);
             setIsSubmitOpen(true);
           } else {
-            setIsLoginOpen(true);
+            handleOpenLogin();
           }
         }}
-        onOpenLogin={() => setIsLoginOpen(true)}
-        onOpenMentions={() => window.location.href = '/mentions-legales'}
+        onOpenLogin={handleOpenLogin}
+        onOpenMentions={() => (window.location.href = '/mentions-legales')}
       />
 
-      {/* Profile Drawer (Own Profile) */}
+      {/* Profile Drawer */}
       <ProfileDrawer
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
         user={user}
         logout={logout}
         covers={covers}
-        onOpenInfo={() => setIsInfoOpen(true)}
+        onOpenInfo={handleOpenInfo}
         onOpenSubmit={() => setIsSubmitOpen(true)}
         onSelectProject={(project) => {
-          setSelectedCard(project);
+          handleCardClick(project);
         }}
         onEditProject={(project) => {
           setEditProjectData(project);
@@ -563,30 +577,30 @@ export function App() {
         }}
       />
 
-      {/* Public Profile Drawer (Viewing Other Users) */}
+      {/* Public Profile Drawer */}
       <PublicProfileDrawer
         isOpen={isPublicProfileOpen}
         onClose={() => setIsPublicProfileOpen(false)}
         userId={publicProfileUserId}
         user={user}
         covers={covers}
-        onOpenInfo={() => setIsInfoOpen(true)}
+        onOpenInfo={handleOpenInfo}
         onOpenProfile={() => {
           if (user) setIsProfileOpen(prev => !prev);
-          else setIsLoginOpen(true);
+          else handleOpenLogin();
         }}
-        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenLogin={handleOpenLogin}
         onSelectProject={(project) => {
-          setSelectedCard(project);
+          handleCardClick(project);
         }}
       />
 
-      {/* Submit/Edit Cover Modal */}
+      {/* Submit Modal */}
       <SubmitModal
         isOpen={isSubmitOpen}
         onClose={() => {
           setIsSubmitOpen(false);
-          setTimeout(() => setEditProjectData(null), 300); // clear after animation
+          setTimeout(() => setEditProjectData(null), 300);
         }}
         onAddCover={handleAddCover}
         editData={editProjectData}
@@ -595,17 +609,17 @@ export function App() {
         }}
       />
 
-      {/* Auth Modals */}
+      {/* Auth Modals synchronisées */}
       <LoginModal
         isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        onOpenRegister={() => setIsRegisterOpen(true)}
+        onClose={handleCloseLogin}
+        onOpenRegister={handleOpenRegister}
       />
 
       <RegisterModal
         isOpen={isRegisterOpen}
-        onClose={() => setIsRegisterOpen(false)}
-        onOpenLogin={() => setIsLoginOpen(true)}
+        onClose={handleCloseRegister}
+        onOpenLogin={handleOpenLogin}
       />
 
       <Toaster
@@ -626,4 +640,5 @@ export function App() {
     </div>
   );
 }
+
 export default App;

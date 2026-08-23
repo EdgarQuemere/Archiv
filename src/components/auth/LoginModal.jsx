@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { AuthContext } from '../../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import api from '../../api/axios';
+import SEO from '../SEO';
 
 const IconEye = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -161,6 +162,12 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111]">
+      {/* Balises SEO pour la connexion */}
+      <SEO
+        title="Connexion | Artchiv'"
+        description="Connectez-vous à Artchiv' pour publier vos books, mémoires et gérer vos projets."
+        url="/connexion"
+      />
       {/* Backdrop */}
       <div
         ref={backdropRef}

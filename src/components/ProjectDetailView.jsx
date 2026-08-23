@@ -264,10 +264,11 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   return (
     <div className="fixed inset-0 z-[70] bg-[#EEEEEE] text-[#111111] flex flex-col font-sans font-medium overflow-hidden animate-in fade-in duration-200">
       <SEO
-        title={item.title}
-        description={`Projet par ${getUserDisplayName(item.author)} - ${item.school}`}
-        image={item.coverUrl}
-      />
+  title={`${item.title} - ${item.author}`}
+  description={`${item.type || 'Projet'} par ${item.author} (${item.school}, ${item.year})`}
+  image={item.coverUrl}
+  url={`/projet/${item.slug || item.id}`}
+/>
 
       {/* TOP LEFT BUTTONS */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
@@ -438,7 +439,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                               ? (isPortrait ? zoomLevel * 6.5 : zoomLevel * 7.5)
                               : (isPortrait ? zoomLevel * 9 : zoomLevel * 11)
                           }
-                          renderTextLayer={false}
+                          renderTextLayer={true}
                           renderAnnotationLayer={true}
                           devicePixelRatio={Math.max(window.devicePixelRatio || 1, 2)}
                           className="block  pointer-events-none"

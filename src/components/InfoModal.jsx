@@ -1,6 +1,7 @@
 import { getUserDisplayName } from '../utils/userUtils';
 import React from 'react';
 import { X, Info, User } from 'lucide-react';
+import SEO from './SEO';
 
 const LinkSVG = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 256 256">
@@ -37,7 +38,11 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
 
   return (
     <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans font-medium overflow-hidden animate-in fade-in duration-200 h-screen w-screen">
-
+      <SEO
+        title="À propos | Artchiv'"
+        description="Découvrez Artchiv', la plateforme collaborative créée par des étudiants pour rassembler et valoriser les books et mémoires d'études en design."
+        url="/info"
+      />
       {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">

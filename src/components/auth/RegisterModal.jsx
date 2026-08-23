@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { AuthContext } from '../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import SearchableSchoolSelect from '../SearchableSchoolSelect';
+import SEO from '../SEO';
 
 const IconEye = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -262,6 +263,11 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111]">
+     <SEO
+      title="Créer un compte | Artchiv'"
+      description="Rejoignez la communauté Artchiv' pour partager vos portfolios, books et mémoires de fin d'études en design."
+      url="/inscription"
+    />
       <div
         ref={backdropRef}
         className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs"
