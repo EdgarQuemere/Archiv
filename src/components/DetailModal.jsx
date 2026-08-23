@@ -34,7 +34,7 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 font-sans text-[#111111] ">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 font-sans font-medium text-[#111111] ">
       {/* Backdrop with Soft Blur */}
       <div
         ref={backdropRef}

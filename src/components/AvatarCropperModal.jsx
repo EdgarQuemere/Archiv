@@ -36,7 +36,7 @@ export function AvatarCropperModal({ imageSrc, onComplete, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 font-sans text-[#111111] ">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 font-sans font-medium text-[#111111] ">
       <div className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs" onClick={onClose} />
 
       <div className="relative bg-[#EEEEEE] w-full max-w-lg border-[1.5px] border-[#111111] rounded-[14px] shadow-2xl overflow-hidden z-10 flex flex-col p-6 sm:p-8 transform-gpu">

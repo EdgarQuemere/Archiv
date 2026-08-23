@@ -36,7 +36,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans overflow-hidden animate-in fade-in duration-200 h-screen w-screen">
+    <div className="fixed inset-0 z-[60] bg-[#EEEEEE] text-[#111111] font-sans font-medium overflow-hidden animate-in fade-in duration-200 h-screen w-screen">
 
       {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
@@ -98,15 +98,15 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         <div className="space-y-4 pt-1">
           <h1 className="text-2xl font-bold italic mb-4 text-[#111111] leading-tight">Artchiv’</h1>
 
-          <p className="text-sm leading-relaxed font-normal">
+          <p className="text-sm leading-relaxed font-medium">
             Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les books et les mémoires de fin d’études.
           </p>
 
-          <p className="text-sm leading-relaxed font-normal">
+          <p className="text-sm leading-relaxed font-medium">
             D’un côté, il y a les books. On a tous vu les mêmes appels à l’aide sur les réseaux au moment des recherches pour les écoles : la constitution du book, c’est le sujet qui prend la tête à tout le monde. Artchiv’ permet de partager simplement ses projets et d’aller fouiller dans ceux des autres. C’est l’endroit idéal pour découvrir l’univers créatif des futurs designers et trouver l’inspiration pour ses propres rendus.
           </p>
 
-          <p className="text-sm leading-relaxed font-normal">
+          <p className="text-sm leading-relaxed font-medium">
             De l’autre, il y a les mémoires. Ce sont des travaux de recherche denses qui demandent des mois d’investissement. L’objectif est de conserver la trace de tous ces écrits précieux et de les valoriser, dans le respect total du travail de chaque auteur. Sans ça, ces mémoires finiraient, pour la plupart, tout simplement perdus à tout jamais dans les méandres d’une clé USB ou sur le disque dur d’un ordi poussiéreux.
           </p>
 
@@ -259,15 +259,15 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           <div className="space-y-4 lg:space-y-5">
             <h1 className="text-3xl font-bold italic mb-4 lg:mb-5 text-[#111111] leading-tight">Artchiv’</h1>
 
-            <p className="text-base leading-relaxed font-normal">
+            <p className="text-base leading-relaxed font-medium">
               Artchiv’, c’est la plateforme pensée par d’anciens étudiants en design pour rassembler les books et les mémoires de fin d’études.
             </p>
 
-            <p className="text-base leading-relaxed font-normal">
+            <p className="text-base leading-relaxed font-medium">
               D’un côté, il y a les books. On a tous vu les mêmes appels à l’aide sur les réseaux au moment des recherches pour les écoles : la constitution du book, c’est le sujet qui prend la tête à tout le monde. Artchiv’ permet de partager simplement ses projets et d’aller fouiller dans ceux des autres. C’est l’endroit idéal pour découvrir l’univers créatif des futurs designers et trouver l’inspiration pour ses propres rendus.
             </p>
 
-            <p className="text-base leading-relaxed font-normal">
+            <p className="text-base leading-relaxed font-medium">
               De l’autre, il y a les mémoires. Ce sont des travaux de recherche denses qui demandent des mois d’investissement. L’objectif est de conserver la trace de tous ces écrits précieux et de les valoriser, dans le respect total du travail de chaque auteur. Sans ça, ces mémoires finiraient, pour la plupart, tout simplement perdus à tout jamais dans les méandres d’une clé USB ou sur le disque dur d’un ordi poussiéreux.
             </p>
 

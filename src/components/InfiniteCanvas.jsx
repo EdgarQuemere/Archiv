@@ -526,6 +526,13 @@ export function InfiniteCanvas({
                   className="w-full h-full object-contain block"
                 />
               </div>
+
+              {/* DOCUMENT TITLE BADGE ON HOVER FOCUS */}
+              {isHovered && item.title && (
+                <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 px-3.5 py-1.5 bg-[#111111] text-[#EEEEEE] text-xs font-medium rounded-full shadow-2xl pointer-events-none z-50 flex items-center gap-1.5 whitespace-nowrap max-w-[320px] border border-[#111111] animate-in fade-in zoom-in-95 duration-150">
+                  <span className="truncate">{item.title}</span>
+                </div>
+              )}
             </div>
           );
         })}

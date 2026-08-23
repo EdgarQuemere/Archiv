@@ -246,7 +246,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans text-[#111111] ">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111] ">
       <div
         ref={backdropRef}
         className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs transition-opacity"
@@ -303,7 +303,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 placeholder="ex: L'archéologie des machines"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
               />
             </div>
 
@@ -316,7 +316,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
                     <option value="Mémoire">Mémoire</option>
                     <option value="Book">Book</option>
@@ -334,7 +334,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                     required
                     value={formData.domain}
                     onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
                     <option value="" disabled>Sélectionner un domaine</option>
                     {domains.map((dom) => (
@@ -357,7 +357,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   <select
                     value={formData.school}
                     onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
                     {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
                       <option key={sch} value={sch}>
@@ -379,7 +379,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   max="2027"
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
                 />
               </div>
             </div>
@@ -393,7 +393,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 placeholder="Décrivez les thématiques principales abordées..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
+                className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
               />
             </div>
 

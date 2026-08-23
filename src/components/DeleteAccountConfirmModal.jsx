@@ -27,7 +27,7 @@ export function DeleteAccountConfirmModal({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 font-sans text-[#111111] ">
+    <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 font-sans font-medium text-[#111111] ">
       {/* Backdrop */}
       <div
         ref={backdropRef}

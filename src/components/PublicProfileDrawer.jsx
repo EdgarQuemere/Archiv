@@ -153,7 +153,7 @@ export function PublicProfileDrawer({
   const lastName = profileData.lastName || profileData.name?.split(' ').slice(1).join(' ') || '';
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden font-sans bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
+    <div className="fixed inset-0 z-[60] overflow-hidden font-sans font-medium bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
       
       {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">

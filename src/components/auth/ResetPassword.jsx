@@ -39,7 +39,7 @@ export function ResetPassword({ token }) {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center p-4 bg-[#EEEEEE] font-sans text-[#111111]">
+    <div className="w-screen h-screen flex items-center justify-center p-4 bg-[#EEEEEE] font-sans font-medium text-[#111111]">
       <div className="relative bg-[#EEEEEE] rounded-[10px] shadow-2xl max-w-md w-full border-[1.5px] border-[#111111] p-6 sm:p-10">
         
         {/* Header */}
@@ -83,7 +83,7 @@ export function ResetPassword({ token }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 bg-white border-[1.5px] border-[#111111] rounded-[8px] pl-10 pr-10 text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-400"
+                    className="w-full h-11 bg-white border-[1.5px] border-[#111111] rounded-[8px] pl-10 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-400"
                   />
                   <button
                     type="button"

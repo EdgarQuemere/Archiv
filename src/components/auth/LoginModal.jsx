@@ -134,7 +134,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans text-[#111111]">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111]">
       {/* Backdrop */}
       <div
         ref={backdropRef}
@@ -217,7 +217,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="votre.email@exemple.com"
-              className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+              className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
             />
           </div>
 
@@ -240,7 +240,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="••••••••"
-                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
               />
               <button
                 type="button"

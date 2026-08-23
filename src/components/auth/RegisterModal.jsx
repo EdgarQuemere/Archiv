@@ -238,7 +238,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans text-[#111111]">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111]">
       {/* Backdrop */}
       <div
         ref={backdropRef}

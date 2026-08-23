@@ -119,7 +119,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-sans text-[#111111] ">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-sans font-medium text-[#111111] ">
       {/* Backdrop */}
       <div
         ref={backdropRef}
@@ -164,7 +164,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                 value={formData.firstName}
                 onChange={handleChange}
                 required
-                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
               />
             </div>
             <div>
@@ -177,7 +177,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                 value={formData.lastName}
                 onChange={handleChange}
                 required
-                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
               />
             </div>
           </div>
@@ -204,7 +204,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                   disabled
                   readOnly
                   title="Vous ne pouvez pas modifier votre adresse e-mail."
-                  className="w-full h-10 sm:h-11 bg-slate-100 border-[1.5px] border-slate-300 text-slate-500 rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none cursor-not-allowed"
+                  className="w-full h-10 sm:h-11 bg-slate-100 border-[1.5px] border-slate-300 text-slate-500 rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none cursor-not-allowed"
                 />
               </div>
 
@@ -219,7 +219,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                     value={formData.newPassword}
                     onChange={handleChange}
                     placeholder="•••••••• (inchangé si vide)"
-                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
                   />
                   <button
                     type="button"
@@ -245,7 +245,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                 >
                   <option value="Etudiant">Étudiant(e)</option>
                   <option value="Enseignant">Enseignant(e)</option>
@@ -279,7 +279,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               value={formData.bio}
               onChange={handleChange}
               placeholder="Décris tes compétences, domaines de recherche ou intentions créatives..."
-              className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
+              className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
             />
           </div>
 
@@ -304,7 +304,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                   value={formData.behanceLink}
                   onChange={handleChange}
                   placeholder="https://behance.net/ton-profil"
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
                 />
               </div>
 
@@ -318,7 +318,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                   value={formData.instaLink}
                   onChange={handleChange}
                   placeholder="https://instagram.com/ton-pseudo"
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
                 />
               </div>
 
@@ -332,7 +332,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
                   value={formData.personalLink}
                   onChange={handleChange}
                   placeholder="https://ton-site.com"
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
                 />
               </div>
             </div>

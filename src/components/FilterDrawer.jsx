@@ -101,7 +101,7 @@ export function FilterDrawer({
     : ['Toutes', '2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018'];
 
   return (
-    <div className="fixed inset-0 z-40 overflow-hidden font-sans flex justify-center sm:justify-end items-center sm:items-start p-3 sm:p-6 pointer-events-none">
+    <div className="fixed inset-0 z-40 overflow-hidden font-sans font-medium flex justify-center sm:justify-end items-center sm:items-start p-3 sm:p-6 pointer-events-none">
       {/* Backdrop Overlay (Behind Navbar at z-30) */}
       <div
         ref={backdropRef}
@@ -173,7 +173,7 @@ export function FilterDrawer({
                   }}
                   onFocus={() => setShowSchoolDropdown(true)}
                   placeholder="Rechercher une école"
-                  className="w-full bg-transparent text-sm text-[#111111] font-normal focus:outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent text-sm text-[#111111] font-medium focus:outline-none placeholder:text-slate-500"
                 />
                 {filters.school !== 'Toutes les écoles' && (
                   <button
@@ -245,7 +245,7 @@ export function FilterDrawer({
                   }}
                   onFocus={() => setShowFieldDropdown(true)}
                   placeholder="Rechercher un domaine"
-                  className="w-full bg-transparent text-sm text-[#111111] font-normal focus:outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent text-sm text-[#111111] font-medium focus:outline-none placeholder:text-slate-500"
                 />
                 {filters.field !== 'Tous les domaines' && (
                   <button
