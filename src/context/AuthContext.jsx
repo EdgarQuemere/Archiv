@@ -48,6 +48,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const resendVerification = async (email) => {
+    const response = await api.post('/auth/resend-verification', { email });
+    return response.data;
+  };
+
   const googleAuth = async (token, additionalData = {}) => {
     const response = await api.post('/auth/google', { token, ...additionalData });
     if (response.data.user) {
@@ -72,7 +77,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, googleAuth, omniscientAuth, deleteAccount, loading, setUser }}>
+    <AuthContext.Provider value={{ user, login, register, logout, googleAuth, omniscientAuth, deleteAccount, resendVerification, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -185,6 +185,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
     if (files.pdf) {
       submitData.append('pdf', files.pdf);
+      submitData.append('pdfSizeStr', (files.pdf.size / (1024 * 1024)).toFixed(1) + ' Mo');
     }
     if (files.cover) {
       submitData.append('cover', files.cover);
@@ -205,10 +206,19 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
         if (onUpdateCover && response.data.project) {
           const p = response.data.project;
           onUpdateCover({
-            ...p,
-            id: p.id,
-            field: p.domain,
-            imageUrl: p.coverUrl
+            ...editData, // keep existing formatted author, etc.
+            title: p.title,
+            school: p.school,
+            year: p.year ? p.year.toString() : editData.year,
+            type: p.type,
+            field: formData.domain || editData.field, // Use submitted domain
+            description: p.description,
+            coverUrl: p.coverUrl,
+            imageUrl: p.coverUrl, // fallback for UI
+            pdfUrl: p.pdfUrl,
+            pdfSize: p.pdfSize,
+            orientation: p.orientation,
+            aspectRatio: p.aspectRatio,
           });
         }
       } else {

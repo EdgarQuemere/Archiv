@@ -18,12 +18,14 @@ const IconEyeClosed = ({ className = "w-4 h-4" }) => (
 );
 
 export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
-  const { login, googleAuth } = useContext(AuthContext);
+  const { login, googleAuth, resendVerification } = useContext(AuthContext);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
@@ -34,6 +36,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
       setFormData({ email: '', password: '' });
       setError('');
       setResetSuccess('');
+      setNeedsVerification(false);
       gsap.timeline()
         .fromTo(backdropRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
         .fromTo(dialogRef.current, { opacity: 0, scale: 0.95, y: 15 }, { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: 'power2.out' }, '-=0.15');
@@ -117,6 +120,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setNeedsVerification(false);
 
     try {
       await login(formData.email, formData.password);
@@ -125,11 +129,33 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
+        if (err.response.data.error.includes('vérifier votre adresse email')) {
+          setNeedsVerification(true);
+        }
       } else {
         setError('Email ou mot de passe incorrect.');
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResending(true);
+    setError('');
+    setResetSuccess('');
+    try {
+      const res = await resendVerification(formData.email);
+      setResetSuccess(res.message || "L'email de vérification a été renvoyé avec succès.");
+      setNeedsVerification(false);
+    } catch (err) {
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Erreur lors du renvoi de l'email.");
+      }
+    } finally {
+      setResending(false);
     }
   };
 
@@ -166,9 +192,22 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
             Accédez à votre compte pour publier un projet.
           </p>
 
+          {/* Status Messages */}
           {error && (
-            <div className="p-3 bg-red-100 border-[1.5px] border-red-400 text-red-700 text-xs font-medium rounded-full text-center mb-3">
-              {error}
+            <div className="flex flex-col items-center gap-2 mb-3">
+              <div className="w-full p-3 bg-red-100 border-[1.5px] border-red-400 text-red-700 text-xs font-medium rounded-full text-center">
+                {error}
+              </div>
+              {needsVerification && (
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={resending}
+                  className="text-xs font-semibold text-[#111111] underline hover:text-black mt-1 disabled:opacity-50 transition-colors"
+                >
+                  {resending ? 'Renvoi en cours...' : "Renvoyer l'email de vérification"}
+                </button>
+              )}
             </div>
           )}
 

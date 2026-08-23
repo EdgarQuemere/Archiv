@@ -122,6 +122,12 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
   }, [isOpen]);
 
   const handleClose = () => {
+    // Clear temporary OAuth tokens so they don't interfere with normal registration later
+    localStorage.removeItem('omni_token');
+    localStorage.removeItem('omni_partial');
+    localStorage.removeItem('google_token');
+    setGoogleToken(null);
+
     if (dialogRef.current && backdropRef.current) {
       gsap.timeline({ onComplete: onClose })
         .to(dialogRef.current, { opacity: 0, scale: 0.95, y: 10, duration: 0.2, ease: 'power2.in' })
