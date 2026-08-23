@@ -27,6 +27,18 @@ export function InfiniteCanvas({
 
   // Hover state
   const [hoveredKey, setHoveredKey] = useState(null);
+  const [imageRatios, setImageRatios] = useState({});
+
+  const handleImageLoad = useCallback((id, e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    if (naturalWidth && naturalHeight) {
+      const ratio = naturalHeight / naturalWidth;
+      setImageRatios(prev => {
+        if (prev[id] === ratio) return prev;
+        return { ...prev, [id]: ratio };
+      });
+    }
+  }, []);
 
   // Dragging state & displacement tracker
   const isDraggingRef = useRef(false);
@@ -168,6 +180,10 @@ export function InfiniteCanvas({
   const handleMouseUp = () => {
     isDraggingRef.current = false;
     setIsDragging(false);
+    const now = performance.now();
+    if (now - lastMousePosRef.current.time > 80) {
+      velocityRef.current = { x: 0, y: 0 };
+    }
   };
 
   const handleTouchStart = (e) => {
@@ -175,17 +191,32 @@ export function InfiniteCanvas({
       isDraggingRef.current = true;
       totalDragDistanceRef.current = 0;
       setIsDragging(true);
-      dragStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+
+      const touch = e.touches[0];
+      const now = performance.now();
+      dragStartRef.current = { x: touch.clientX, y: touch.clientY };
       panStartRef.current = { x: targetCamRef.current.x, y: targetCamRef.current.y };
+      lastMousePosRef.current = { x: touch.clientX, y: touch.clientY, time: now };
       velocityRef.current = { x: 0, y: 0 };
     }
   };
 
   const handleTouchMove = (e) => {
     if (isDraggingRef.current && e.touches.length === 1) {
-      const dx = e.touches[0].clientX - dragStartRef.current.x;
-      const dy = e.touches[0].clientY - dragStartRef.current.y;
+      const touch = e.touches[0];
+      const now = performance.now();
+      const dt = Math.max(1, now - lastMousePosRef.current.time);
+
+      const dx = touch.clientX - dragStartRef.current.x;
+      const dy = touch.clientY - dragStartRef.current.y;
       totalDragDistanceRef.current = Math.hypot(dx, dy);
+
+      const vx = ((touch.clientX - lastMousePosRef.current.x) / dt) * 22;
+      const vy = ((touch.clientY - lastMousePosRef.current.y) / dt) * 22;
+
+      velocityRef.current = { x: vx, y: vy };
+      lastMousePosRef.current = { x: touch.clientX, y: touch.clientY, time: now };
+
       targetCamRef.current.x = panStartRef.current.x + dx;
       targetCamRef.current.y = panStartRef.current.y + dy;
     }
@@ -194,6 +225,10 @@ export function InfiniteCanvas({
   const handleTouchEnd = () => {
     isDraggingRef.current = false;
     setIsDragging(false);
+    const now = performance.now();
+    if (now - lastMousePosRef.current.time > 80) {
+      velocityRef.current = { x: 0, y: 0 };
+    }
   };
 
   const handleCardClick = (item, position) => {
@@ -223,27 +258,35 @@ export function InfiniteCanvas({
   const itemsWithMetrics = useMemo(() => {
     if (!items || items.length === 0) return [];
     return items.map(item => {
-      let ar = 1.414;
-      if (item.nativeHeight && item.nativeWidth) {
-        ar = item.nativeHeight / item.nativeWidth;
-      } else if (item.aspectRatio) {
-        ar = item.aspectRatio;
-      } else if (item.orientation === 'landscape') {
-        ar = 0.707;
+      let ar = imageRatios[item.id];
+
+      if (!ar) {
+        if (item.nativeHeight && item.nativeWidth) {
+          ar = item.nativeHeight / item.nativeWidth;
+        } else if (item.orientation === 'landscape') {
+          ar = 0.707;
+        } else if (item.aspectRatio && item.aspectRatio < 0.95) {
+          ar = item.aspectRatio;
+        } else if (item.aspectRatio && item.aspectRatio > 1.8) {
+          ar = 1 / item.aspectRatio;
+        } else {
+          ar = 1.414;
+        }
       }
 
-      const isLandscape = ar < 1.1;
-      const itemWidth = isLandscape ? (colWidth * 2 + canvasGap) : colWidth;
-      const exactHeight = Math.round(itemWidth * ar);
+      const isLandscape = ar < 0.95 || item.orientation === 'landscape';
+      const itemWidth = colWidth;
+      const exactHeight = Math.round(colWidth * ar);
 
       return {
         ...item,
         scaledWidth: itemWidth,
         scaledHeight: exactHeight,
-        isLandscape
+        isLandscape,
+        ar
       };
     });
-  }, [items, colWidth]);
+  }, [items, colWidth, canvasGap, imageRatios]);
 
   // MASONRY PUZZLE INFINITE CANVAS (ZERO HOLES, UNFINISHED CONTINUOUS STACK)
   // IN LARGE MODE (canvasGap >= 400): CLEAN ALIGNED STRUCTURED GRID MATRIX
@@ -473,13 +516,14 @@ export function InfiniteCanvas({
                   alt={item.title}
                   draggable={false}
                   onDragStart={(e) => e.preventDefault()}
+                  onLoad={(e) => handleImageLoad(item.id, e)}
                   style={{
                     WebkitUserDrag: 'none',
                     userSelect: 'none',
                     pointerEvents: 'none',
                     filter: isHovered ? 'brightness(1.05) contrast(1.02)' : 'brightness(0.95)'
                   }}
-                  className="w-full h-full object-contain block "
+                  className="w-full h-full object-contain block"
                 />
               </div>
             </div>

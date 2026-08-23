@@ -188,9 +188,10 @@ export function App() {
             year: p.year.toString(),
             type: p.type,
             field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
-            // Excluded heavy fields from list: description, pdfUrl, pdfSize
             coverUrl: p.coverUrl,
             imageUrl: p.coverUrl,
+            orientation: p.orientation,
+            aspectRatio: p.aspectRatio,
             userId: p.userId,
             tags: [],
             date: p.createdAt
@@ -494,6 +495,14 @@ export function App() {
           }}
           onOpenLogin={() => setIsLoginOpen(true)}
           onOpenInfo={() => setIsInfoOpen(true)}
+          onOpenSubmit={() => {
+            if (user) {
+              setEditProjectData(null);
+              setIsSubmitOpen(true);
+            } else {
+              setIsLoginOpen(true);
+            }
+          }}
           onOpenPublicProfile={(userId) => {
             setPublicProfileUserId(userId);
             setIsPublicProfileOpen(true);

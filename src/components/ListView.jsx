@@ -353,34 +353,37 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       <div className="fixed top-[38%] sm:top-1/2 left-0 right-0 h-[1.5px] -translate-y-1/2 bg-[#111111]/35 pointer-events-none z-0" />
 
       {/* Centered Covers Column */}
-      <div className="relative z-10 max-w-md mx-auto py-[38vh] sm:py-[42vh] px-4 flex flex-col items-center gap-12 sm:gap-16">
-        {infiniteItems.map((item) => (
-          <div
-            key={item.loopKey}
-            ref={(el) => {
-              if (el) itemMapRef.current.set(item.loopKey, el);
-              else itemMapRef.current.delete(item.loopKey);
-            }}
-            onClick={() => onCardClick(item)}
-            style={{
-              transformOrigin: 'center center',
-              willChange: 'transform, opacity'
-            }}
-            className="cursor-pointer flex flex-col items-center py-2"
-          >
-            {/* Clean Raw Cover Image Container */}
-            <div className={`${item.orientation === 'landscape' ? 'w-80 sm:w-[500px]' : 'w-56 sm:w-72'} h-[320px] sm:h-[420px] bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
-              <img
-                src={item.coverUrl}
-                alt={item.title}
-                draggable={false}
-                onDragStart={(e) => e.preventDefault()}
-                style={{ WebkitUserDrag: 'none', userSelect: 'none' }}
-                className="w-full h-full object-contain block  pointer-events-none hover:scale-[1.02] transition-transform"
-              />
+      <div className="relative z-10 max-w-[1600px] w-full mx-auto py-[38vh] sm:py-[42vh] px-4 flex flex-col items-center gap-12 sm:gap-16">
+        {infiniteItems.map((item) => {
+          const isLandscape = item.orientation === 'landscape' || (item.aspectRatio && item.aspectRatio < 0.95);
+          return (
+            <div
+              key={item.loopKey}
+              ref={(el) => {
+                if (el) itemMapRef.current.set(item.loopKey, el);
+                else itemMapRef.current.delete(item.loopKey);
+              }}
+              onClick={() => onCardClick(item)}
+              style={{
+                transformOrigin: 'center center',
+                willChange: 'transform, opacity'
+              }}
+              className="cursor-pointer flex flex-col items-center py-2"
+            >
+              {/* Clean Raw Cover Image Container */}
+              <div className={`${isLandscape ? 'w-[600px] max-w-full xs:w-[780px] sm:w-[1140px] md:w-[1380px] lg:w-[1530px] h-[540px] sm:h-[800px] md:h-[960px]' : 'w-56 sm:w-72 h-[320px] sm:h-[420px]'} bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
+                <img
+                  src={item.coverUrl}
+                  alt={item.title}
+                  draggable={false}
+                  onDragStart={(e) => e.preventDefault()}
+                  style={{ WebkitUserDrag: 'none', userSelect: 'none' }}
+                  className="w-full h-full object-contain block pointer-events-none hover:scale-[1.02] transition-transform"
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Fixed Bottom-Right Information Card (Right-aligned text style) */}

@@ -18,11 +18,23 @@ export function NetworkGraphCanvas({
 
   // Active hover node filter state
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
+  const [imageRatios, setImageRatios] = useState({});
 
   // Dragging state & displacement distance tracker
   const isDraggingRef = useRef(false);
   const totalDragDistanceRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  const handleImageLoad = useCallback((nodeId, e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    if (naturalWidth && naturalHeight) {
+      const ratio = naturalHeight / naturalWidth;
+      setImageRatios(prev => {
+        if (prev[nodeId] === ratio) return prev;
+        return { ...prev, [nodeId]: ratio };
+      });
+    }
+  }, []);
 
   // Initial zoom logic
   const targetCamRef = useRef({ x: camera.x, y: camera.y, zoom: camera.zoom || 0.5 });
@@ -312,6 +324,55 @@ export function NetworkGraphCanvas({
   const handleMouseUp = () => {
     isDraggingRef.current = false;
     setIsDragging(false);
+    const now = performance.now();
+    if (now - lastMousePosRef.current.time > 80) {
+      velocityRef.current = { x: 0, y: 0 };
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      isDraggingRef.current = true;
+      totalDragDistanceRef.current = 0;
+      setIsDragging(true);
+
+      const touch = e.touches[0];
+      const now = performance.now();
+      dragStartRef.current = { x: touch.clientX, y: touch.clientY };
+      panStartRef.current = { x: targetCamRef.current.x, y: targetCamRef.current.y };
+      lastMousePosRef.current = { x: touch.clientX, y: touch.clientY, time: now };
+      velocityRef.current = { x: 0, y: 0 };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (isDraggingRef.current && e.touches.length === 1) {
+      const touch = e.touches[0];
+      const now = performance.now();
+      const dt = Math.max(1, now - lastMousePosRef.current.time);
+
+      const dx = touch.clientX - dragStartRef.current.x;
+      const dy = touch.clientY - dragStartRef.current.y;
+      totalDragDistanceRef.current = Math.hypot(dx, dy);
+
+      const vx = ((touch.clientX - lastMousePosRef.current.x) / dt) * 16;
+      const vy = ((touch.clientY - lastMousePosRef.current.y) / dt) * 16;
+
+      velocityRef.current = { x: vx, y: vy };
+      lastMousePosRef.current = { x: touch.clientX, y: touch.clientY, time: now };
+
+      targetCamRef.current.x = panStartRef.current.x + dx;
+      targetCamRef.current.y = panStartRef.current.y + dy;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    const now = performance.now();
+    if (now - lastMousePosRef.current.time > 80) {
+      velocityRef.current = { x: 0, y: 0 };
+    }
   };
 
   const handleCardClick = (item, x, y) => {
@@ -368,6 +429,9 @@ export function NetworkGraphCanvas({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
 
       <div
@@ -435,9 +499,23 @@ export function NetworkGraphCanvas({
 
         {/* NODE LAYER (Cover Cards without thick black outlines) */}
         {graphData.nodes.map((node) => {
-          const aspectRatio = node.aspectRatio || 1.414;
-          const cardHeight = Math.round(cardWidth * Math.min(aspectRatio, 1.6));
-          const posX = node.x - cardWidth / 2;
+          let ar = imageRatios[node.id];
+          if (!ar) {
+            if (node.nativeHeight && node.nativeWidth) {
+              ar = node.nativeHeight / node.nativeWidth;
+            } else if (node.orientation === 'landscape') {
+              ar = 0.707;
+            } else if (node.aspectRatio) {
+              ar = node.aspectRatio < 0.95 ? node.aspectRatio : (node.aspectRatio > 1.8 ? 1 / node.aspectRatio : node.aspectRatio);
+            } else {
+              ar = 1.414;
+            }
+          }
+
+          const isLandscape = ar < 0.95 || node.orientation === 'landscape';
+          const currentCardWidth = isLandscape ? 220 : 170;
+          const cardHeight = Math.round(currentCardWidth * ar);
+          const posX = node.x - currentCardWidth / 2;
           const posY = node.y - cardHeight / 2;
 
           const isHovered = hoveredNodeId === node.id;
@@ -459,7 +537,7 @@ export function NetworkGraphCanvas({
                 position: 'absolute',
                 left: 0,
                 top: 0,
-                width: `${cardWidth}px`,
+                width: `${currentCardWidth}px`,
                 height: `${cardHeight}px`,
                 transform: `translate3d(${posX}px, ${posY}px, 0)`,
                 zIndex: isHovered ? 60 : isActiveNeighbor && hasActiveFilter ? 40 : 10,
@@ -492,8 +570,9 @@ export function NetworkGraphCanvas({
                     loading="lazy"
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
+                    onLoad={(e) => handleImageLoad(node.id, e)}
                     style={{ WebkitUserDrag: 'none', userSelect: 'none', pointerEvents: 'none' }}
-                    className="w-full h-full object-contain block  p-1"
+                    className="w-full h-full object-contain block p-1"
                   />
                 </div>
               </div>

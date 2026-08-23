@@ -48,7 +48,13 @@ const BookmarkSVG = () => (
   </svg>
 );
 
-export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, onOpenInfo, onOpenPublicProfile }) {
+const IconAddDocument = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M216.49,79.51l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.51ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm104-60a12,12,0,0,1-12,12H140v12a12,12,0,0,1-24,0V164H104a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,164,152Z" />
+  </svg>
+);
+
+export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, onOpenInfo, onOpenSubmit, onOpenPublicProfile }) {
   const { user, setUser } = useContext(AuthContext);
   const [showInfo, setShowInfo] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -256,7 +262,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   if (!item) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden  animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[70] bg-[#EEEEEE] text-[#111111] flex flex-col font-sans overflow-hidden animate-in fade-in duration-200">
       <SEO
         title={item.title}
         description={`Projet par ${getUserDisplayName(item.author)} - ${item.school}`}
@@ -265,7 +271,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
       {/* TOP LEFT BUTTONS */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
-        <picture onClick={onClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
+        <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
           <img
             src="/artchiv-logo.webp"
@@ -274,7 +280,10 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           />
         </picture>
         <button
-          onClick={onOpenInfo}
+          onClick={() => {
+            onClose?.();
+            onOpenInfo?.();
+          }}
           title="Informations"
           className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
@@ -283,6 +292,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
         <button
           onClick={() => {
+            onClose?.();
             if (user) {
               onOpenProfile?.();
             } else {
@@ -293,6 +303,17 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
           <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        </button>
+
+        <button
+          onClick={() => {
+            onClose?.();
+            onOpenSubmit?.();
+          }}
+          title="Ajouter mon travail"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+        >
+          <IconAddDocument className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
       </div>
 
@@ -319,7 +340,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               </h1>
 
               <p className="text-xs sm:text-base font-medium mb-1 sm:mb-2 text-[#111111]">
-                par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(item.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{item.author}</span>
+                par <span onClick={() => { onClose?.(); onOpenPublicProfile && onOpenPublicProfile(item.userId); }} className="underline cursor-pointer hover:opacity-80 font-bold">{item.author}</span>
               </p>
 
               <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">

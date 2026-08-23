@@ -71,6 +71,7 @@ export function PublicProfileDrawer({
         userId: profileData.id,
         tags: []
       });
+      handleClose();
     }
   };
 
@@ -156,7 +157,7 @@ export function PublicProfileDrawer({
       
       {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
-        <picture onClick={handleClose} className="cursor-pointer transition-opacity hover:opacity-80 mr-0.5 shrink-0 flex items-center">
+        <picture onClick={handleClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
           <img 
             src="/artchiv-logo.webp" 
@@ -298,7 +299,7 @@ export function PublicProfileDrawer({
               </div>
             ) : (
               userProjects.map((project) => (
-                <div key={project.id} className="flex flex-col sm:flex-row gap-8 items-end">
+                <div key={project.id} className="flex flex-col sm:flex-row gap-8 items-start">
                   {/* Cover Thumbnail */}
                   <div 
                     className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
@@ -316,7 +317,7 @@ export function PublicProfileDrawer({
                   </div>
                   
                   {/* Cover Details */}
-                  <div className="flex-1 flex flex-col justify-end py-1">
+                  <div className="flex-1 flex flex-col justify-start py-0">
                     <div>
                       <h3 
                         className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
