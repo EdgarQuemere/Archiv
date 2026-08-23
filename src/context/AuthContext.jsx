@@ -38,8 +38,15 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     const response = await api.post('/auth/register', userData);
-    // Fetch le profil complet pour avoir role, currentSchool, isOmniscient, etc.
-    await fetchFullUser();
+    // Pas de fetchFullUser ici : l'email n'est pas encore vérifié, pas de cookie JWT
+    return response.data;
+  };
+
+  const verifyEmailToken = async (token) => {
+    const response = await api.post(`/auth/verify-email/${token}`);
+    if (response.data.user) {
+      await fetchFullUser();
+    }
     return response.data;
   };
 
@@ -77,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, googleAuth, omniscientAuth, deleteAccount, resendVerification, loading, setUser }}>
+    <AuthContext.Provider value={{ user, login, register, logout, googleAuth, omniscientAuth, deleteAccount, resendVerification, verifyEmailToken, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

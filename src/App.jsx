@@ -13,6 +13,7 @@ import { SubmitModal } from './components/SubmitModal';
 import { LoginModal } from './components/auth/LoginModal';
 import { RegisterModal } from './components/auth/RegisterModal';
 import { ResetPassword } from './components/auth/ResetPassword';
+import { VerifyEmail } from './components/auth/VerifyEmail';
 import { OmniscientCallback } from './components/auth/OmniscientCallback';
 import SEO from './components/SEO';
 import AdminDashboard from './components/admin/AdminDashboard';
@@ -349,6 +350,16 @@ export function App() {
   // Handle OAuth Callbacks simply by checking path
   if (window.location.pathname === '/auth/omniscient/callback') {
     return <OmniscientCallback />;
+  }
+
+  if (window.location.pathname.startsWith('/verify-email/')) {
+    const token = window.location.pathname.split('/').pop();
+    return (
+      <>
+        <SEO title="Vérification de votre email" description="Confirmez votre adresse email Artchiv." />
+        <VerifyEmail token={token} />
+      </>
+    );
   }
 
   if (window.location.pathname.startsWith('/reset-password/')) {

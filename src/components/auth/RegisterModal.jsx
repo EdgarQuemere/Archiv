@@ -50,6 +50,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
   const [googleToken, setGoogleToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -127,6 +129,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
     localStorage.removeItem('omni_partial');
     localStorage.removeItem('google_token');
     setGoogleToken(null);
+    setEmailSent(false);
+    setRegisteredEmail('');
 
     if (dialogRef.current && backdropRef.current) {
       gsap.timeline({ onComplete: onClose })
@@ -150,8 +154,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
       setLoading(true);
       setError('');
       await googleAuth(credentialResponse.credential);
-      if (onSuccess) onSuccess();
-      handleClose();
+      setRegisteredEmail(formData.email || '');
+      setEmailSent(true);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.requireMoreInfo) {
         const decoded = jwtDecode(credentialResponse.credential);
@@ -224,8 +228,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
         }
       }
 
-      if (onSuccess) onSuccess();
-      handleClose();
+      setRegisteredEmail(formData.email || '');
+      setEmailSent(true);
     } catch (err) {
       if (err.response && err.response.data) {
         if (err.response.data.errors && err.response.data.errors.length > 0) {
@@ -257,6 +261,32 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
         ref={dialogRef}
         className="relative bg-[#EEEEEE] rounded-[10px] shadow-2xl max-w-md w-full z-10 border-[1.5px] border-[#111111] p-5 sm:p-8 transform-gpu max-h-[90vh] overflow-y-auto"
       >
+
+        {/* Email envoyé — affiché après inscription réussie */}
+        {emailSent ? (
+          <div className="flex flex-col items-center text-center py-4">
+            <div className="w-14 h-14 rounded-full bg-[#111111] flex items-center justify-center mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="white" className="w-7 h-7">
+                <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/>
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold mb-3 text-[#111111]">Un email de confirmation<br />vous a été envoyé</h2>
+            <p className="text-sm text-[#555555] leading-relaxed mb-1">
+              Nous avons envoyé un lien de vérification à :
+            </p>
+            <p className="text-sm font-semibold text-[#111111] mb-5">{registeredEmail}</p>
+            <p className="text-xs text-[#888888] leading-relaxed mb-6">
+              Cliquez sur le lien dans l'email pour activer votre compte.<br />
+              Le lien est valide pendant 24 heures.
+            </p>
+            <button
+              onClick={handleClose}
+              className="w-full h-11 rounded-full bg-[#111111] text-white font-semibold text-sm hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              Fermer
+            </button>
+          </div>
+        ) : (<>
         {/* Close Button */}
         <button
           onClick={handleClose}
@@ -552,6 +582,9 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
             </button>
           </div>
         </form>
+
+        </>
+        )}
       </div>
     </div>
   );
