@@ -51,7 +51,7 @@ exports.updateProfile = async (req, res) => {
     const user = await prisma.user.update({
       where: { id: req.userId },
       data: updateData,
-      select: { // On ne renvoie pas le mot de passe
+      select: {
         id: true,
         email: true,
         firstName: true, lastName: true, pseudo: true, displayPreference: true,

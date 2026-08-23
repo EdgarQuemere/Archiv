@@ -14,8 +14,8 @@ exports.register = async (req, res) => {
   }
 
   try {
-    const { 
-      email, password, firstName, lastName, pseudo, displayPreference, role, currentSchool, 
+    const {
+      email, password, firstName, lastName, pseudo, displayPreference, role, currentSchool,
       behanceLink, instaLink, personalLink
     } = req.body;
     let profilePicture = req.file ? req.file.location : req.body.profilePicture;
@@ -140,7 +140,7 @@ exports.logout = (req, res) => {
 exports.googleAuth = async (req, res) => {
   try {
     const { token, role, currentSchool, behanceLink, instaLink, personalLink } = req.body;
-    
+
     // MOCK VERIFICATION
     let payload;
     if (token && token.startsWith('TEST_TOKEN')) {
@@ -160,9 +160,6 @@ exports.googleAuth = async (req, res) => {
     if (user) {
       if (user.isBanned) {
         return res.status(403).json({ error: 'Votre compte a été banni. Contactez l\'administrateur.' });
-      }
-      if (!user.isOmniscient) {
-        user = await prisma.user.update({ where: { email }, data: { isOmniscient: true } });
       }
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
       res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
@@ -206,7 +203,7 @@ exports.googleAuth = async (req, res) => {
 exports.omniscientAuth = async (req, res) => {
   try {
     const { code, role, currentSchool, behanceLink, instaLink, personalLink, omniToken } = req.body;
-    
+
     let email, first_name, last_name;
 
     if (omniToken) {
@@ -223,13 +220,13 @@ exports.omniscientAuth = async (req, res) => {
         grant_type: "authorization_code",
         redirect_uri: req.body.redirectUri || "http://localhost:3006/auth/omniscient/callback"
       });
-      
+
       const accessToken = tokenResponse.data.access_token;
-      
+
       const profileResponse = await axios.get(`${process.env.OMNISCIENT_URL}/api/me`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
-      
+
       email = profileResponse.data.email;
       first_name = profileResponse.data.first_name;
       last_name = profileResponse.data.last_name;
@@ -252,11 +249,11 @@ exports.omniscientAuth = async (req, res) => {
     if (!role || !currentSchool) {
       // Create a temporary token so we don"t reuse the OAuth code
       const tempToken = jwt.sign({ email, firstName: first_name, lastName: last_name }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      return res.status(400).json({ 
-        error: "Informations manquantes", 
-        requireMoreInfo: true, 
+      return res.status(400).json({
+        error: "Informations manquantes",
+        requireMoreInfo: true,
         omniToken: tempToken,
-        partialData: { email, firstName: first_name, lastName: last_name } 
+        partialData: { email, firstName: first_name, lastName: last_name }
       });
     }
 
@@ -320,7 +317,7 @@ exports.forgotPassword = async (req, res) => {
     });
 
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
-    
+
     // Configuration nodemailer
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'ssl0.ovh.net',
