@@ -5,6 +5,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { SCHOOLS_LIST } from '../../utils/constants';
+import SearchableSchoolSelect from '../SearchableSchoolSelect';
 import api from '../../api/axios';
 
 const IconEye = ({ className = "w-4 h-4" }) => (
@@ -475,19 +476,12 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                 {formData.role !== 'Autre' && (
                   <div>
                     <label className="text-xs sm:text-sm font-medium block mb-1">École *</label>
-                    <div className="relative">
-                      <select
-                        name="currentSchool"
-                        value={formData.currentSchool}
-                        onChange={handleChange}
-                        className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20 appearance-none cursor-pointer"
-                      >
-                        {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
-                          <option key={sch} value={sch}>{sch}</option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
-                    </div>
+                    <SearchableSchoolSelect
+                      value={formData.currentSchool}
+                      onChange={(sch) => setFormData(prev => ({ ...prev, currentSchool: sch }))}
+                      options={SCHOOLS_LIST.filter(s => s !== "Toutes les écoles")}
+                      placeholder="Rechercher une école..."
+                    />
                   </div>
                 )}
               </div>

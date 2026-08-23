@@ -1,6 +1,6 @@
 import { getUserDisplayName } from '../utils/userUtils';
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { X, Info, User, UploadCloud } from 'lucide-react';
+import { X, Info, User, UploadCloud, ExternalLink } from 'lucide-react';
 import gsap from 'gsap';
 import api from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
@@ -83,10 +83,33 @@ export function ProfileDrawer({
   onEditProject,
   onDeleteProject,
   onOpenInfo,
-  onOpenSubmit
+  onOpenSubmit,
+  onSelectProject
 }) {
   const { deleteAccount, setUser } = useContext(AuthContext);
   const containerRef = useRef(null);
+
+  const handleSelectProject = (project) => {
+    if (onSelectProject) {
+      const domainName = project.domain ? (project.domain.name || project.domain) : (project.field || 'Inconnu');
+      onSelectProject({
+        id: project.id,
+        title: project.title,
+        author: project.author || getUserDisplayName(profileData) || 'Auteur',
+        school: project.school || profileData?.currentSchool || '',
+        year: project.year?.toString() || (project.createdAt ? new Date(project.createdAt).getFullYear().toString() : '2026'),
+        type: project.type || 'Mémoire',
+        field: domainName,
+        description: project.description,
+        coverUrl: project.coverUrl,
+        imageUrl: project.coverUrl,
+        pdfUrl: project.pdfUrl,
+        pdfSize: project.pdfSize || 'Inconnu',
+        userId: project.userId || profileData?.id,
+        tags: project.tags || []
+      });
+    }
+  };
 
   // Profile Data State (Fallback to Mock profile if user is null)
   const [profileData, setProfileData] = useState(user || {});
@@ -525,8 +548,11 @@ export function ProfileDrawer({
               ) : (
                 userProjects.map((project) => (
                   <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-end">
-                    {/* Cover Thumbnail (No stroke/border) */}
-                    <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
+                    {/* Cover Thumbnail */}
+                    <div
+                      className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => handleSelectProject(project)}
+                    >
                       {project.coverUrl ? (
                         <img
                           src={project.coverUrl}
@@ -541,7 +567,10 @@ export function ProfileDrawer({
                     {/* Cover Details */}
                     <div className="flex-1 flex flex-col justify-end py-1">
                       <div>
-                        <h3 className="text-xl font-bold text-[#111111] mb-2 leading-snug">
+                        <h3
+                          className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
+                          onClick={() => handleSelectProject(project)}
+                        >
                           {project.title}
                         </h3>
                         <p className="text-base font-medium text-[#111111] mb-4">
@@ -553,7 +582,7 @@ export function ProfileDrawer({
                       </div>
 
                       {/* Card Action Buttons */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         {deletingId === project.id ? (
                           <div className="flex items-center gap-2">
                             <button
@@ -571,6 +600,13 @@ export function ProfileDrawer({
                           </div>
                         ) : (
                           <>
+                            <button
+                              onClick={() => handleSelectProject(project)}
+                              className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+                            >
+                              <span>Consulter</span>
+                              <ExternalLink className="w-4 h-4 stroke-[2.25]" />
+                            </button>
                             <button
                               onClick={() => onEditProject && onEditProject(project)}
                               className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer"
@@ -600,7 +636,10 @@ export function ProfileDrawer({
               ) : (
                 savedProjects.map((project) => (
                   <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-end">
-                    <div className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden">
+                    <div
+                      className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => handleSelectProject(project)}
+                    >
                       {project.coverUrl ? (
                         <img src={project.coverUrl} alt={project.title} className="w-full h-auto object-contain block" />
                       ) : (
@@ -610,7 +649,10 @@ export function ProfileDrawer({
 
                     <div className="flex-1 flex flex-col justify-end py-1">
                       <div>
-                        <h3 className="text-xl font-bold text-[#111111] mb-2 leading-snug">
+                        <h3
+                          className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
+                          onClick={() => handleSelectProject(project)}
+                        >
                           {project.title}
                         </h3>
                         <p className="text-base font-medium text-[#111111] mb-4">
@@ -621,7 +663,14 @@ export function ProfileDrawer({
                         </p>
                       </div>
 
-                      <div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          onClick={() => handleSelectProject(project)}
+                          className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-base font-medium rounded-full flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+                        >
+                          <span>Consulter</span>
+                          <ExternalLink className="w-4 h-4 stroke-[2.25]" />
+                        </button>
                         <button
                           onClick={() => handleRemoveSavedProject(project.id)}
                           className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"

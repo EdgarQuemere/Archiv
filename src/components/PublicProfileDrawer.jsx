@@ -1,6 +1,6 @@
 import { getUserDisplayName } from '../utils/userUtils';
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Info } from 'lucide-react';
+import { X, Info, ExternalLink } from 'lucide-react';
 import gsap from 'gsap';
 import api from '../api/axios';
 
@@ -51,6 +51,28 @@ export function PublicProfileDrawer({
   
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleSelectProject = (project) => {
+    if (onSelectProject && profileData) {
+      const domainName = project.domain ? (project.domain.name || project.domain) : (project.field || 'Inconnu');
+      onSelectProject({
+        id: project.id,
+        title: project.title,
+        author: getUserDisplayName(profileData),
+        school: project.school || profileData.currentSchool,
+        year: project.year?.toString() || (project.createdAt ? new Date(project.createdAt).getFullYear().toString() : '2026'),
+        type: project.type || 'Illustration',
+        field: domainName,
+        description: project.description,
+        coverUrl: project.coverUrl,
+        imageUrl: project.coverUrl,
+        pdfUrl: project.pdfUrl,
+        pdfSize: project.pdfSize || 'Inconnu',
+        userId: profileData.id,
+        tags: []
+      });
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -280,27 +302,7 @@ export function PublicProfileDrawer({
                   {/* Cover Thumbnail */}
                   <div 
                     className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => {
-                      if (onSelectProject) {
-                         const domainName = project.domain ? (project.domain.name || project.domain) : 'Inconnu';
-                         onSelectProject({
-                           id: project.id,
-                           title: project.title,
-                           author: getUserDisplayName(profileData),
-                           school: project.school || profileData.currentSchool,
-                           year: project.year?.toString() || new Date(project.createdAt).getFullYear().toString(),
-                           type: project.type,
-                           field: domainName,
-                           description: project.description,
-                           coverUrl: project.coverUrl,
-                           imageUrl: project.coverUrl,
-                           pdfUrl: project.pdfUrl,
-                           pdfSize: project.pdfSize || 'Inconnu',
-                           userId: profileData.id,
-                           tags: []
-                         });
-                      }
-                    }}
+                    onClick={() => handleSelectProject(project)}
                   >
                     {project.coverUrl ? (
                       <img 
@@ -318,27 +320,7 @@ export function PublicProfileDrawer({
                     <div>
                       <h3 
                         className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
-                        onClick={() => {
-                          if (onSelectProject) {
-                             const domainName = project.domain ? (project.domain.name || project.domain) : 'Inconnu';
-                             onSelectProject({
-                               id: project.id,
-                               title: project.title,
-                               author: getUserDisplayName(profileData),
-                               school: project.school || profileData.currentSchool,
-                               year: project.year?.toString() || new Date(project.createdAt).getFullYear().toString(),
-                               type: project.type,
-                               field: domainName,
-                               description: project.description,
-                               coverUrl: project.coverUrl,
-                               imageUrl: project.coverUrl,
-                               pdfUrl: project.pdfUrl,
-                               pdfSize: project.pdfSize || 'Inconnu',
-                               userId: profileData.id,
-                               tags: []
-                             });
-                          }
-                        }}
+                        onClick={() => handleSelectProject(project)}
                       >
                         {project.title}
                       </h3>
@@ -348,6 +330,16 @@ export function PublicProfileDrawer({
                       <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md line-clamp-3">
                         {project.description || "Aucune description fournie."}
                       </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => handleSelectProject(project)}
+                        className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-base font-medium rounded-full flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+                      >
+                        <span>Consulter</span>
+                        <ExternalLink className="w-4 h-4 stroke-[2.25]" />
+                      </button>
                     </div>
                   </div>
                 </div>

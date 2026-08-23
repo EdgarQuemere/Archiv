@@ -531,6 +531,9 @@ export function App() {
         covers={covers}
         onOpenInfo={() => setIsInfoOpen(true)}
         onOpenSubmit={() => setIsSubmitOpen(true)}
+        onSelectProject={(project) => {
+          setSelectedCard(project);
+        }}
         onEditProject={(project) => {
           setEditProjectData(project);
           setIsSubmitOpen(true);

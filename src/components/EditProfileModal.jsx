@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Save, User, Globe, Mail, Lock, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { SCHOOLS_LIST } from '../utils/constants';
+import SearchableSchoolSelect from './SearchableSchoolSelect';
 import { toast } from 'sonner';
 
 /* Phosphor SVG Icon Components matching ProfileDrawer */
@@ -258,13 +259,11 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                 Établissement / École
               </label>
-              <input
-                type="text"
-                name="currentSchool"
+              <SearchableSchoolSelect
                 value={formData.currentSchool}
-                onChange={handleChange}
-                placeholder="ex: ÉNSAD Paris, École Boulle..."
-                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                onChange={(sch) => setFormData(prev => ({ ...prev, currentSchool: sch }))}
+                options={SCHOOLS_LIST.filter(s => s !== "Toutes les écoles")}
+                placeholder="Rechercher une école..."
               />
             </div>
           </div>
