@@ -5,7 +5,13 @@ const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy');
 const prisma = require('../config/db');
-const nodemailer = require('nodemailer');
+
+// Initialisation Mailjet via API HTTP
+const Mailjet = require('node-mailjet');
+const mailjet = Mailjet.apiConnect(
+  process.env.MAILJET_API_KEY,
+  process.env.MAILJET_API_SECRET
+);
 
 exports.register = async (req, res) => {
   const errors = validationResult(req);
@@ -44,21 +50,24 @@ exports.register = async (req, res) => {
     });
 
     const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email/${emailVerificationToken}`;
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'ssl0.ovh.net',
-      port: process.env.SMTP_PORT || 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
 
-    const mailOptions = {
-      from: `"Artchiv" <${process.env.SMTP_USER}>`,
-      to: user.email,
-      subject: 'Vérification de votre adresse email Artchiv',
-      html: `
+    // Envoi via Mailjet API HTTP
+    try {
+      await mailjet.post('send', { version: 'v3.1' }).request({
+        Messages: [
+          {
+            From: {
+              Email: process.env.MAILJET_SENDER_EMAIL,
+              Name: 'Artchiv',
+            },
+            To: [
+              {
+                Email: user.email,
+                Name: user.firstName || user.email,
+              },
+            ],
+            Subject: 'Vérification de votre adresse email Artchiv',
+            HTMLPart: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #EEEEEE; color: #111111; text-align: center; border-radius: 8px;">
       <div style="background-color: #111111; padding: 20px; border-radius: 8px 8px 0 0;">
         <h1 style="color: #EEEEEE; margin: 0; font-size: 24px; letter-spacing: 1px;">ARCHIV</h1>
@@ -77,10 +86,13 @@ exports.register = async (req, res) => {
         </p>
       </div>
     </div>
-  `
-    };
-
-    transporter.sendMail(mailOptions).catch(err => console.error("Erreur d'envoi d'email de vérification:", err));
+            `,
+          },
+        ],
+      });
+    } catch (mailError) {
+      console.error("Erreur d'envoi d'email de vérification Mailjet:", mailError.statusCode, mailError.message);
+    }
 
     res.status(201).json({ message: 'Inscription réussie. Veuillez vérifier votre adresse email pour pouvoir vous connecter.' });
   } catch (error) {
@@ -207,7 +219,6 @@ exports.omniscientAuth = async (req, res) => {
     let email, first_name, last_name;
 
     if (omniToken) {
-      // Decode the temporary token
       const decoded = jwt.verify(omniToken, process.env.JWT_SECRET);
       email = decoded.email;
       first_name = decoded.firstName;
@@ -247,7 +258,6 @@ exports.omniscientAuth = async (req, res) => {
     }
 
     if (!role || !currentSchool) {
-      // Create a temporary token so we don"t reuse the OAuth code
       const tempToken = jwt.sign({ email, firstName: first_name, lastName: last_name }, process.env.JWT_SECRET, { expiresIn: "1h" });
       return res.status(400).json({
         error: "Informations manquantes",
@@ -299,11 +309,9 @@ exports.forgotPassword = async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      // Return 200 even if user is not found to prevent email enumeration
       return res.status(200).json({ message: "Si l'email existe, un lien de réinitialisation a été envoyé." });
     }
 
-    // Generate token
     const crypto = require('crypto');
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
@@ -318,22 +326,23 @@ exports.forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
 
-    // Configuration nodemailer
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'ssl0.ovh.net',
-      port: process.env.SMTP_PORT || 465,
-      secure: true, // true pour le port 465
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: `"Artchiv" <${process.env.SMTP_USER}>`,
-      to: user.email,
-      subject: 'Réinitialisation de votre mot de passe Artchiv',
-      html: `
+    // Envoi via Mailjet API HTTP
+    try {
+      await mailjet.post('send', { version: 'v3.1' }).request({
+        Messages: [
+          {
+            From: {
+              Email: process.env.MAILJET_SENDER_EMAIL,
+              Name: 'Artchiv',
+            },
+            To: [
+              {
+                Email: user.email,
+                Name: user.firstName || user.email,
+              },
+            ],
+            Subject: 'Réinitialisation de votre mot de passe Artchiv',
+            HTMLPart: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #EEEEEE; color: #111111; text-align: center; border-radius: 8px;">
       <div style="background-color: #111111; padding: 20px; border-radius: 8px 8px 0 0;">
         <h1 style="color: #EEEEEE; margin: 0; font-size: 24px; letter-spacing: 1px;">ARCHIV</h1>
@@ -353,11 +362,14 @@ exports.forgotPassword = async (req, res) => {
         </p>
       </div>
     </div>
-  `
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log(`[DEV] Email de réinitialisation envoyé à ${email}`);
+            `,
+          },
+        ],
+      });
+      console.log(`[AUTH] Email de réinitialisation envoyé à ${email}`);
+    } catch (mailError) {
+      console.error("Erreur d'envoi Mailjet réinitialisation:", mailError.statusCode, mailError.message);
+    }
 
     res.status(200).json({ message: "Si l'email existe, un lien de réinitialisation a été envoyé." });
   } catch (error) {
@@ -379,7 +391,7 @@ exports.resetPassword = async (req, res) => {
     const user = await prisma.user.findFirst({
       where: {
         resetPasswordToken: token,
-        resetPasswordExpires: { gt: new Date() } // Ensures token is not expired
+        resetPasswordExpires: { gt: new Date() }
       }
     });
 
@@ -413,7 +425,7 @@ exports.verifyEmail = async (req, res) => {
     const user = await prisma.user.findFirst({
       where: {
         emailVerificationToken: token,
-        emailVerificationExpires: { gt: new Date() } // not expired
+        emailVerificationExpires: { gt: new Date() }
       }
     });
 
