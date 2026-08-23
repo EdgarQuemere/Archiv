@@ -2,8 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 export function SEO({ title, description, image, url }) {
-  const defaultTitle = 'Artchiv\' - La plateforme des étudiants';
-  const defaultDescription = 'La plateforme qui réunit les Books et Mémoires des étudiants en design';
+  const defaultTitle = 'Artchiv\' - La plateforme qui réunit les Books et Mémoires des étudiants en design';
+  const defaultDescription = 'Découvrez les books, mémoires et projets de diplôme des étudiants en écoles de design. Inspirez-vous, partagez vos créations et faites briller votre travail.';
   const defaultImage = 'https://artchiv.fr/archiv_logo_condesed.webp'; // Ou toute autre image par défaut
   const siteUrl = 'https://artchiv.fr';
 

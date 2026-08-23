@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Upload, CheckCircle2, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { pdfjs } from 'react-pdf';
-import { SCHOOLS_LIST } from '../utils/constants';
-import api from '../api/axios'; // Import de l'instance axios avec credentials
+import SearchableSchoolSelect from './SearchableSchoolSelect';
+import api from '../api/axios';
 
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -11,14 +11,13 @@ const IconAddDocument = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
-// Configuration du worker avec un fichier local (.js) pour éviter l'erreur MIME .mjs sur Coolify
-// et avec type: 'module' car pdfjs v4 utilise des modules ES.
+// Configuration du worker local
 pdfjs.GlobalWorkerOptions.workerPort = new Worker('/pdf.worker.js', { type: 'module' });
 
 export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCover }) {
   const [formData, setFormData] = useState({
     title: '',
-    school: SCHOOLS_LIST[1] || '',
+    school: '',
     year: '2026',
     type: 'Mémoire',
     domain: 'Design Graphique',
@@ -48,22 +47,26 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       if (editData) {
         setFormData({
           title: editData.title || '',
-          school: editData.school || SCHOOLS_LIST[1],
+          school: editData.school || '',
           year: editData.year || '2026',
           type: editData.type || 'Mémoire',
           domain: editData.field || '',
           description: editData.description || '',
           allowDownload: editData.allowDownload !== undefined ? editData.allowDownload : true,
+          orientation: editData.orientation || 'portrait',
+          aspectRatio: editData.aspectRatio || 1.414
         });
       } else {
         setFormData({
           title: '',
-          school: SCHOOLS_LIST[1] || '',
+          school: '',
           year: '2026',
           type: 'Mémoire',
           domain: 'Design Graphique',
           description: '',
           allowDownload: true,
+          orientation: 'portrait',
+          aspectRatio: 1.414
         });
       }
       setUploadProgress(0);
@@ -134,9 +137,6 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
-      // Les PDF ont souvent un fond transparent. Lors de la conversion en JPEG,
-      // la transparence devient noire, ce qui masque les dessins/textes noirs.
-      // Il faut donc remplir le canvas de blanc d'abord.
       context.fillStyle = 'white';
       context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -168,6 +168,16 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.school.trim()) {
+      setError(
+        formData.type === 'Book'
+          ? "Veuillez indiquer l'école ou institution ciblée pour ce book."
+          : "Veuillez sélectionner l'école où le mémoire a été soutenu."
+      );
+      return;
+    }
+
     setLoading(true);
     setUploadProgress(0);
     setError('');
@@ -206,15 +216,15 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
         if (onUpdateCover && response.data.project) {
           const p = response.data.project;
           onUpdateCover({
-            ...editData, // keep existing formatted author, etc.
+            ...editData,
             title: p.title,
             school: p.school,
             year: p.year ? p.year.toString() : editData.year,
             type: p.type,
-            field: formData.domain || editData.field, // Use submitted domain
+            field: formData.domain || editData.field,
             description: p.description,
             coverUrl: p.coverUrl,
-            imageUrl: p.coverUrl, // fallback for UI
+            imageUrl: p.coverUrl,
             pdfUrl: p.pdfUrl,
             pdfSize: p.pdfSize,
             orientation: p.orientation,
@@ -254,6 +264,8 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       setUploadProgress(0);
     }
   };
+
+  const isBook = formData.type === 'Book';
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111] ">
@@ -310,7 +322,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
               <input
                 required
                 type="text"
-                placeholder="ex: L'archéologie des machines"
+                placeholder={isBook ? "ex: Portfolio 2026 - Direction Artistique" : "ex: L'archéologie des machines"}
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
@@ -337,16 +349,16 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
               <div>
                 <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
-                  Domaine {formData.type === 'Book' ? <span className="text-[#999999] font-normal">(optionnel)</span> : '*'}
+                  Domaine {isBook ? <span className="text-[#999999] font-normal">(optionnel)</span> : '*'}
                 </label>
                 <div className="relative">
                   <select
-                    required={formData.type !== 'Book'}
+                    required={!isBook}
                     value={formData.domain}
                     onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
                     className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
-                    <option value="">{formData.type === 'Book' ? 'Tous les domaines' : 'Sélectionner un domaine'}</option>
+                    <option value="">{isBook ? 'Tous les domaines' : 'Sélectionner un domaine'}</option>
                     {domains.map((dom) => (
                       <option key={dom} value={dom}>
                         {dom}
@@ -358,27 +370,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div>
-                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
-                  École / Institution *
-                </label>
-                <div className="relative">
-                  <select
-                    value={formData.school}
-                    onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
-                  >
-                    {SCHOOLS_LIST.filter(s => s !== "Toutes les écoles").map((sch) => (
-                      <option key={sch} value={sch}>
-                        {sch}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
-                </div>
-              </div>
-
+            <div>
               <div>
                 <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                   Année *
@@ -393,7 +385,21 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 />
               </div>
             </div>
-
+            <div>
+              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+                {isBook ? "École / Institution ciblée *" : "École / Institution d'origine *"}
+              </label>
+              <SearchableSchoolSelect
+                value={formData.school}
+                onChange={(sch) => setFormData({ ...formData, school: sch })}
+                placeholder={isBook ? "École visée par le book..." : "École du mémoire..."}
+              />
+              <span className="text-[10px] text-slate-500 block mt-1 leading-tight">
+                {isBook
+                  ? "🎯 Indiquez l'école ou le concours auquel ce book est destiné."
+                  : "🎓 L'école dans laquelle vous avez soutenu ce mémoire."}
+              </span>
+            </div>
             <div>
               <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
                 Résumé succinct
@@ -514,3 +520,5 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     </div>
   );
 }
+
+export default SubmitModal;

@@ -1,8 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import Register from './components/auth/Register.jsx'
-import Login from './components/auth/Login.jsx'
 import Success from './components/auth/Success.jsx'
 import './fonts.css'
 import './index.css'

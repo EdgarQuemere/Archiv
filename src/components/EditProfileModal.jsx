@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Save, User, Globe, Mail, Lock, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
-import { SCHOOLS_LIST } from '../utils/constants';
 import SearchableSchoolSelect from './SearchableSchoolSelect';
 import { toast } from 'sonner';
 
@@ -64,7 +63,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
         pseudo: userProfile.pseudo || '',
         displayPreference: userProfile.displayPreference || 'NAME',
         role: userProfile.role || 'Etudiant',
-        currentSchool: userProfile.currentSchool || SCHOOLS_LIST[1] || 'ÉNSAD Paris',
+        currentSchool: userProfile.currentSchool || '',
         email: userProfile.email || '',
         newPassword: '',
         bio: userProfile.bio || '',
@@ -262,7 +261,6 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
               <SearchableSchoolSelect
                 value={formData.currentSchool}
                 onChange={(sch) => setFormData(prev => ({ ...prev, currentSchool: sch }))}
-                options={SCHOOLS_LIST.filter(s => s !== "Toutes les écoles")}
                 placeholder="Rechercher une école..."
               />
             </div>

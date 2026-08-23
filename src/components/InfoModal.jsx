@@ -208,10 +208,10 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         {/* 3. CONTACT & PARTNERS SECTION */}
         <div className="space-y-3 pt-2">
           <a
-            href="mailto:contact@archiv.fr"
+            href="mailto:contact@artchiv.fr"
             className="block text-sm italic font-medium hover:underline text-[#111111]"
           >
-            contact@archiv.fr
+            contact@artchiv.fr
           </a>
 
           <button
@@ -278,10 +278,10 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
 
           <div className="space-y-3 pt-2">
             <a
-              href="mailto:contact@archiv.fr"
+              href="mailto:contact@artchiv.fr"
               className="block text-base italic font-medium hover:underline text-[#111111]"
             >
-              contact@archiv.fr
+              contact@artchiv.fr
             </a>
 
             <button
