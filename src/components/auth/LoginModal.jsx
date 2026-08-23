@@ -186,7 +186,7 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
               className="w-full h-[40px] bg-[#111111] text-[#EEEEEE] rounded-[4px] border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-3 transition-colors cursor-pointer shadow-sm"
             >
               <img src="/omniscient_logo_white.svg" alt="Omniscient Design" className="h-4 w-auto object-contain" />
-              <span>Continuer avec Omniscient Design</span>
+              <span>Se connecter avec Omniscient Design</span>
             </button>
 
             <div className="w-full flex justify-center">

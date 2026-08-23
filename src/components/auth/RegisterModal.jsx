@@ -217,7 +217,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
           await register(formData);
         }
       }
-      
+
       if (onSuccess) onSuccess();
       handleClose();
     } catch (err) {
@@ -286,7 +286,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                 className="w-full h-[40px] bg-[#111111] text-[#EEEEEE] rounded-[4px] border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-3 transition-colors cursor-pointer shadow-sm"
               >
                 <img src="/omniscient_logo_white.svg" alt="Omniscient Design" className="h-4 w-auto object-contain" />
-                <span>Continuer avec Omniscient Design</span>
+                <span>S'inscrire avec Omniscient Design</span>
               </button>
 
               <div className="w-full flex justify-center">
@@ -333,7 +333,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="text-xs sm:text-sm font-medium block mb-1">Pseudo (Optionnel)</label>
                 <input
@@ -381,9 +381,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                 </div>
                 {/* Critères du mot de passe */}
                 <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    showCriteria ? 'max-h-24 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
-                  }`}
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${showCriteria ? 'max-h-24 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
+                    }`}
                 >
                   <div className="flex flex-col gap-1.5 text-[10px] sm:text-xs pl-2">
                     <div className={`flex items-center gap-2 ${hasMinLength ? 'text-green-600' : 'text-slate-500'}`}>
@@ -433,7 +432,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
             <>
               {/* Avatar Upload */}
               <div className="flex flex-col items-center mb-4">
-                <div 
+                <div
                   className="relative w-20 h-20 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[10px] overflow-hidden cursor-pointer group shadow-sm flex items-center justify-center"
                   onClick={() => fileInputRef.current?.click()}
                 >

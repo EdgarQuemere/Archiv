@@ -95,7 +95,9 @@ export function ProfileDrawer({
       onSelectProject({
         id: project.id,
         title: project.title,
-        author: project.author || getUserDisplayName(profileData) || 'Auteur',
+        author: typeof project.author === 'object' && project.author !== null
+          ? getUserDisplayName(project.author)
+          : (project.author || getUserDisplayName(profileData) || 'Auteur'),
         school: project.school || profileData?.currentSchool || '',
         year: project.year?.toString() || (project.createdAt ? new Date(project.createdAt).getFullYear().toString() : '2026'),
         type: project.type || 'Mémoire',
@@ -367,7 +369,7 @@ export function ProfileDrawer({
         {/* LEFT COLUMN - USER PROFILE INFO */}
         <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-4 xs:p-6 md:p-6 md:pl-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
 
-          <div className="max-w-md space-y-5 xs:space-y-6 sm:space-y-7">
+          <div className="max-w-md space-y-4">
             {/* Avatar (NO stroke/border) */}
             <div
               className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]"
@@ -398,7 +400,7 @@ export function ProfileDrawer({
 
             {/* Name & Small Omniscient Design Logo */}
             <div className="flex items-center gap-2">
-              <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
+              <h1 className="text-2xl xs:text-3xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
                 <span>{getUserDisplayName(profileData)}</span>
                 {profileData.isOmniscient && (
                   <img
@@ -411,17 +413,17 @@ export function ProfileDrawer({
               </h1>
             </div>
 
-            {/* Role */}
-            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.role || 'Enseignant'}</p>
+            {/* Role + School — grouped tight as secondary identity info */}
+            <div className="space-y-1">
+              {profileData.role && <p className="text-base font-medium text-[#111111]">{profileData.role}</p>}
+              {profileData.currentSchool && <p className="text-base font-medium text-[#555555]">{profileData.currentSchool}</p>}
+            </div>
 
-            {/* School */}
-            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.currentSchool || 'HEAR – Strasbourg'}</p>
-
-            {/* Email */}
-            <p className="text-sm xs:text-base font-medium text-[#111111] break-all">{profileData.email}</p>
-
-            {/* Password */}
-            <p className="text-sm xs:text-base font-medium text-[#111111] tracking-widest">**************</p>
+            {/* Credentials — email + password grouped tight */}
+            <div className="space-y-1">
+              <p className="text-base font-medium text-[#111111] break-all">{profileData.email}</p>
+              <p className="text-base font-medium text-[#AAAAAA] tracking-widest">**************</p>
+            </div>
 
             {/* Social Links (User-provided Phosphor SVGs) */}
             <div className="flex items-center gap-5 pt-1">
@@ -575,10 +577,10 @@ export function ProfileDrawer({
                           {project.title}
                         </h3>
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.school} – {project.year} – {project.type || 'Illustration'}
+                          {project.school} – {project.year} – {project.type || 'Illustration'} {project.domain?.name || project.field ? ` – ${project.domain?.name || project.field}` : ''}
                         </p>
                         <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
-                          {project.description || "Création des principes virtuel réagisse la pression et à la vitesse du stylet pour une peinture numerique organique."}
+                          {project.description || "Pas de description"}
                         </p>
                       </div>
 
@@ -657,10 +659,10 @@ export function ProfileDrawer({
                           {project.title}
                         </h3>
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.author ? `${project.author} – ` : ''}{project.school} – {project.year} – {project.type || 'Book'}
+                          {project.author ? `${typeof project.author === 'object' ? getUserDisplayName(project.author) : project.author} – ` : ''}{project.school} – {project.year} – {project.type}{project.domain?.name || project.field ? ` – ${project.domain?.name || project.field}` : ''}
                         </p>
                         <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
-                          {project.description || "Création des principes virtuel réagisse la pression et à la vitesse du stylet pour une peinture numerique organique."}
+                          {project.description || "Pas de description"}
                         </p>
                       </div>
 
