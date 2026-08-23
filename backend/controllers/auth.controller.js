@@ -69,7 +69,7 @@ exports.register = async (req, res) => {
             Subject: 'Vérification de votre adresse email Artchiv',
             HTMLPart: `
     <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #111111; text-align: center;">
-      <div style="background-color: #111111; padding: 40px 20px; border-radius: 12px 12px 0 0;">
+      <div style="background-color: #000; padding: 40px 20px; border-radius: 12px 12px 0 0;">
         <img src="${process.env.FRONTEND_URL || 'http://localhost:3000'}/artchiv-logo.webp" alt="Artchiv" style="height: 40px; margin-bottom: 0;" />
       </div>
       <div style="background-color: #FFFFFF; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
@@ -433,7 +433,7 @@ exports.verifyEmail = async (req, res) => {
       return res.status(400).json({ error: "Le lien de vérification est invalide ou a expiré." });
     }
 
-    await prisma.user.update({
+    const verifiedUser = await prisma.user.update({
       where: { id: user.id },
       data: {
         isEmailVerified: true,
@@ -442,7 +442,28 @@ exports.verifyEmail = async (req, res) => {
       }
     });
 
-    res.status(200).json({ message: "Votre adresse email a été vérifiée avec succès. Vous pouvez maintenant vous connecter." });
+    // Connexion automatique après vérification (renommé en jwtToken)
+    const jwtToken = jwt.sign({ userId: verifiedUser.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.cookie('auth_token', jwtToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.status(200).json({
+      message: "Votre adresse email a été vérifiée avec succès.",
+      user: {
+        id: verifiedUser.id,
+        email: verifiedUser.email,
+        firstName: verifiedUser.firstName,
+        lastName: verifiedUser.lastName,
+        pseudo: verifiedUser.pseudo,
+        displayPreference: verifiedUser.displayPreference,
+        profilePicture: verifiedUser.profilePicture,
+        isAdmin: verifiedUser.isAdmin
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erreur lors de la vérification de l'email" });
@@ -498,7 +519,7 @@ exports.resendVerification = async (req, res) => {
             Subject: 'Vérification de votre adresse email Artchiv',
             HTMLPart: `
     <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #111111; text-align: center;">
-      <div style="background-color: #111111; padding: 40px 20px; border-radius: 12px 12px 0 0;">
+      <div style="background-color: #000f; padding: 40px 20px; border-radius: 12px 12px 0 0;">
         <img src="${process.env.FRONTEND_URL || 'http://localhost:3000'}/artchiv-logo.webp" alt="Artchiv" style="height: 40px; margin-bottom: 0;" />
       </div>
       <div style="background-color: #FFFFFF; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
