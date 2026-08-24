@@ -1,6 +1,5 @@
-import { getUserDisplayName } from '../utils/userUtils';
-import React, { useState, useRef, useEffect, useLayoutEffect, useContext } from 'react';
-import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Info, User, Columns, Download, Bookmark } from 'lucide-react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Info, Download, Bookmark, AlertCircle, RefreshCw } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import SEO from './SEO';
 import api from '../api/axios';
@@ -17,7 +16,6 @@ const pdfOptions = {
   wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
 };
 
-// User provided SVGs
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
@@ -36,18 +34,6 @@ const PageDoubleSVG = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
-const DownloadSVG = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 256 256">
-    <path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path>
-  </svg>
-);
-
-const BookmarkSVG = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 256 256">
-    <path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z"></path>
-  </svg>
-);
-
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M216.49,79.51l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.51ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm104-60a12,12,0,0,1-12,12H140v12a12,12,0,0,1-24,0V164H104a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,164,152Z" />
@@ -61,6 +47,14 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const isPortrait = item?.orientation === 'portrait' || (item?.aspectRatio && item?.aspectRatio > 1.1);
 
   const isSaved = user?.savedProjects?.some(sp => sp.projectId === item?.id);
+
+  const authorDisplayName = typeof item?.author === 'string' && item.author.trim() !== ''
+    ? item.author
+    : (item?.author?.firstName || item?.author?.lastName)
+      ? `${item.author?.firstName || ''} ${item.author?.lastName || ''}`.trim()
+      : item?.author?.pseudo || 'Auteur inconnu';
+
+  const authorIdentifier = item?.authorPseudo || item?.author?.pseudo || item?.userId;
 
   const handleDownload = async () => {
     try {
@@ -98,26 +92,27 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     } finally {
       setIsSaving(false);
     }
-  }; const [zoomLevel, setZoomLevel] = useState(() => {
+  };
+
+  const [zoomLevel, setZoomLevel] = useState(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     if (isMobile) {
       return isPortrait ? 24 : 28;
     }
     return isPortrait ? 36 : 50;
   });
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState('single'); // 'single' or 'double'
+  const [viewMode, setViewMode] = useState('single');
   const [numPages, setNumPages] = useState(0);
 
   const scrollContainerRef = useRef(null);
   const pageRefs = useRef([]);
   const isNavigatingRef = useRef(false);
   const navTimerRef = useRef(null);
-  const isInitialMount = useRef(true);
   const rafRef = useRef(null);
   const scrollStopTimerRef = useRef(null);
   const [isScrolling, setIsScrolling] = useState(false);
-
   const focalRatioRef = useRef(0.5);
 
   if (pageRefs.current.length !== numPages) {
@@ -131,15 +126,11 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     const handleScroll = () => {
       if (isNavigatingRef.current) return;
 
-      // Throttle via RAF to avoid hammering state on every pixel
       if (rafRef.current) return;
       rafRef.current = requestAnimationFrame(() => {
         rafRef.current = null;
-
-        // Mark as scrolling (disables heavy layers)
         setIsScrolling(true);
 
-        // Debounce: re-enable layers 150ms after scroll stops
         if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
         scrollStopTimerRef.current = setTimeout(() => {
           setIsScrolling(false);
@@ -286,11 +277,11 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   return (
     <div className="fixed inset-0 z-[70] bg-[#EEEEEE] text-[#111111] flex flex-col font-sans font-medium overflow-hidden animate-in fade-in duration-200">
       <SEO
-  title={`${item.title} - ${item.author}`}
-  description={`${item.type || 'Projet'} par ${item.author} (${item.school}, ${item.year})`}
-  image={item.coverUrl}
-  url={`/projet/${item.slug || item.id}`}
-/>
+        title={`${item.title} - ${authorDisplayName}`}
+        description={`${item.type || 'Projet'} par ${authorDisplayName} (${item.school || ''}, ${item.year || ''})`}
+        image={item.coverUrl}
+        url={`/projet/${item.slug || item.id}`}
+      />
 
       {/* TOP LEFT BUTTONS */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
@@ -322,7 +313,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               onOpenLogin?.();
             }
           }}
-          title={user ? user.name || 'Profil' : 'Se connecter'}
+          title={user ? user.name || user.pseudo || 'Profil' : 'Se connecter'}
           className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
           <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -363,7 +354,18 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               </h1>
 
               <p className="text-xs sm:text-base font-medium mb-1 sm:mb-2 text-[#111111]">
-                par <span onClick={() => { onClose?.(); onOpenPublicProfile && onOpenPublicProfile(item.userId); }} className="underline cursor-pointer hover:opacity-80 font-bold">{item.author}</span>
+                par{' '}
+                <span
+                  onClick={() => {
+                    onClose?.();
+                    if (onOpenPublicProfile && authorIdentifier) {
+                      onOpenPublicProfile(authorIdentifier);
+                    }
+                  }}
+                  className="underline cursor-pointer hover:opacity-80 font-bold"
+                >
+                  {authorDisplayName}
+                </span>
               </p>
 
               <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
@@ -380,7 +382,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
           {/* Action Buttons Row */}
           <div className="flex items-center gap-1.5 sm:gap-2.5">
-            {/* Toggle Info Button (< / >) */}
             <button
               onClick={() => setShowInfo((prev) => !prev)}
               title={showInfo ? 'Masquer les informations' : 'Afficher les informations'}
@@ -393,19 +394,17 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               )}
             </button>
 
-            {/* Download Button */}
             {item.allowDownload && (
               <button
                 onClick={handleDownload}
                 className="h-9 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
-                title={`Télécharger le PDF`}
+                title="Télécharger le PDF"
               >
                 <span>Télécharger {item.pdfSize ? `(${item.pdfSize})` : ''}</span>
                 <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
               </button>
             )}
 
-            {/* Bookmark / Save Button */}
             <button
               onClick={toggleSave}
               disabled={isSaving}
@@ -432,8 +431,44 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           }}
           className="w-full h-full overflow-hidden"
           loading={
-            <div className="flex items-center justify-center h-full w-full bg-[#EEEEEE]">
-              <span className="text-[#111111] font-mono text-xs sm:text-sm font-bold">Chargement du PDF...</span>
+            <div className="flex flex-col items-center justify-center h-full w-full bg-[#EEEEEE] gap-3">
+              <div className="w-6 h-6 border-2 border-[#111111]/20 border-t-[#111111] rounded-full animate-spin" />
+              <span className="text-[#111111] font-mono text-xs sm:text-sm font-semibold tracking-tight">
+                Chargement du document...
+              </span>
+            </div>
+          }
+          error={
+            <div className="flex flex-col items-center justify-center h-full w-full bg-[#EEEEEE] p-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] flex items-center justify-center mb-4 shadow-sm">
+                <AlertCircle className="w-7 h-7 text-[#111111]" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-[#111111] mb-1.5">
+                Impossible d'afficher le document
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-sm mb-6 leading-relaxed">
+                Le fichier PDF n'a pas pu être chargé ou son format n'est pas pris en charge par le visualiseur.
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="h-10 px-5 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-xs sm:text-sm font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 stroke-[2.25]" />
+                  <span>Réessayer</span>
+                </button>
+                {item.allowDownload && item.pdfUrl && (
+                  <a
+                    href={item.pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 px-5 rounded-full bg-[#111111] hover:bg-black text-xs sm:text-sm font-medium text-white flex items-center gap-2 transition-colors shadow-sm"
+                  >
+                    <Download className="w-3.5 h-3.5 stroke-[2.25]" />
+                    <span>Télécharger directement</span>
+                  </a>
+                )}
+              </div>
             </div>
           }
         >
@@ -476,10 +511,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           </div>
         </Document>
 
-        {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR (3 Segmented Pill Containers stacked vertically on mobile) */}
+        {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR */}
         <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end sm:flex-row sm:items-center gap-2 sm:gap-3.5 pointer-events-auto font-sans max-w-full">
-
-          {/* Segment 1: View Mode Switcher (Single / Double) */}
+          {/* Segment 1: Single / Double View */}
           <div className="flex h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={() => setViewMode('single')}
@@ -506,7 +540,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             </button>
           </div>
 
-          {/* Segment 2: Zoom Controls (- / +) */}
+          {/* Segment 2: Zoom */}
           <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handleZoomOut}
@@ -527,7 +561,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             </button>
           </div>
 
-          {/* Segment 3: Page Navigation (^ / v) & Counter (1 sur 12) */}
+          {/* Segment 3: Pagination */}
           <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handlePrevPage}
@@ -549,7 +583,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
 
-            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs sm:text-base font-medium  min-w-[56px] xs:min-w-[64px] sm:min-w-[80px]">
+            <div className="h-full px-2.5 sm:px-4 flex items-center justify-center bg-[#111111] text-[#EEEEEE] text-xs sm:text-base font-medium min-w-[56px] xs:min-w-[64px] sm:min-w-[80px]">
               {currentPage} sur {numPages || 1}
             </div>
           </div>

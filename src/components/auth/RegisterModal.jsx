@@ -19,7 +19,7 @@ const IconEyeClosed = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
-export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
+export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion = false }) {
   const { register, googleAuth, omniscientAuth } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -58,13 +58,30 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
   const backdropRef = useRef(null);
   const dialogRef = useRef(null);
 
+  const handleClose = () => {
+    localStorage.removeItem('omni_token');
+    localStorage.removeItem('omni_partial');
+    localStorage.removeItem('google_token');
+    setGoogleToken(null);
+    setEmailSent(false);
+    setRegisteredEmail('');
+    setError('');
+
+    if (dialogRef.current && backdropRef.current) {
+      gsap.timeline({ onComplete: onClose })
+        .to(dialogRef.current, { opacity: 0, scale: 0.95, y: 10, duration: 0.2, ease: 'power2.in' })
+        .to(backdropRef.current, { opacity: 0, duration: 0.15 }, '-=0.1');
+    } else {
+      onClose();
+    }
+  };
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setLoading(true);
       setError('');
       await googleAuth(credentialResponse.credential || credentialResponse.access_token);
-      setRegisteredEmail(formData.email || '');
-      setEmailSent(true);
+      handleClose();
     } catch (err) {
       if (err.response && err.response.data && err.response.data.requireMoreInfo) {
         if (credentialResponse.credential) {
@@ -74,7 +91,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
             ...prev,
             firstName: decoded.given_name || '',
             lastName: decoded.family_name || '',
-            email: decoded.email
+            email: decoded.email || ''
           }));
         }
         setStep(2);
@@ -112,6 +129,9 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
       const partial = localStorage.getItem('omni_partial');
       const storedGoogleToken = localStorage.getItem('google_token');
 
+      setEmailSent(false);
+      setError('');
+
       if (token && partial) {
         const data = JSON.parse(partial);
         setFormData(prev => ({ ...prev, ...data }));
@@ -124,7 +144,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
             ...prev,
             firstName: decoded.given_name || '',
             lastName: decoded.family_name || '',
-            email: decoded.email
+            email: decoded.email || ''
           }));
           setStep(2);
         } catch (e) {
@@ -132,6 +152,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
           setStep(1);
         }
         localStorage.removeItem('google_token');
+      } else if (isOAuthCompletion) {
+        setStep(2);
       } else {
         setFormData({
           firstName: '',
@@ -146,36 +168,17 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
           instaLink: '',
           personalLink: ''
         });
-        setError('');
         setStep(1);
         setGoogleToken(null);
       }
 
-      // Anime l'ouverture proprement
       if (backdropRef.current && dialogRef.current) {
         gsap.timeline()
           .fromTo(backdropRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
           .fromTo(dialogRef.current, { opacity: 0, scale: 0.95, y: 15 }, { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: 'power2.out' }, '-=0.15');
       }
     }
-  }, [isOpen]);
-
-  const handleClose = () => {
-    localStorage.removeItem('omni_token');
-    localStorage.removeItem('omni_partial');
-    localStorage.removeItem('google_token');
-    setGoogleToken(null);
-    setEmailSent(false);
-    setRegisteredEmail('');
-
-    if (dialogRef.current && backdropRef.current) {
-      gsap.timeline({ onComplete: onClose })
-        .to(dialogRef.current, { opacity: 0, scale: 0.95, y: 10, duration: 0.2, ease: 'power2.in' })
-        .to(backdropRef.current, { opacity: 0, duration: 0.15 }, '-=0.1');
-    } else {
-      onClose();
-    }
-  };
+  }, [isOpen, isOAuthCompletion]);
 
   const handleSwitchToLogin = () => {
     if (dialogRef.current && backdropRef.current) {
@@ -215,32 +218,49 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
       return;
     }
 
+    if (!formData.pseudo || formData.pseudo.trim().length < 3) {
+      setError('Le pseudo est obligatoire (3 caractères minimum).');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
       const omniToken = localStorage.getItem('omni_token');
+      const isOAuth = Boolean(omniToken || googleToken || isOAuthCompletion);
+
       if (omniToken) {
         await omniscientAuth(undefined, { omniToken, ...formData });
         localStorage.removeItem('omni_token');
         localStorage.removeItem('omni_partial');
-      } else if (googleToken) {
-        await googleAuth(googleToken, formData);
-      } else {
-        if (avatarFile) {
-          const formDataPayload = new FormData();
-          Object.keys(formData).forEach(key => {
-            formDataPayload.append(key, formData[key]);
-          });
-          formDataPayload.append('profilePicture', avatarFile);
-          await register(formDataPayload);
-        } else {
-          await register(formData);
-        }
+        handleClose();
+        return;
       }
 
-      setRegisteredEmail(formData.email || '');
-      setEmailSent(true);
+      if (googleToken) {
+        await googleAuth(googleToken, formData);
+        handleClose();
+        return;
+      }
+
+      if (avatarFile) {
+        const formDataPayload = new FormData();
+        Object.keys(formData).forEach(key => {
+          formDataPayload.append(key, formData[key]);
+        });
+        formDataPayload.append('profilePicture', avatarFile);
+        await register(formDataPayload);
+      } else {
+        await register(formData);
+      }
+
+      if (!isOAuth) {
+        setRegisteredEmail(formData.email || '');
+        setEmailSent(true);
+      } else {
+        handleClose();
+      }
     } catch (err) {
       if (err.response && err.response.data) {
         if (err.response.data.errors && err.response.data.errors.length > 0) {
@@ -258,16 +278,15 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
     }
   };
 
-  // ✅ Emplacement correct pour la condition de rendu
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111]">
-     <SEO
-      title="Créer un compte | Artchiv'"
-      description="Rejoignez la communauté Artchiv' pour partager vos portfolios, books et mémoires de fin d'études en design."
-      url="/inscription"
-    />
+      <SEO
+        title="Créer un compte | Artchiv'"
+        description="Rejoignez la communauté Artchiv' pour partager vos portfolios, books et mémoires de fin d'études en design."
+        url="/inscription"
+      />
       <div
         ref={backdropRef}
         className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs"
@@ -389,18 +408,6 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                   </div>
 
                   <div>
-                    <label className="text-xs sm:text-sm font-medium block mb-1">Pseudo (Optionnel)</label>
-                    <input
-                      type="text"
-                      name="pseudo"
-                      value={formData.pseudo}
-                      onChange={handleChange}
-                      placeholder="Ton pseudo (min 3 caractères)"
-                      className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
-                    />
-                  </div>
-
-                  <div>
                     <label className="text-xs sm:text-sm font-medium block mb-1">Email *</label>
                     <input
                       required
@@ -505,25 +512,36 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                     />
                   </div>
 
+                  {/* Pseudo TOUJOURS affiché et obligatoire à l'étape 2 */}
                   <div>
-                    <div className={formData.role === 'Autre' ? "col-span-2" : ""}>
-                      <label className="text-xs sm:text-sm font-medium block mb-1">Rôle *</label>
-                      <div className="relative">
-                        <select
-                          name="role"
-                          value={formData.role}
-                          onChange={handleChange}
-                          className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20 appearance-none cursor-pointer"
-                        >
-                          <option value="Etudiant">Étudiant(e)</option>
-                          <option value="Enseignant">Enseignant(e)</option>
-                          <option value="Alumni">Alumni</option>
-                          <option value="Autre">Autre</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
-                      </div>
-                    </div>
+                    <label className="text-xs sm:text-sm font-medium block mb-1">Pseudo *</label>
+                    <input
+                      required
+                      type="text"
+                      name="pseudo"
+                      value={formData.pseudo}
+                      onChange={handleChange}
+                      placeholder="Ton pseudo (min 3 caractères)"
+                      className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
+                    />
+                  </div>
 
+                  <div>
+                    <label className="text-xs sm:text-sm font-medium block mb-1">Rôle *</label>
+                    <div className="relative">
+                      <select
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20 appearance-none cursor-pointer"
+                      >
+                        <option value="Etudiant">Étudiant(e)</option>
+                        <option value="Enseignant">Enseignant(e)</option>
+                        <option value="Alumni">Alumni</option>
+                        <option value="Autre">Autre</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
+                    </div>
                   </div>
 
                   <div>
@@ -538,6 +556,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                       </div>
                     )}
                   </div>
+
                   <div>
                     <label className="text-xs sm:text-sm font-medium block mb-1">Lien Behance (Optionnel)</label>
                     <input
@@ -587,7 +606,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, onSuccess }) {
                   ) : (
                     <UserPlus className="w-4 h-4 stroke-[2.25]" />
                   )}
-                  <span>{step === 1 ? 'Suivant' : (loading ? 'Création...' : 'Créer un compte')}</span>
+                  <span>{step === 1 ? 'Suivant' : (loading ? 'Création...' : 'Terminer')}</span>
                 </button>
                 <button
                   type="button"

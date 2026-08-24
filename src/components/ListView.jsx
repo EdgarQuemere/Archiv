@@ -395,7 +395,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             </h3>
 
             <p className="text-xs sm:text-sm font-medium mb-1 sm:mb-2">
-              par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author}</span>
+              par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.authorPseudo || currentInfoItem.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author}</span>
             </p>
 
             <p className="text-[11px] sm:text-xs font-mono mb-2 sm:mb-4 text-slate-600">

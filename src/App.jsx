@@ -22,7 +22,8 @@ import { AuthContext } from './context/AuthContext';
 import axios from './api/axios';
 import { Toaster } from 'sonner';
 
-// Fisher-Yates Shuffle algorithm for randomizing memory covers
+
+// Algorithme de mélange Fisher-Yates
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -38,12 +39,12 @@ const IconAddDocument = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
-// Fonction de formatage d'un projet brut venant de l'API
+// Formatage standardisé des données d'un projet
 const formatProjectData = (p) => ({
   id: p.id,
   slug: p.slug,
   title: p.title,
-  author: p.author ? `${p.author.firstName || ''} ${p.author.lastName || ''}`.trim() : 'Unknown',
+  authorPseudo: p.author?.pseudo || p.userId,
   authorProfilePicture: p.author ? p.author.profilePicture : null,
   isOmniscient: p.author ? p.author.isOmniscient : false,
   school: p.school,
@@ -68,15 +69,16 @@ export function App() {
   const [activeView, setActiveView] = useState('canvas'); // 'canvas' | 'network' | 'list'
   const [focusedCoverId, setFocusedCoverId] = useState(null);
   const mainContainerRef = useRef(null);
+  const [isOAuthCompletion, setIsOAuthCompletion] = useState(false);
 
-  // Camera state locked at 1.0 zoom
+  // État de la caméra verrouillée
   const [camera, setCamera] = useState({
     x: typeof window !== 'undefined' ? Math.round(window.innerWidth / 2 - 110) : 0,
     y: typeof window !== 'undefined' ? Math.round(window.innerHeight / 2 - 130) : 0,
     zoom: 1.0
   });
 
-  // Search & Filter State
+  // Filtres et recherche
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     type: 'Tous',
@@ -85,7 +87,7 @@ export function App() {
     year: 'Toutes'
   });
 
-  // Modals & Drawers state
+  // États des tiroirs et fenêtres modales
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -100,7 +102,7 @@ export function App() {
 
   const { user, logout } = useContext(AuthContext);
 
-  // 🚀 1. Détection initiale des URLs directes au chargement
+  // 🚀 1. Détection initiale unique au chargement (Routes directes)
   useEffect(() => {
     const pathname = window.location.pathname;
 
@@ -111,7 +113,6 @@ export function App() {
     } else if (pathname === '/inscription' || pathname === '/register') {
       setIsRegisterOpen(true);
     } else if (pathname.startsWith('/projet/')) {
-      // Chargement direct d'un projet par son slug ou son id (/projet/mon-slug)
       const identifier = pathname.replace('/projet/', '').trim();
       if (identifier) {
         axios.get(`/projects/${identifier}`)
@@ -120,12 +121,22 @@ export function App() {
               setSelectedCard(formatProjectData(res.data.project));
             }
           })
-          .catch((err) => console.error("Erreur chargement direct projet:", err));
+          .catch((err) => console.error("Erreur chargement direct projet :", err));
+      }
+    } else if (pathname.startsWith('/profil/')) {
+      const profileId = decodeURIComponent(pathname.replace('/profil/', '').trim());
+      if (profileId) {
+        setPublicProfileUserId(profileId);
+        setIsPublicProfileOpen(true);
       }
     }
 
     if (window.location.search.includes('complete_profile=true')) {
+      setIsOAuthCompletion(true);
       setIsRegisterOpen(true);
+      const url = new URL(window.location);
+      url.searchParams.delete('complete_profile');
+      window.history.replaceState({}, '', url.pathname);
     }
   }, []);
 
@@ -142,6 +153,24 @@ export function App() {
   const handleCloseInfo = () => {
     setIsInfoOpen(false);
     if (window.location.pathname === '/info') {
+      window.history.pushState(null, '', '/');
+    }
+  };
+
+  // Profil public
+  const handleOpenPublicProfile = (userIdOrPseudo) => {
+    setPublicProfileUserId(userIdOrPseudo);
+    setIsPublicProfileOpen(true);
+    const targetUrl = `/profil/${encodeURIComponent(userIdOrPseudo)}`;
+    if (window.location.pathname !== targetUrl) {
+      window.history.pushState(null, '', targetUrl);
+    }
+  };
+
+  const handleClosePublicProfile = () => {
+    setIsPublicProfileOpen(false);
+    setPublicProfileUserId(null);
+    if (window.location.pathname.startsWith('/profil/')) {
       window.history.pushState(null, '', '/');
     }
   };
@@ -178,7 +207,7 @@ export function App() {
     }
   };
 
-  // 🚀 Clic sur un projet (Met l'URL à jour en /projet/:slug)
+  // Clic sur une carte projet
   const handleCardClick = async (item) => {
     const projectSlug = item.slug || item.id;
     window.history.pushState(null, '', `/projet/${projectSlug}`);
@@ -192,16 +221,16 @@ export function App() {
       const response = await axios.get(`/projects/${projectSlug}`);
       if (response.data && response.data.project) {
         const formatted = formatProjectData(response.data.project);
-        setCovers(prev => prev.map(c => c.id === item.id ? formatted : c));
+        setCovers((prev) => prev.map((c) => (c.id === item.id ? formatted : c)));
         setSelectedCard(formatted);
       }
     } catch (err) {
-      console.error("Erreur lors de la récupération des détails:", err);
+      console.error("Erreur lors de la récupération des détails :", err);
       setSelectedCard(item);
     }
   };
 
-  // Fermeture du projet
+  // Fermeture de la vue projet
   const handleCloseProject = () => {
     setSelectedCard(null);
     if (window.location.pathname.startsWith('/projet/')) {
@@ -209,24 +238,36 @@ export function App() {
     }
   };
 
-  // 🚀 Écoute du bouton Retour / Précédent du navigateur
+  // 🚀 Gestion de l'historique et du bouton Retour navigateur
   useEffect(() => {
     const handlePopState = () => {
       const pathname = window.location.pathname;
 
+      // 1. Synchronisation Projet
       if (!pathname.startsWith('/projet/')) {
         setSelectedCard(null);
       } else {
         const identifier = pathname.replace('/projet/', '').trim();
         if (identifier) {
           axios.get(`/projects/${identifier}`)
-            .then(res => {
+            .then((res) => {
               if (res.data?.project) setSelectedCard(formatProjectData(res.data.project));
             })
             .catch(() => setSelectedCard(null));
         }
       }
 
+      // 2. Synchronisation Profil Public
+      if (pathname.startsWith('/profil/')) {
+        const profileId = decodeURIComponent(pathname.replace('/profil/', '').trim());
+        setPublicProfileUserId(profileId);
+        setIsPublicProfileOpen(true);
+      } else {
+        setIsPublicProfileOpen(false);
+        setPublicProfileUserId(null);
+      }
+
+      // 3. Synchronisation Modals
       setIsInfoOpen(pathname === '/info');
       setIsLoginOpen(pathname === '/connexion' || pathname === '/login');
       setIsRegisterOpen(pathname === '/inscription' || pathname === '/register');
@@ -234,14 +275,13 @@ export function App() {
       setIsFilterOpen(false);
       setIsProfileOpen(false);
       setIsSubmitOpen(false);
-      setIsPublicProfileOpen(false);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // GSAP View Transition Animation on activeView change
+  // Animation GSAP de changement de vue
   useEffect(() => {
     if (mainContainerRef.current) {
       gsap.fromTo(
@@ -252,7 +292,7 @@ export function App() {
     }
   }, [activeView]);
 
-  // Fetch projects from backend (Progressive Loading)
+  // Chargement progressif des projets
   useEffect(() => {
     let isCancelled = false;
 
@@ -263,9 +303,9 @@ export function App() {
         if (response.data && response.data.projects) {
           const formattedProjects = response.data.projects.map(formatProjectData);
 
-          setCovers(prev => {
-            const prevIds = new Set(prev.map(p => p.id));
-            const uniqueNew = formattedProjects.filter(p => !prevIds.has(p.id));
+          setCovers((prev) => {
+            const prevIds = new Set(prev.map((p) => p.id));
+            const uniqueNew = formattedProjects.filter((p) => !prevIds.has(p.id));
             if (uniqueNew.length === 0) return prev;
 
             const newSet = [...prev, ...uniqueNew];
@@ -279,7 +319,7 @@ export function App() {
           }
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération progressive des projets:", error);
+        console.error("Erreur lors de la récupération progressive :", error);
       }
     };
 
@@ -290,7 +330,7 @@ export function App() {
     };
   }, []);
 
-  // Reset filters
+  // Réinitialisation des filtres
   const handleResetFilters = () => {
     setFilters({
       type: 'Tous',
@@ -324,7 +364,7 @@ export function App() {
         const matchesAuthor = item.author.toLowerCase().includes(q);
         const matchesSchool = item.school.toLowerCase().includes(q);
         const matchesField = item.field.toLowerCase().includes(q);
-        const matchesTags = item.tags.some(t => t.toLowerCase().includes(q));
+        const matchesTags = item.tags?.some((t) => t.toLowerCase().includes(q));
         if (!matchesTitle && !matchesAuthor && !matchesSchool && !matchesField && !matchesTags) {
           return false;
         }
@@ -335,22 +375,22 @@ export function App() {
   }, [covers, filters, searchQuery]);
 
   const dynamicSchools = useMemo(() => {
-    const schools = new Set(covers.map(c => c.school).filter(Boolean));
+    const schools = new Set(covers.map((c) => c.school).filter(Boolean));
     return ['Toutes les écoles', ...Array.from(schools).sort()];
   }, [covers]);
 
   const dynamicFields = useMemo(() => {
-    const fields = new Set(covers.map(c => c.field).filter(Boolean));
+    const fields = new Set(covers.map((c) => c.field).filter(Boolean));
     return ['Tous les domaines', ...Array.from(fields).sort()];
   }, [covers]);
 
   const dynamicYears = useMemo(() => {
-    const years = new Set(covers.map(c => c.year).filter(Boolean));
+    const years = new Set(covers.map((c) => c.year).filter(Boolean));
     return ['Toutes', ...Array.from(years).sort((a, b) => String(b).localeCompare(String(a)))];
   }, [covers]);
 
   const dynamicTypes = useMemo(() => {
-    const types = new Set(covers.map(c => c.type).filter(Boolean));
+    const types = new Set(covers.map((c) => c.type).filter(Boolean));
     return ['Tous', ...Array.from(types).sort()];
   }, [covers]);
 
@@ -404,7 +444,7 @@ export function App() {
       <Navbar
         activeView={activeView}
         setActiveView={setActiveView}
-        onOpenFilter={() => setIsFilterOpen(prev => !prev)}
+        onOpenFilter={() => setIsFilterOpen((prev) => !prev)}
         isFilterOpen={isFilterOpen}
         onOpenInfo={() => {
           if (isInfoOpen) handleCloseInfo();
@@ -421,7 +461,7 @@ export function App() {
         }}
         onOpenLogin={handleOpenLogin}
         onOpenProfile={() => {
-          if (user) setIsProfileOpen(prev => !prev);
+          if (user) setIsProfileOpen((prev) => !prev);
           else handleOpenLogin();
         }}
         isProfileOpen={isProfileOpen}
@@ -483,9 +523,8 @@ export function App() {
             focusedCoverId={focusedCoverId}
             onActiveCoverChange={(id) => setFocusedCoverId(id)}
             onCardClick={handleCardClick}
-            onOpenPublicProfile={(authorName) => {
-              setPublicProfileUserId(authorName);
-              setIsPublicProfileOpen(true);
+            onOpenPublicProfile={(authorIdentifier) => {
+              handleOpenPublicProfile(authorIdentifier);
             }}
             onAddWork={() => {
               if (user) setIsSubmitOpen(true);
@@ -509,13 +548,13 @@ export function App() {
         dynamicTypes={dynamicTypes}
       />
 
-      {/* Full-screen Project View with PDF Reader */}
+      {/* Vue plein écran du projet avec lecteur PDF */}
       {selectedCard && (
         <ProjectDetailView
           item={selectedCard}
           onClose={handleCloseProject}
           onOpenProfile={() => {
-            if (user) setIsProfileOpen(prev => !prev);
+            if (user) setIsProfileOpen((prev) => !prev);
             else handleOpenLogin();
           }}
           onOpenLogin={handleOpenLogin}
@@ -529,8 +568,7 @@ export function App() {
             }
           }}
           onOpenPublicProfile={(userId) => {
-            setPublicProfileUserId(userId);
-            setIsPublicProfileOpen(true);
+            handleOpenPublicProfile(userId);
           }}
         />
       )}
@@ -541,7 +579,7 @@ export function App() {
         onClose={handleCloseInfo}
         user={user}
         onOpenProfile={() => {
-          if (user) setIsProfileOpen(prev => !prev);
+          if (user) setIsProfileOpen((prev) => !prev);
           else handleOpenLogin();
         }}
         onOpenSubmit={() => {
@@ -556,7 +594,7 @@ export function App() {
         onOpenMentions={() => (window.location.href = '/mentions-legales')}
       />
 
-      {/* Profile Drawer */}
+      {/* Profile Drawer (Profil connecté) */}
       <ProfileDrawer
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
@@ -573,20 +611,20 @@ export function App() {
           setIsSubmitOpen(true);
         }}
         onDeleteProject={(projectId) => {
-          setCovers(prev => prev.filter(c => c.id !== projectId));
+          setCovers((prev) => prev.filter((c) => c.id !== projectId));
         }}
       />
 
-      {/* Public Profile Drawer */}
+      {/* Public Profile Drawer (Vue profil tiers) */}
       <PublicProfileDrawer
         isOpen={isPublicProfileOpen}
-        onClose={() => setIsPublicProfileOpen(false)}
+        onClose={handleClosePublicProfile}
         userId={publicProfileUserId}
         user={user}
         covers={covers}
         onOpenInfo={handleOpenInfo}
         onOpenProfile={() => {
-          if (user) setIsProfileOpen(prev => !prev);
+          if (user) setIsProfileOpen((prev) => !prev);
           else handleOpenLogin();
         }}
         onOpenLogin={handleOpenLogin}
@@ -605,11 +643,11 @@ export function App() {
         onAddCover={handleAddCover}
         editData={editProjectData}
         onUpdateCover={(updatedProject) => {
-          setCovers(prev => prev.map(c => c.id === updatedProject.id ? updatedProject : c));
+          setCovers((prev) => prev.map((c) => (c.id === updatedProject.id ? updatedProject : c)));
         }}
       />
 
-      {/* Auth Modals synchronisées */}
+      {/* Auth Modals */}
       <LoginModal
         isOpen={isLoginOpen}
         onClose={handleCloseLogin}
@@ -618,7 +656,11 @@ export function App() {
 
       <RegisterModal
         isOpen={isRegisterOpen}
-        onClose={handleCloseRegister}
+        isOAuthCompletion={isOAuthCompletion}
+        onClose={() => {
+          handleCloseRegister();
+          setIsOAuthCompletion(false);
+        }}
         onOpenLogin={handleOpenLogin}
       />
 

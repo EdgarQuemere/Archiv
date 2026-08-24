@@ -11,15 +11,13 @@ import { LogoutConfirmModal } from './LogoutConfirmModal';
 import { DeleteAccountReasonModal } from './DeleteAccountReasonModal';
 import { DeleteAccountConfirmModal } from './DeleteAccountConfirmModal';
 
-/* Custom Phosphor Profile User SVG provided by USER */
+/* Custom Phosphor Profile User SVG */
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
   </svg>
 );
 
-
-/* Phosphor SVG Icon Components provided by USER */
 const IconBehance = ({ className = "w-6 h-6" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M160,80a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H168A8,8,0,0,1,160,80Zm-24,78a42,42,0,0,1-42,42H32a8,8,0,0,1-8-8V64a8,8,0,0,1,8-8H90a38,38,0,0,1,25.65,66A42,42,0,0,1,136,158ZM40,116H90a22,22,0,0,0,0-44H40Zm80,42a26,26,0,0,0-26-26H40v52H94A26,26,0,0,0,120,158Zm128-6a8,8,0,0,1-8,8H169a32,32,0,0,0,56.59,11.2,8,8,0,0,1,12.8,9.61A48,48,0,1,1,248,152Zm-17-8a32,32,0,0,0-62,0Z" />
@@ -89,11 +87,14 @@ export function ProfileDrawer({
   const { deleteAccount, setUser } = useContext(AuthContext);
   const containerRef = useRef(null);
 
+  const [profileData, setProfileData] = useState(user || {});
+
   const handleSelectProject = (project) => {
     if (onSelectProject) {
       const domainName = project.domain ? (project.domain.name || project.domain) : (project.field || 'Inconnu');
       onSelectProject({
         id: project.id,
+        slug: project.slug,
         title: project.title,
         author: typeof project.author === 'object' && project.author !== null
           ? getUserDisplayName(project.author)
@@ -114,10 +115,6 @@ export function ProfileDrawer({
     }
   };
 
-  // Profile Data State (Fallback to Mock profile if user is null)
-  const [profileData, setProfileData] = useState(user || {});
-
-  // Sync profileData when live user changes
   useEffect(() => {
     if (user) {
       setProfileData(user);
@@ -126,8 +123,7 @@ export function ProfileDrawer({
     }
   }, [user]);
 
-  // Local tabs and modal state
-  const [activeTab, setActiveTab] = useState('documents'); // 'documents' | 'enregistrements'
+  const [activeTab, setActiveTab] = useState('documents');
   const [deletingId, setDeletingId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -135,7 +131,6 @@ export function ProfileDrawer({
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
   const [deletionReason, setDeletionReason] = useState('');
 
-  // Local Mock Projects & Saved Projects
   const [userProjects, setUserProjects] = useState(() => {
     if (user) {
       return covers.filter(c => c.userId === user.id);
@@ -160,7 +155,6 @@ export function ProfileDrawer({
     }
   }, [user, covers]);
 
-  // Avatar Upload & Crop State
   const fileInputRef = useRef(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [cropperImageSrc, setCropperImageSrc] = useState(null);
@@ -214,7 +208,7 @@ export function ProfileDrawer({
         }
       );
     } else {
-      toast.success("Avatar fictif mis à jour !");
+      toast.success("Avatar mis à jour !");
     }
   };
 
@@ -314,7 +308,7 @@ export function ProfileDrawer({
   return (
     <div className="fixed inset-0 z-[60] overflow-hidden font-sans font-medium bg-[#EEEEEE] text-[#111111]" ref={containerRef}>
 
-      {/* 1. TOP NAVBAR (Identical responsive classes top-3 left-3 sm:top-6 sm:left-6 matching Navbar.jsx) */}
+      {/* TOP NAVBAR */}
       <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
         <picture onClick={handleClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
@@ -344,14 +338,14 @@ export function ProfileDrawer({
 
         <button
           onClick={() => onOpenSubmit?.()}
-          className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] hover:bg-[#E2E2E2] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm`}
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] hover:bg-[#E2E2E2] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
           title="Ajouter mon travail"
         >
           <IconAddDocument className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
       </div>
 
-      {/* TOP RIGHT CLOSE BUTTON (Matching Navbar.jsx position) */}
+      {/* TOP RIGHT CLOSE BUTTON */}
       <button
         onClick={handleClose}
         title="Fermer"
@@ -363,14 +357,14 @@ export function ProfileDrawer({
       {/* VERTICAL SEPARATOR LINE */}
       <div className="hidden md:block absolute top-28 bottom-0 left-1/2 w-[1.5px] bg-[#111111] z-10 pointer-events-none" />
 
-      {/* MAIN CONTENT AREA: SCROLLABLE ON MOBILE, 2-COLUMN LAYOUT ON DESKTOP */}
+      {/* MAIN CONTENT AREA */}
       <div className="flex flex-col md:flex-row h-full w-full overflow-y-auto md:overflow-hidden">
 
         {/* LEFT COLUMN - USER PROFILE INFO */}
         <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-4 xs:p-6 md:p-6 md:pl-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
 
           <div className="max-w-md space-y-4">
-            {/* Avatar (NO stroke/border) */}
+            {/* Avatar */}
             <div
               className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]"
               onClick={() => fileInputRef.current?.click()}
@@ -398,34 +392,41 @@ export function ProfileDrawer({
               />
             </div>
 
-            {/* Name & Small Omniscient Design Logo */}
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl xs:text-3xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
-                <span>{getUserDisplayName(profileData)}</span>
-                {profileData.isOmniscient && (
-                  <img
-                    src="/logo-od.svg"
-                    alt="Omniscient Design"
-                    className="h-5 w-auto inline-block align-middle shrink-0 ml-0.5"
-                    title="Membre Omniscient Design"
-                  />
-                )}
-              </h1>
+            {/* Name + Pseudo + Logo */}
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl xs:text-3xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
+                  <span>{getUserDisplayName(profileData)}</span>
+                  {profileData.isOmniscient && (
+                    <img
+                      src="/logo-od.svg"
+                      alt="Omniscient Design"
+                      className="h-5 w-auto inline-block align-middle shrink-0 ml-0.5"
+                      title="Membre Omniscient Design"
+                    />
+                  )}
+                </h1>
+              </div>
+              {profileData.pseudo && (
+                <p className="text-sm sm:text-base font-medium text-slate-500 mt-0.5">
+                  @{profileData.pseudo}
+                </p>
+              )}
             </div>
 
-            {/* Role + School — grouped tight as secondary identity info */}
+            {/* Role + School */}
             <div className="space-y-1">
               {profileData.role && <p className="text-base font-medium text-[#111111]">{profileData.role}</p>}
               {profileData.currentSchool && <p className="text-base font-medium text-[#555555]">{profileData.currentSchool}</p>}
             </div>
 
-            {/* Credentials — email + password grouped tight */}
+            {/* Credentials */}
             <div className="space-y-1">
               <p className="text-base font-medium text-[#111111] break-all">{profileData.email}</p>
               <p className="text-base font-medium text-[#AAAAAA] tracking-widest">**************</p>
             </div>
 
-            {/* Social Links (User-provided Phosphor SVGs) */}
+            {/* Social Links */}
             <div className="flex items-center gap-5 pt-1">
               {profileData.behanceLink && profileData.behanceLink !== '#' && (
                 <a
@@ -462,13 +463,11 @@ export function ProfileDrawer({
               )}
             </div>
 
-            {/* ACTION BUTTONS ROW (User-provided Phosphor SVGs) */}
+            {/* Action Buttons Row */}
             <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 pt-1">
-              {/* Round add-document button */}
-
               <button
                 onClick={() => setIsEditModalOpen(true)}
-                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Modifier</span>
                 <IconPencil className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
@@ -476,7 +475,7 @@ export function ProfileDrawer({
 
               <button
                 onClick={() => setIsLogoutModalOpen(true)}
-                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base xs:text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Se déconnecter</span>
                 <IconLogOut className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
@@ -484,7 +483,7 @@ export function ProfileDrawer({
 
               <button
                 onClick={() => setIsDeleteReasonModalOpen(true)}
-                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base xs:text-base font-medium text-[#FF0000] flex items-center gap-2 transition-colors cursor-pointer"
+                className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Supprimer mon compte</span>
                 <IconDelete className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-[#FF0000]" />
@@ -502,7 +501,7 @@ export function ProfileDrawer({
             <div className="h-9 xs:h-10 border-[1.5px] border-[#111111] bg-[#EEEEEE] inline-flex items-center rounded-full overflow-hidden p-0 shadow-sm">
               <button
                 onClick={() => setActiveTab('documents')}
-                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'documents'
+                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-sm xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'documents'
                   ? 'bg-[#111111] text-[#EEEEEE]'
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                   }`}
@@ -516,7 +515,7 @@ export function ProfileDrawer({
 
               <button
                 onClick={() => setActiveTab('enregistrements')}
-                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-xs xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'enregistrements'
+                className={`h-full px-3.5 xs:px-5 sm:px-6 flex items-center gap-1.5 sm:gap-2.5 text-sm xs:text-sm sm:text-base font-medium transition-colors cursor-pointer ${activeTab === 'enregistrements'
                   ? 'bg-[#111111] text-[#EEEEEE]'
                   : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                   }`}
@@ -551,7 +550,6 @@ export function ProfileDrawer({
               ) : (
                 userProjects.map((project) => (
                   <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
-                    {/* Cover Thumbnail */}
                     <div
                       className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => handleSelectProject(project)}
@@ -567,7 +565,6 @@ export function ProfileDrawer({
                       )}
                     </div>
 
-                    {/* Cover Details */}
                     <div className="flex-1 flex flex-col justify-start py-0">
                       <div>
                         <h3
@@ -584,19 +581,18 @@ export function ProfileDrawer({
                         </p>
                       </div>
 
-                      {/* Card Action Buttons */}
                       <div className="flex flex-wrap items-center gap-3">
                         {deletingId === project.id ? (
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleDeleteProjectItem(project.id)}
-                              className="h-10 px-5 rounded-full bg-red-600 text-white text-base font-medium border border-[#111111] hover:bg-red-700"
+                              className="h-10 px-5 rounded-full bg-red-600 text-white text-base font-medium border border-[#111111] hover:bg-red-700 cursor-pointer"
                             >
                               Confirmer
                             </button>
                             <button
                               onClick={() => setDeletingId(null)}
-                              className="h-10 px-5 rounded-full bg-[#EEEEEE] text-[#111111] text-base font-medium border border-[#111111] hover:bg-[#E2E2E2]"
+                              className="h-10 px-5 rounded-full bg-[#EEEEEE] text-[#111111] text-base font-medium border border-[#111111] hover:bg-[#E2E2E2] cursor-pointer"
                             >
                               Annuler
                             </button>
@@ -669,7 +665,7 @@ export function ProfileDrawer({
                       <div className="flex flex-wrap items-center gap-3">
                         <button
                           onClick={() => handleSelectProject(project)}
-                          className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-base font-medium rounded-full flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+                          className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
                         >
                           <span>Consulter</span>
                           <ExternalLink className="w-4 h-4 stroke-[2.25]" />
@@ -691,7 +687,7 @@ export function ProfileDrawer({
         </div>
       </div>
 
-      {/* Edit Profile Modal */}
+      {/* Modals */}
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
@@ -699,7 +695,6 @@ export function ProfileDrawer({
         onSaveProfile={handleSaveProfileData}
       />
 
-      {/* Avatar Crop Modal */}
       {cropperImageSrc && (
         <AvatarCropperModal
           imageSrc={cropperImageSrc}
@@ -708,14 +703,12 @@ export function ProfileDrawer({
         />
       )}
 
-      {/* Logout Confirmation Modal */}
       <LogoutConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
         onConfirm={handleConfirmLogout}
       />
 
-      {/* Delete Account Step 1: Reason Modal */}
       <DeleteAccountReasonModal
         isOpen={isDeleteReasonModalOpen}
         onClose={() => setIsDeleteReasonModalOpen(false)}
@@ -726,7 +719,6 @@ export function ProfileDrawer({
         }}
       />
 
-      {/* Delete Account Step 2: Final Confirmation Modal */}
       <DeleteAccountConfirmModal
         isOpen={isDeleteConfirmModalOpen}
         onClose={() => setIsDeleteConfirmModalOpen(false)}
@@ -735,3 +727,5 @@ export function ProfileDrawer({
     </div>
   );
 }
+
+export default ProfileDrawer;
