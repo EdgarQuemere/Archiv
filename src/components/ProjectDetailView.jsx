@@ -292,64 +292,67 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         url={`/projet/${item.slug || item.id}`}
       />
 
-      {/* TOP LEFT BUTTONS */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto">
-        <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
-          <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
-          <img
-            src="/artchiv-logo.webp"
-            alt="Artchiv"
-            className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
-          />
-        </picture>
-        <button
-          onClick={() => {
-            onClose?.();
-            onOpenInfo?.();
-          }}
-          title="Informations"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
-        >
-          <Info className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
-        </button>
+      {/* TOP HEADER (Exact clone of Navbar.jsx header wrapper) */}
+      <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-50 flex items-center justify-between gap-1 sm:gap-3.5 pointer-events-none font-sans max-w-full">
+        {/* Top Left Buttons Group */}
+        <div className="flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto shrink-0">
+          <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
+            <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
+            <img
+              src="/artchiv-logo.webp"
+              alt="Artchiv"
+              className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
+            />
+          </picture>
+          <button
+            onClick={() => {
+              onClose?.();
+              onOpenInfo?.();
+            }}
+            title="Informations"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          >
+            <Info className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
+          </button>
 
-        <button
-          onClick={() => {
-            onClose?.();
-            if (user) {
-              onOpenProfile?.();
-            } else {
-              onOpenLogin?.();
-            }
-          }}
-          title={user ? user.name || user.pseudo || 'Profil' : 'Se connecter'}
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
-        >
-          <IconUserProfile className="w-4 h-4 sm:w-4 sm:h-4" />
-        </button>
+          <button
+            onClick={() => {
+              onClose?.();
+              if (user) {
+                onOpenProfile?.();
+              } else {
+                onOpenLogin?.();
+              }
+            }}
+            title={user ? user.name || user.pseudo || 'Profil' : 'Se connecter'}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          >
+            <IconUserProfile className="w-4 h-4 sm:w-4 sm:h-4" />
+          </button>
 
-        <button
-          onClick={() => {
-            onClose?.();
-            onOpenSubmit?.();
-          }}
-          title="Ajouter mon travail"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
-        >
-          <IconAddDocument className="w-4 h-4 sm:w-4 sm:h-4" />
-        </button>
-      </div>
+          <button
+            onClick={() => {
+              onClose?.();
+              onOpenSubmit?.();
+            }}
+            title="Ajouter mon travail"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          >
+            <IconAddDocument className="w-4 h-4 sm:w-4 sm:h-4" />
+          </button>
+        </div>
 
-      {/* TOP RIGHT CLOSE BUTTON */}
-      <div className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 pointer-events-auto">
-        <button
-          onClick={onClose}
-          title="Fermer la vue produit"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
-        >
-          <X className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
-        </button>
-      </div>
+        {/* Top Right Close Button */}
+        <div className="pointer-events-auto flex items-center gap-1 xs:gap-1.5 sm:gap-3.5 shrink-0">
+          <button
+            onClick={onClose}
+            title="Fermer la vue produit"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+          >
+            <X className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
+          </button>
+        </div>
+      </header>
 
       {/* MAIN CONTAINER AREA */}
       <div className="relative flex-1 w-full h-full overflow-hidden flex bg-[#EEEEEE]">
@@ -362,7 +365,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 {item.title}
               </h1>
 
-              <p className="text-xs sm:text-base font-medium mb-1 sm:mb-2 text-[#111111]">
+              <p className="text-sm sm:text-base font-medium mb-1 sm:mb-2 text-[#111111]">
                 par{' '}
                 <span
                   onClick={() => {
@@ -377,24 +380,24 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 </span>
               </p>
 
-              <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-0.5">
+              <p className="text-sm sm:text-base font-mono text-slate-600 mb-0.5">
                 {item.year || '2026'} — {item.type || 'Mémoire'}{item.domain?.name || item.field ? ` — ${item.domain?.name || item.field}` : ''}
               </p>
               {item.school && (
-                <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
+                <p className="text-sm sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
                   {item.school}
                 </p>
               )}
 
               {item.description && (
                 <div>
-                  <p className={`text-xs sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md ${isDescExpanded ? 'line-clamp-none' : 'line-clamp-3 sm:line-clamp-none'}`}>
+                  <p className={`text-sm sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md ${isDescExpanded ? 'line-clamp-none' : 'line-clamp-3 sm:line-clamp-none'}`}>
                     {decodeHTMLEntities(item.description)}
                   </p>
                   {(item.description.length > 90 || item.description.includes('\n')) && (
                     <button
                       onClick={() => setIsDescExpanded(prev => !prev)}
-                      className="mt-1 text-xs font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block sm:hidden"
+                      className="mt-1 text-sm font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block sm:hidden"
                     >
                       {isDescExpanded ? 'voir moins' : 'voir plus'}
                     </button>
@@ -421,7 +424,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             {item.allowDownload && (
               <button
                 onClick={handleDownload}
-                className="h-10 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
+                className="h-10 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-sm sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
                 title="Télécharger le PDF"
               >
                 <Download className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25] sm:order-2" />

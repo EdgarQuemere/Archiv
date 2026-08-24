@@ -43,59 +43,62 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         description="Découvrez Artchiv', la plateforme collaborative créée par des étudiants pour rassembler et valoriser les books et mémoires d'études en design."
         url="/info"
       />
-      {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto">
-        <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
-          <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
-          <img
-            src="/artchiv-logo.webp"
-            alt="Artchiv"
-            className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
-          />
-        </picture>
-        {/* Info Button - Active Solid Black */}
-        <button
-          onClick={onClose}
-          title="Fermer la page information"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#111111] border-[1.5px] border-[#111111] text-[#EEEEEE] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
-        >
-          <Info className="w-4 h-4 stroke-[2.25]" />
-        </button>
-        {/* User Profile Button */}
-        <button
-          onClick={() => {
-            if (user) {
-              onClose();
-              onOpenProfile?.();
-            } else {
-              onOpenLogin?.();
-            }
-          }}
-          title={user ? getUserDisplayName(user) || 'Profil' : 'Se connecter'}
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
-        >
-          <IconUserProfile className="w-4 h-4" />
-        </button>
+      {/* TOP HEADER (Exact clone of Navbar.jsx header wrapper) */}
+      <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-50 flex items-center justify-between gap-1 sm:gap-3.5 pointer-events-none font-sans max-w-full">
+        {/* Top Left Buttons Group */}
+        <div className="flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto shrink-0">
+          <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
+            <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
+            <img
+              src="/artchiv-logo.webp"
+              alt="Artchiv"
+              className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
+            />
+          </picture>
+          {/* Info Button - Active Solid Black */}
+          <button
+            onClick={onClose}
+            title="Fermer la page information"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#111111] border-[1.5px] border-[#111111] text-[#EEEEEE] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          >
+            <Info className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
+          </button>
+          {/* User Profile Button */}
+          <button
+            onClick={() => {
+              if (user) {
+                onClose();
+                onOpenProfile?.();
+              } else {
+                onOpenLogin?.();
+              }
+            }}
+            title={user ? getUserDisplayName(user) || 'Profil' : 'Se connecter'}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          >
+            <IconUserProfile className="w-4 h-4 sm:w-4 sm:h-4" />
+          </button>
 
-        <button
-          onClick={() => onOpenSubmit?.()}
-          className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] hover:bg-[#E2E2E2] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm`}
-          title="Ajouter mon travail"
-        >
-          <IconAddDocument className="w-4 h-4" />
-        </button>
-      </div>
+          <button
+            onClick={() => onOpenSubmit?.()}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+            title="Ajouter mon travail"
+          >
+            <IconAddDocument className="w-4 h-4 sm:w-4 sm:h-4" />
+          </button>
+        </div>
 
-      {/* TOP RIGHT CLOSE BUTTON */}
-      <div className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 pointer-events-auto">
-        <button
-          onClick={onClose}
-          title="Fermer"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-sm"
-        >
-          <X className="w-4 h-4 stroke-[2.25]" />
-        </button>
-      </div>
+        {/* Top Right Group */}
+        <div className="pointer-events-auto flex items-center gap-1 xs:gap-1.5 sm:gap-3.5 shrink-0">
+          <button
+            onClick={onClose}
+            title="Fermer"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          >
+            <X className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
+          </button>
+        </div>
+      </header>
 
       {/* MOBILE LAYOUT (< 768px): SCROLLABLE VERTICAL FLOW WITH 3 HORIZONTAL PHOTOS */}
       <div className="md:hidden absolute top-20 bottom-3 left-4 right-4 overflow-y-auto pb-10 pt-2 text-[#111111] flex flex-col gap-9">

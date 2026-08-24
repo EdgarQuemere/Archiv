@@ -305,18 +305,18 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 {editData ? 'Modifier le projet' : 'Ajouter un projet'}
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-slate-600 mb-4">
+            <p className="text-sm text-slate-600 mb-4">
               {editData ? 'Mettez à jour les informations de votre projet.' : 'Rejoignez l\'archive visuelle des étudiants en art et design.'}
             </p>
 
             {error && (
-              <div className="p-3 bg-red-100 border-[1.5px] border-red-400 text-red-700 text-xs font-medium rounded-full text-center mb-3">
+              <div className="p-3 bg-red-100 border-[1.5px] border-red-400 text-red-700 text-sm font-medium rounded-full text-center mb-3">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+              <label className="text-sm font-medium text-[#111111] block mb-1">
                 Titre du travail *
               </label>
               <input
@@ -325,20 +325,20 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 placeholder={isBook ? "ex: Portfolio 2026 - Direction Artistique" : "ex: L'archéologie des machines"}
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+                <label className="text-sm font-medium text-[#111111] block mb-1">
                   Type *
                 </label>
                 <div className="relative">
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
                     <option value="Mémoire">Mémoire</option>
                     <option value="Book">Book</option>
@@ -348,7 +348,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
               </div>
 
               <div>
-                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+                <label className="text-sm font-medium text-[#111111] block mb-1">
                   Domaine {isBook ? <span className="text-[#999999] font-normal">(optionnel)</span> : '*'}
                 </label>
                 <div className="relative">
@@ -356,7 +356,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                     required={!isBook}
                     value={formData.domain}
                     onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+                    className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
                     <option value="">{isBook ? 'Tous les domaines' : 'Sélectionner un domaine'}</option>
                     {domains.map((dom) => (
@@ -372,7 +372,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
             <div>
               <div>
-                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+                <label className="text-sm font-medium text-[#111111] block mb-1">
                   Année *
                 </label>
                 <input
@@ -381,12 +381,12 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   max="2027"
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
                 />
               </div>
             </div>
             <div>
-              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+              <label className="text-sm font-medium text-[#111111] block mb-1">
                 {isBook ? "École / Institution ciblée *" : "École / Institution d'origine *"}
               </label>
               <SearchableSchoolSelect
@@ -401,7 +401,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
               </span>
             </div>
             <div>
-              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+              <label className="text-sm font-medium text-[#111111] block mb-1">
                 Résumé succinct
               </label>
               <textarea
@@ -409,17 +409,17 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 placeholder="Décrivez les thématiques principales abordées..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
+                className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
               />
             </div>
 
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between items-baseline mb-1">
-                  <label className="text-xs sm:text-sm font-medium text-[#111111] block">
+                  <label className="text-sm font-medium text-[#111111] block">
                     Fichier PDF {editData ? '' : '*'}
                   </label>
-                  <span className="text-[10px] text-slate-500 font-mono">Max 10 Mo</span>
+                  <span className="text-xs text-slate-500 font-mono">Max 10 Mo</span>
                 </div>
                 <input
                   required={!editData}
@@ -427,20 +427,20 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   name="pdf"
                   accept="application/pdf"
                   onChange={handleFileChange}
-                  className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-3.5 py-1.5 text-xs focus:outline-none file:mr-2 file:py-1 file:px-3 file:border-0 file:rounded-full file:text-xs file:bg-[#111111] file:text-white cursor-pointer"
+                  className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-3.5 py-1.5 text-sm focus:outline-none file:mr-2 file:py-1 file:px-3 file:border-0 file:rounded-full file:text-xs file:bg-[#111111] file:text-white cursor-pointer"
                 />
-                {editData && <div className="text-[10px] text-slate-500 mt-1">Laissez vide pour conserver le PDF actuel.</div>}
+                {editData && <div className="text-xs text-slate-500 mt-1">Laissez vide pour conserver le PDF actuel.</div>}
               </div>
 
               <div>
-                <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+                <label className="text-sm font-medium text-[#111111] block mb-1">
                   Aperçu de la Couverture
                 </label>
                 <div className="w-full min-h-[160px] max-h-[260px] bg-[#E2E2E2] border-[1.5px] border-[#111111] rounded-[14px] flex flex-col items-center justify-center overflow-hidden relative shadow-sm p-3">
                   {extractingCover ? (
                     <div className="flex flex-col items-center text-slate-500 py-6">
                       <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mb-2" />
-                      <span className="text-xs font-medium">Génération de la couverture...</span>
+                      <span className="text-sm font-medium">Génération de la couverture...</span>
                     </div>
                   ) : coverPreviewUrl || (editData && editData.coverUrl) ? (
                     <img
@@ -449,7 +449,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                       className="w-full max-h-[230px] object-contain rounded-[8px]"
                     />
                   ) : (
-                    <span className="text-xs text-slate-500 font-medium px-4 text-center py-6">
+                    <span className="text-sm text-slate-500 font-medium px-4 text-center py-6">
                       Sélectionnez un PDF pour générer la couverture.
                     </span>
                   )}
@@ -465,7 +465,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 onChange={(e) => setFormData(prev => ({ ...prev, allowDownload: e.target.checked }))}
                 className="w-4 h-4 rounded border-[#111111] text-[#111111] focus:ring-[#111111] accent-[#111111] cursor-pointer"
               />
-              <label htmlFor="allowDownload" className="text-xs sm:text-sm font-medium text-[#111111] cursor-pointer ">
+              <label htmlFor="allowDownload" className="text-sm font-medium text-[#111111] cursor-pointer ">
                 Autoriser le téléchargement du projet
               </label>
             </div>
@@ -491,14 +491,14 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   type="button"
                   onClick={handleClose}
                   disabled={loading}
-                  className="h-10 sm:h-11 px-5 bg-[#EEEEEE] text-[#111111] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm disabled:opacity-50"
+                  className="h-10 sm:h-11 px-5 bg-[#EEEEEE] text-[#111111] rounded-full border-[1.5px] border-[#111111] text-sm font-medium hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm disabled:opacity-50"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-10 sm:h-11 px-6 bg-[#111111] text-[#EEEEEE] rounded-full border-[1.5px] border-[#111111] text-xs sm:text-sm font-medium hover:bg-black flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm disabled:opacity-50 min-w-[160px]"
+                  className="h-10 sm:h-11 px-6 bg-[#111111] text-[#EEEEEE] rounded-full border-[1.5px] border-[#111111] text-sm font-medium hover:bg-black flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm disabled:opacity-50 min-w-[160px]"
                 >
                   {loading ? (
                     <>

@@ -198,7 +198,7 @@ export function FilterDrawer({
                     setSchoolSearch('');
                     setShowSchoolDropdown(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                  className={`w-full text-left px-3 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer ${
                     filters.school === 'Toutes les écoles' ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
                   }`}
                 >
@@ -214,7 +214,7 @@ export function FilterDrawer({
                         setSchoolSearch(school);
                         setShowSchoolDropdown(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                      className={`w-full text-left px-3 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer ${
                         filters.school === school ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
                       }`}
                     >
@@ -270,7 +270,7 @@ export function FilterDrawer({
                     setFieldSearch('');
                     setShowFieldDropdown(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                  className={`w-full text-left px-3 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer ${
                     filters.field === 'Tous les domaines' ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
                   }`}
                 >
@@ -286,7 +286,7 @@ export function FilterDrawer({
                         setFieldSearch(field);
                         setShowFieldDropdown(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer ${
+                      className={`w-full text-left px-3 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer ${
                         filters.field === field ? 'bg-[#111111] text-[#EEEEEE]' : 'hover:bg-[#E2E2E2] text-[#111111]'
                       }`}
                     >

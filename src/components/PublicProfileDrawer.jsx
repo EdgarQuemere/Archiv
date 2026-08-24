@@ -170,50 +170,55 @@ export function PublicProfileDrawer({
         url={`/profil/${encodeURIComponent(profileSlug)}`}
       />
 
-      {/* TOP NAVBAR */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto">
-        <picture onClick={handleClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
-          <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
-          <img
-            src="/artchiv-logo.webp"
-            alt="Artchiv"
-            className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
-          />
-        </picture>
-        <button
-          onClick={() => {
-            handleClose();
-            onOpenInfo?.();
-          }}
-          title="Informations"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors cursor-pointer"
-        >
-          <Info className="w-4 h-4 stroke-[2.25]" />
-        </button>
-        <button
-          onClick={() => {
-            handleClose();
-            if (user) {
-              onOpenProfile?.();
-            } else {
-              onOpenLogin?.();
-            }
-          }}
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center shrink-0 shadow-sm transition-colors cursor-pointer"
-          title={user ? getUserDisplayName(user) || 'Profil' : 'Se connecter'}
-        >
-          <IconUserProfile className="w-4 h-4" />
-        </button>
-      </div>
+      {/* TOP HEADER (Exact clone of Navbar.jsx header wrapper) */}
+      <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-50 flex items-center justify-between gap-1 sm:gap-3.5 pointer-events-none font-sans max-w-full">
+        {/* Top Left Buttons Group */}
+        <div className="flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto shrink-0">
+          <picture onClick={handleClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
+            <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
+            <img
+              src="/artchiv-logo.webp"
+              alt="Artchiv"
+              className="h-9 xs:h-10 sm:h-13 md:h-14 w-auto object-contain block"
+            />
+          </picture>
+          <button
+            onClick={() => {
+              handleClose();
+              onOpenInfo?.();
+            }}
+            title="Informations"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors cursor-pointer"
+          >
+            <Info className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
+          </button>
+          <button
+            onClick={() => {
+              handleClose();
+              if (user) {
+                onOpenProfile?.();
+              } else {
+                onOpenLogin?.();
+              }
+            }}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center shrink-0 shadow-sm transition-colors cursor-pointer"
+            title={user ? getUserDisplayName(user) || 'Profil' : 'Se connecter'}
+          >
+            <IconUserProfile className="w-4 h-4 sm:w-4 sm:h-4" />
+          </button>
+        </div>
 
-      {/* TOP RIGHT CLOSE BUTTON */}
-      <button
-        onClick={handleClose}
-        className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center hover:bg-[#111111] hover:text-[#EEEEEE] transition-colors shadow-sm cursor-pointer"
-        title="Fermer"
-      >
-        <X className="w-4 h-4 stroke-[2.25]" />
-      </button>
+        {/* Top Right Group */}
+        <div className="pointer-events-auto flex items-center gap-1 xs:gap-1.5 sm:gap-3.5 shrink-0">
+          <button
+            onClick={handleClose}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center hover:bg-[#111111] hover:text-[#EEEEEE] transition-colors shadow-sm cursor-pointer"
+            title="Fermer"
+          >
+            <X className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
+          </button>
+        </div>
+      </header>
 
       {/* VERTICAL SEPARATOR LINE */}
       <div className="hidden md:block absolute top-28 bottom-0 left-1/2 w-[1.5px] bg-[#111111] z-10 pointer-events-none" />
