@@ -34,12 +34,25 @@ async function generateUniqueSlug(title, excludeId = null) {
   }
 }
 
-// Fonction utilitaire pour formater l'URL vers le proxy backend
+// 🔧 CORRECTION : Forçage propre de la clé S3 pour pointer vers le proxy backend
 const formatFileUrl = (file) => {
   if (!file) return null;
-  // Si multer-s3 renvoie une key, on l'utilise, sinon on extrait de la location
-  const key = file.key || (file.location ? file.location.split('/').slice(-2).join('/') : null);
-  return key ? `/api/files/${key}` : file.location;
+  if (file.key) {
+    return `/api/files/${file.key}`;
+  }
+  if (file.location) {
+    // Si on a une URL de type https://.../projects/nom.jpg, on extrait la fin
+    const parts = file.location.split('/');
+    if (parts.length >= 2) {
+      const fileName = parts.pop();
+      const folderName = parts.pop();
+      if (folderName && fileName) {
+        return `/api/files/${folderName}/${fileName}`;
+      }
+    }
+    return file.location;
+  }
+  return null;
 };
 
 const deleteFile = async (fileUrl) => {
@@ -321,14 +334,14 @@ exports.deleteProject = async (req, res) => {
 exports.saveProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.userId;
+    $userId = req.userId;
 
     const project = await prisma.project.findUnique({ where: { id } });
     if (!project) return res.status(404).json({ error: 'Projet introuvable.' });
 
     const existing = await prisma.savedProject.findUnique({
       where: {
-        userId_projectId: { userId, projectId: id }
+        userId_projectId: { userId: req.userId, projectId: id }
       }
     });
 
@@ -337,7 +350,7 @@ exports.saveProject = async (req, res) => {
     }
 
     await prisma.savedProject.create({
-      data: { userId, projectId: id }
+      data: { userId: req.userId, projectId: id }
     });
 
     res.json({ message: 'Projet enregistré avec succès' });
@@ -351,11 +364,10 @@ exports.saveProject = async (req, res) => {
 exports.unsaveProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.userId;
 
     const existing = await prisma.savedProject.findUnique({
       where: {
-        userId_projectId: { userId, projectId: id }
+        userId_projectId: { userId: req.userId, projectId: id }
       }
     });
 
@@ -365,7 +377,7 @@ exports.unsaveProject = async (req, res) => {
 
     await prisma.savedProject.delete({
       where: {
-        userId_projectId: { userId, projectId: id }
+        userId_projectId: { userId: req.userId, projectId: id }
       }
     });
 

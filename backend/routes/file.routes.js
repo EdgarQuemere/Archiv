@@ -5,8 +5,12 @@ const { s3, bucketName } = require('../config/s3');
 
 router.get('/*', async (req, res) => {
     try {
-        const key = req.params[0]; // ex: projects/mon-fichier.pdf
+        const key = req.params[0];
         if (!key) return res.status(400).json({ error: 'Fichier non spécifié' });
+
+        // ⚠️ Autoriser explicitement l'accès multi-origine (CORS) pour que le navigateur affiche l'image
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
         const command = new GetObjectCommand({
             Bucket: bucketName,
@@ -19,7 +23,6 @@ router.get('/*', async (req, res) => {
             res.setHeader('Content-Type', response.ContentType);
         }
 
-        // Stream le contenu binaire pur de Garage vers Express
         response.Body.pipe(res);
     } catch (error) {
         console.error('Erreur proxy S3:', error);
