@@ -3,7 +3,7 @@ const router = express.Router();
 const { body } = require('express-validator');
 const projectController = require('../controllers/project.controller');
 const requireAuth = require('../middlewares/auth.middleware');
-const upload = require('../middlewares/upload.middleware');
+const { uploadProject } = require('../middlewares/upload.middleware');
 
 const projectValidation = [
   body('title').optional().trim().escape(),
@@ -15,13 +15,13 @@ const projectValidation = [
 ];
 
 // Création d'un projet
-router.post('/', requireAuth, upload.fields([
+router.post('/', requireAuth, uploadProject.fields([
   { name: 'pdf', maxCount: 1 },
   { name: 'cover', maxCount: 1 }
 ]), projectValidation, projectController.createProject);
 
 // Mise à jour d'un projet
-router.put('/:id', requireAuth, upload.fields([
+router.put('/:id', requireAuth, uploadProject.fields([
   { name: 'pdf', maxCount: 1 },
   { name: 'cover', maxCount: 1 }
 ]), projectValidation, projectController.updateProject);

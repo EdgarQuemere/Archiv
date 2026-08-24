@@ -1,18 +1,18 @@
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const { S3Client, PutBucketPolicyCommand, GetBucketPolicyCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutBucketPolicyCommand } = require('@aws-sdk/client-s3');
 const path = require('path');
 require('dotenv').config();
 
 // Configuration du client S3 pour MinIO
 const s3 = new S3Client({
   endpoint: process.env.MINIO_ENDPOINT,
-  region: 'us-east-1', // Required by S3 SDK, can be anything for MinIO
+  region: 'us-east-1',
   credentials: {
     accessKeyId: process.env.MINIO_ACCESS_KEY,
     secretAccessKey: process.env.MINIO_SECRET_KEY,
   },
-  forcePathStyle: true, // IMPORTANT pour MinIO
+  forcePathStyle: true,
 });
 
 const bucketName = process.env.MINIO_BUCKET_NAME || 'archiv-uploads';
@@ -46,11 +46,10 @@ const makeBucketPublic = async () => {
   }
 };
 
-// On lance la fonction au démarrage pour s'assurer que c'est public
 makeBucketPublic();
 
-// Configuration de multer pour utiliser S3 (MinIO)
-const upload = multer({
+// 1. Configuration pour les Avatars / Photos de profil (Max 5 Mo - Images uniquement)
+const uploadAvatar = multer({
   storage: multerS3({
     s3: s3,
     bucket: bucketName,
@@ -58,20 +57,51 @@ const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
-      const folder = file.fieldname === 'profilePicture' ? 'avatars/' : 'projects/';
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, folder + uniqueSuffix + path.extname(file.originalname));
+      cb(null, 'avatars/' + uniqueSuffix + path.extname(file.originalname));
     }
   }),
-  limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB max limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 👈 5 Mo max pour les avatars
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Format d\'image non autorisé (JPEG, PNG, WebP uniquement).'));
+    }
+  }
+});
+
+// 2. Configuration pour les Projets (Max 30 Mo - PDF et Images)
+const uploadProject = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: bucketName,
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      cb(null, 'projects/' + uniqueSuffix + path.extname(file.originalname));
+    }
+  }),
+  limits: { fileSize: 30 * 1024 * 1024 }, // 👈 30 Mo max pour les projets / PDFs
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Format de fichier non autorisé.'));
+      cb(new Error('Format de fichier non autorisé (PDF, JPEG, PNG, WebP uniquement).'));
     }
   }
 });
 
-module.exports = upload;
+// On attache uploadAvatar à uploadProject pour garder la rétrocompatibilité
+uploadProject.uploadAvatar = uploadAvatar;
+uploadProject.uploadProject = uploadProject;
+
+// Export par défaut = uploadProject (évite de casser auth.routes.js et project.routes.js)
+// Mais on permet aussi la déstructuration { uploadAvatar }
+module.exports = uploadProject;
+module.exports.uploadAvatar = uploadAvatar;
+module.exports.uploadProject = uploadProject;
