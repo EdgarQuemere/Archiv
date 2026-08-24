@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { pdfjs } from 'react-pdf';
 import SearchableSchoolSelect from './SearchableSchoolSelect';
 import api from '../api/axios';
+import { getFileUrl } from '../utils/url';
 
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -444,7 +445,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                     </div>
                   ) : coverPreviewUrl || (editData && editData.coverUrl) ? (
                     <img
-                      src={coverPreviewUrl || editData.coverUrl}
+                      src={coverPreviewUrl || getFileUrl(editData.coverUrl)}
                       alt="Aperçu couverture complet"
                       className="w-full max-h-[230px] object-contain rounded-[8px]"
                     />

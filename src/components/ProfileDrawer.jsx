@@ -10,6 +10,7 @@ import { EditProfileModal } from './EditProfileModal';
 import { LogoutConfirmModal } from './LogoutConfirmModal';
 import { DeleteAccountReasonModal } from './DeleteAccountReasonModal';
 import { DeleteAccountConfirmModal } from './DeleteAccountConfirmModal';
+import { getFileUrl } from '../utils/url';
 
 /* Custom Phosphor Profile User SVG */
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
@@ -111,7 +112,7 @@ export function ProfileDrawer({
         userId: project.userId || profileData?.id,
         allowDownload: project.allowDownload ?? true,
         tags: project.tags || []
-      });f
+      }); f
       if (onClose) onClose();
     }
   };
@@ -385,7 +386,7 @@ export function ProfileDrawer({
               onDrop={handleAvatarDrop}
             >
               <img
-                src={profileData.profilePicture || '/pdp_1.webp'}
+                src={getFileUrl(profileData.profilePicture) || '/pdp_1.webp'}
                 alt="Avatar"
                 className="w-full h-full object-cover"
               />
@@ -576,7 +577,7 @@ export function ProfileDrawer({
                     >
                       {project.coverUrl ? (
                         <img
-                          src={project.coverUrl}
+                          src={getFileUrl(project.coverUrl)}
                           alt={project.title}
                           className="w-full h-auto object-contain block"
                         />
@@ -663,7 +664,7 @@ export function ProfileDrawer({
                       onClick={() => handleSelectProject(project)}
                     >
                       {project.coverUrl ? (
-                        <img src={project.coverUrl} alt={project.title} className="w-full h-auto object-contain block" />
+                        <img src={getFileUrl(project.coverUrl)} alt={project.title} className="w-full h-auto object-contain block" />
                       ) : (
                         <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
                       )}

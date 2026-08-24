@@ -4,6 +4,7 @@ import { X, Info, ExternalLink } from 'lucide-react';
 import gsap from 'gsap';
 import api from '../api/axios';
 import SEO from './SEO';
+import { getFileUrl } from '../utils/url';
 
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -231,7 +232,7 @@ export function PublicProfileDrawer({
           <div className="max-w-md space-y-4">
             <div className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden shadow-sm">
               <img
-                src={profileData.profilePicture || '/pdp_1.webp'}
+                src={getFileUrl(profileData.profilePicture) || '/pdp_1.webp'}
                 alt="Avatar"
                 className="w-full h-full object-cover"
               />
@@ -327,7 +328,7 @@ export function PublicProfileDrawer({
                   >
                     {project.coverUrl ? (
                       <img
-                        src={project.coverUrl}
+                        src={getFileUrl(project.coverUrl)}
                         alt={project.title}
                         className="w-full h-auto object-contain block"
                       />

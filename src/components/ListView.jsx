@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { ExternalLink, BookOpen, MapPin, User } from 'lucide-react';
 import gsap from 'gsap';
+import { getFileUrl } from '../utils/url';
 
 const decodeHTMLEntities = (str) => {
   if (!str || typeof str !== 'string') return str || '';
@@ -385,7 +386,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
               {/* Clean Raw Cover Image Container */}
               <div className={`${isLandscape ? 'w-[240px] max-w-full xs:w-[300px] sm:w-[420px] md:w-[500px] lg:w-[560px] h-[160px] sm:h-[280px] md:h-[330px] lg:h-[370px]' : 'w-56 sm:w-72 h-[320px] sm:h-[420px]'} bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
                 <img
-                  src={item.coverUrl}
+                  src={getFileUrl(item.coverUrl)}
                   alt={item.title}
                   draggable={false}
                   onDragStart={(e) => e.preventDefault()}

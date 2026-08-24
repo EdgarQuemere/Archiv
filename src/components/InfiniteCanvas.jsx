@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import gsap from 'gsap';
 import { Compass, Grid } from 'lucide-react';
+import { getFileUrl } from '../utils/url';
 
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -507,12 +508,12 @@ export function InfiniteCanvas({
                   padding: isHovered ? `${HOVER_PADDING}px` : '0px'
                 }}
                 className={`w-full h-full flex flex-col items-center justify-center transition-all duration-250 ease-out origin-center ${isHovered
-                    ? 'bg-[#EEEEEE] shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
-                    : 'bg-transparent shadow-none border-0'
+                  ? 'bg-[#EEEEEE] shadow-[0_30px_60px_rgba(0,0,0,0.85)] border-3 border-[#111111] rounded-none'
+                  : 'bg-transparent shadow-none border-0'
                   }`}
               >
                 <img
-                  src={item.coverUrl}
+                  src={getFileUrl(item.coverUrl)}
                   alt={item.title}
                   draggable={false}
                   onDragStart={(e) => e.preventDefault()}
@@ -546,8 +547,8 @@ export function InfiniteCanvas({
             onClick={() => setCanvasGap(0)}
             title="Espacement 0px (Serré)"
             className={`h-full px-3 xs:px-4 sm:px-6 flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-base font-medium transition-colors cursor-pointer ${canvasGap === 0
-                ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              ? 'bg-[#111111] text-[#EEEEEE]'
+              : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
               }`}
           >
             <Grid className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
@@ -560,8 +561,8 @@ export function InfiniteCanvas({
             onClick={() => setCanvasGap(96)}
             title="Espacement 96px (Moyen)"
             className={`h-full px-3 xs:px-4 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${canvasGap === 96
-                ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              ? 'bg-[#111111] text-[#EEEEEE]'
+              : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
               }`}
           >
             <span>Moyen</span>
@@ -573,8 +574,8 @@ export function InfiniteCanvas({
             onClick={() => setCanvasGap(300)}
             title="Espacement 300px (Large)"
             className={`h-full px-3 xs:px-4 sm:px-6 flex items-center justify-center text-xs sm:text-base font-medium transition-colors cursor-pointer ${canvasGap >= 280
-                ? 'bg-[#111111] text-[#EEEEEE]'
-                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              ? 'bg-[#111111] text-[#EEEEEE]'
+              : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
               }`}
           >
             <span>Large</span>

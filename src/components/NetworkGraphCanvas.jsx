@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import gsap from 'gsap';
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, forceRadial } from 'd3-force';
 import { ZoomIn, ZoomOut, Compass } from 'lucide-react';
+import { getFileUrl } from '../utils/url';
 
 export function NetworkGraphCanvas({
   items,
@@ -558,14 +559,14 @@ export function NetworkGraphCanvas({
                 {/* CLEAN NO-OUTLINE FRAME with rich high-elevation drop shadow */}
                 <div
                   className={`w-full h-full relative overflow-visible bg-[#EEEEEE] transition-all duration-300 ${isHovered
-                      ? 'shadow-[0_25px_50px_rgba(0,0,0,0.35)] border border-[#111111]'
-                      : isActiveNeighbor && hasActiveFilter
-                        ? 'shadow-[0_15px_30px_rgba(0,0,0,0.25)] border border-[#111111]/70'
-                        : 'shadow-md border border-[#111111]/20 hover:border-[#111111]/60'
+                    ? 'shadow-[0_25px_50px_rgba(0,0,0,0.35)] border border-[#111111]'
+                    : isActiveNeighbor && hasActiveFilter
+                      ? 'shadow-[0_15px_30px_rgba(0,0,0,0.25)] border border-[#111111]/70'
+                      : 'shadow-md border border-[#111111]/20 hover:border-[#111111]/60'
                     }`}
                 >
                   <img
-                    src={node.coverUrl}
+                    src={getFileUrl(node.coverUrl)}
                     alt={node.title}
                     loading="lazy"
                     draggable={false}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, BookOpen, Share2, Heart, Download } from 'lucide-react';
 import gsap from 'gsap';
+import { getFileUrl } from '../utils/url';
 
 export function DetailModal({ item, onClose, onOpenPublicProfile }) {
   const [liked, setLiked] = useState(false);
@@ -60,7 +61,7 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
         <div className="md:w-1/2 bg-[#E2E2E2] border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-[#111111] p-6 flex flex-col items-center justify-center relative min-h-[280px]">
           <div className="w-48 sm:w-60 aspect-[3/4] bg-white rounded-[10px] border-[1.5px] border-[#111111] shadow-md overflow-hidden relative group">
             <img
-              src={item.coverUrl || item.imageUrl || '/artchiv-logo.webp'}
+              src={getFileUrl(item.coverUrl) || getFileUrl(item.imageUrl) || '/artchiv-logo.webp'}
               alt={item.title}
               className="w-full h-full object-cover"
             />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen } from 'lucide-react';
+import { getFileUrl } from '../utils/url';
 
 export function CoverCard({ item, position, onClick }) {
   const [loaded, setLoaded] = useState(false);
@@ -30,7 +31,7 @@ export function CoverCard({ item, position, onClick }) {
 
         {/* Clean Cover Image */}
         <img
-          src={item.coverUrl}
+          src={getFileUrl(item.coverUrl)}
           alt={item.title}
           loading="lazy"
           draggable={false}
