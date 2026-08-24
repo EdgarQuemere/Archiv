@@ -58,7 +58,7 @@ export function PublicProfileDrawer({
         id: project.id,
         slug: project.slug,
         title: project.title,
-        author: getUserDisplayName(profileData),
+        author: profileData.pseudo || getUserDisplayName(profileData),
         authorPseudo: profileData.pseudo || profileData.id,
         school: project.school || profileData.currentSchool,
         year: project.year?.toString() || (project.createdAt ? new Date(project.createdAt).getFullYear().toString() : '2026'),
@@ -158,7 +158,7 @@ export function PublicProfileDrawer({
   }
 
   const userProjects = profileData.projects || [];
-  const displayName = getUserDisplayName(profileData) || 'Profil';
+  const displayName = profileData.pseudo || getUserDisplayName(profileData) || 'Profil';
   const profileSlug = profileData.pseudo || profileData.id || userId;
 
   return (
@@ -233,7 +233,7 @@ export function PublicProfileDrawer({
             </div>
 
             <div className="flex items-center gap-2">
-              <h1 className="text-xl xs:text-2xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
+              <h1 className="text-2xl xs:text-3xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
                 <span>{displayName}</span>
                 {profileData.isOmniscient && (
                   <img
@@ -246,8 +246,18 @@ export function PublicProfileDrawer({
               </h1>
             </div>
 
-            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.role || 'Créateur'}</p>
-            <p className="text-sm xs:text-base font-medium text-[#111111]">{profileData.currentSchool || 'École de design'}</p>
+            <p className="text-base font-medium text-[#111111]">{profileData.role || 'Créateur'}</p>
+            <p className="text-base font-medium text-[#555555]">{profileData.currentSchool || 'École de design'}</p>
+
+            {profileData.bio && (
+              <p className="text-base font-medium text-[#333333] whitespace-pre-line leading-relaxed">
+                {profileData.bio}
+              </p>
+            )}
+
+            {profileData.email && (
+              <p className="text-base font-medium text-[#111111] break-all">{profileData.email}</p>
+            )}
 
             <div className="flex items-center gap-5 pt-1">
               {profileData.behanceLink && profileData.behanceLink !== '#' && (
@@ -329,9 +339,14 @@ export function PublicProfileDrawer({
                       >
                         {project.title}
                       </h3>
-                      <p className="text-base font-medium text-[#111111] mb-4">
-                        {project.school || profileData.currentSchool} – {project.year?.toString() || new Date(project.createdAt).getFullYear()} – {project.type || (project.domain ? (project.domain.name || project.domain) : 'Illustration')}
+                      <p className="text-base font-medium text-[#111111] mb-0.5">
+                        {project.year?.toString() || (project.createdAt ? new Date(project.createdAt).getFullYear().toString() : '2026')} — {project.type || 'Mémoire'}{project.domain?.name || project.field ? ` — ${project.domain?.name || project.field}` : ''}
                       </p>
+                      {(project.school || profileData?.currentSchool) && (
+                        <p className="text-base font-medium text-[#111111] mb-4">
+                          {project.school || profileData?.currentSchool}
+                        </p>
+                      )}
                       <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md line-clamp-3">
                         {project.description || "Aucune description fournie."}
                       </p>

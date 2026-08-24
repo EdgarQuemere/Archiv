@@ -97,8 +97,8 @@ export function NetworkGraphCanvas({
         const a = items[i];
         const b = items[j];
 
-        const aWords = getWords(a.abstract);
-        const bWords = getWords(b.abstract);
+        const aWords = getWords(`${a.title || ''} ${a.description || ''}`);
+        const bWords = getWords(`${b.title || ''} ${b.description || ''}`);
         let shared = [...new Set(aWords.filter(w => bWords.includes(w)))];
 
         if (shared.length > 4) {

@@ -48,11 +48,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
   const isSaved = user?.savedProjects?.some(sp => sp.projectId === item?.id);
 
-  const authorDisplayName = typeof item?.author === 'string' && item.author.trim() !== ''
-    ? item.author
-    : (item?.author?.firstName || item?.author?.lastName)
-      ? `${item.author?.firstName || ''} ${item.author?.lastName || ''}`.trim()
-      : item?.author?.pseudo || 'Auteur inconnu';
+  const authorDisplayName = item?.authorPseudo || item?.author?.pseudo || (typeof item?.author === 'string' && item.author.trim() !== '' ? item.author : null) || (item?.author?.firstName || item?.author?.lastName ? `${item.author?.firstName || ''} ${item.author?.lastName || ''}`.trim() : 'Auteur inconnu');
 
   const authorIdentifier = item?.authorPseudo || item?.author?.pseudo || item?.userId;
 
@@ -372,9 +368,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 {item.school} - {item.year} • {item.type || item.field} {item.domain?.name || item.field ? ` - ${item.domain?.name || item.field}` : ''}
               </p>
 
-              {(item.description || item.abstract) && (
+              {item.description && (
                 <p className="text-xs sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md line-clamp-4 sm:line-clamp-none">
-                  {item.description || item.abstract}
+                  {item.description}
                 </p>
               )}
             </div>

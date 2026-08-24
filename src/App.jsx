@@ -19,6 +19,7 @@ import SEO from './components/SEO';
 import AdminDashboard from './components/admin/AdminDashboard';
 import { MentionsLegales } from './components/MentionsLegales';
 import { AuthContext } from './context/AuthContext';
+import { getUserDisplayName } from './utils/userUtils';
 import axios from './api/axios';
 import { Toaster } from 'sonner';
 
@@ -40,29 +41,37 @@ const IconAddDocument = ({ className = "w-4 h-4" }) => (
 );
 
 // Formatage standardisé des données d'un projet
-const formatProjectData = (p) => ({
-  id: p.id,
-  slug: p.slug,
-  title: p.title,
-  authorPseudo: p.author?.pseudo || p.userId,
-  authorProfilePicture: p.author ? p.author.profilePicture : null,
-  isOmniscient: p.author ? p.author.isOmniscient : false,
-  school: p.school,
-  year: p.year ? p.year.toString() : '',
-  type: p.type,
-  field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
-  description: p.description,
-  coverUrl: p.coverUrl,
-  imageUrl: p.coverUrl,
-  pdfUrl: p.pdfUrl,
-  pdfSize: p.pdfSize || 'Inconnu',
-  orientation: p.orientation,
-  aspectRatio: p.aspectRatio,
-  allowDownload: p.allowDownload,
-  userId: p.userId,
-  tags: [],
-  date: p.createdAt
-});
+const formatProjectData = (p) => {
+  const pseudoVal = p.author?.pseudo || p.user?.pseudo || p.authorPseudo;
+  const authorName = pseudoVal || (typeof p.author === 'object' && p.author !== null
+    ? getUserDisplayName(p.author)
+    : (typeof p.author === 'string' && p.author.trim() !== '' ? p.author : 'Auteur inconnu'));
+
+  return {
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    author: authorName,
+    authorPseudo: pseudoVal || p.userId || (typeof p.author === 'string' ? p.author : ''),
+    authorProfilePicture: p.author?.profilePicture || p.user?.profilePicture || null,
+    isOmniscient: p.author?.isOmniscient || p.user?.isOmniscient || false,
+    school: p.school,
+    year: p.year ? p.year.toString() : '',
+    type: p.type,
+    field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
+    description: p.description,
+    coverUrl: p.coverUrl,
+    imageUrl: p.coverUrl,
+    pdfUrl: p.pdfUrl,
+    pdfSize: p.pdfSize || 'Inconnu',
+    orientation: p.orientation,
+    aspectRatio: p.aspectRatio,
+    allowDownload: p.allowDownload,
+    userId: p.userId || p.author?.id || p.user?.id,
+    tags: [],
+    date: p.createdAt
+  };
+};
 
 export function App() {
   const [covers, setCovers] = useState([]);
@@ -468,6 +477,7 @@ export function App() {
             handleOpenLogin();
           }
         }}
+        isSubmitOpen={isSubmitOpen}
         onOpenLogin={handleOpenLogin}
         onOpenProfile={() => {
           if (user) setIsProfileOpen((prev) => !prev);

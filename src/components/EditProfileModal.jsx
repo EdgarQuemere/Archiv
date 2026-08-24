@@ -181,6 +181,20 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
             </div>
           </div>
 
+          <div>
+            <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+              Nom d'utilisateur / Pseudo
+            </label>
+            <input
+              type="text"
+              name="pseudo"
+              value={formData.pseudo}
+              onChange={handleChange}
+              placeholder="ex: edgar_q"
+              className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500"
+            />
+          </div>
+
           {/* Security / Identifiers Section */}
           <div className="pt-2">
             <div className="flex items-center my-3">

@@ -31,6 +31,7 @@ export function Navbar({
   onOpenFilter,
   isFilterOpen,
   onOpenSubmit,
+  isSubmitOpen,
   onOpenInfo,
   isInfoOpen,
   onOpenLogin,
@@ -85,7 +86,7 @@ export function Navbar({
 
           <button
             onClick={() => onOpenSubmit?.()}
-            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${isProfileOpen
+            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${isSubmitOpen
               ? 'bg-[#111111] text-[#EEEEEE]'
               : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
               }`}

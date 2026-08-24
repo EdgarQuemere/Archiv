@@ -294,13 +294,20 @@ export function ProfileDrawer({
     }
   };
 
-  const handleSaveProfileData = (updatedFields) => {
+  const handleSaveProfileData = async (updatedFields) => {
     setProfileData(prev => ({
       ...prev,
       ...updatedFields
     }));
     if (user && setUser) {
       setUser(prev => ({ ...prev, ...updatedFields }));
+    }
+    try {
+      if (user) {
+        await api.put('/users/me', updatedFields);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la sauvegarde du profil :", err);
     }
   };
 
@@ -420,6 +427,13 @@ export function ProfileDrawer({
               {profileData.role && <p className="text-base font-medium text-[#111111]">{profileData.role}</p>}
               {profileData.currentSchool && <p className="text-base font-medium text-[#555555]">{profileData.currentSchool}</p>}
             </div>
+
+            {/* Bio */}
+            {profileData.bio && (
+              <p className="text-sm sm:text-base font-medium text-[#333333] whitespace-pre-line leading-relaxed">
+                {profileData.bio}
+              </p>
+            )}
 
             {/* Credentials */}
             <div className="space-y-1">
@@ -574,8 +588,11 @@ export function ProfileDrawer({
                         >
                           {project.title}
                         </h3>
+                        <p className="text-base font-medium text-[#111111] mb-0.5">
+                          {project.year || '2026'} — {project.type || 'Mémoire'}{project.domain?.name || project.field ? ` — ${project.domain?.name || project.field}` : ''}
+                        </p>
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.school} – {project.year} – {project.type || 'Illustration'} {project.domain?.name || project.field ? ` – ${project.domain?.name || project.field}` : ''}
+                          {getUserDisplayName(profileData)}{project.school ? ` — ${project.school}` : ''}
                         </p>
                         <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
                           {project.description || "Pas de description"}
@@ -655,8 +672,11 @@ export function ProfileDrawer({
                         >
                           {project.title}
                         </h3>
+                        <p className="text-base font-medium text-[#111111] mb-0.5">
+                          {project.year || '2026'} — {project.type || 'Mémoire'}{project.domain?.name || project.field ? ` — ${project.domain?.name || project.field}` : ''}
+                        </p>
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.author ? `${typeof project.author === 'object' ? getUserDisplayName(project.author) : project.author} – ` : ''}{project.school} – {project.year} – {project.type}{project.domain?.name || project.field ? ` – ${project.domain?.name || project.field}` : ''}
+                          {project.author ? `${typeof project.author === 'object' ? getUserDisplayName(project.author) : project.author}${project.school ? ` — ${project.school}` : ''}` : project.school}
                         </p>
                         <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
                           {project.description || "Pas de description"}

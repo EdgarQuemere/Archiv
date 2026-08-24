@@ -115,7 +115,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             De l’autre, il y a les mémoires. Ce sont des travaux de recherche denses qui demandent des mois d’investissement. L’objectif est de conserver la trace de tous ces écrits précieux et de les valoriser, dans le respect total du travail de chaque auteur. Sans ça, ces mémoires finiraient, pour la plupart, tout simplement perdus à tout jamais dans les méandres d’une clé USB ou sur le disque dur d’un ordi poussiéreux.
           </p>
 
-          <p className="text-sm leading-relaxed font-normal pt-1">
+          <p className="text-sm leading-relaxed font-medium pt-1">
             Partage ton travail sur Artchiv’ et laisse une trace de tes études en design.
           </p>
         </div>
@@ -276,7 +276,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               De l’autre, il y a les mémoires. Ce sont des travaux de recherche denses qui demandent des mois d’investissement. L’objectif est de conserver la trace de tous ces écrits précieux et de les valoriser, dans le respect total du travail de chaque auteur. Sans ça, ces mémoires finiraient, pour la plupart, tout simplement perdus à tout jamais dans les méandres d’une clé USB ou sur le disque dur d’un ordi poussiéreux.
             </p>
 
-            <p className="text-base leading-relaxed font-normal pt-1">
+            <p className="text-base leading-relaxed font-medium pt-1">
               Partage ton travail sur Artchiv’ et laisse une trace de tes études en design.
             </p>
           </div>

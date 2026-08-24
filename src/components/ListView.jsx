@@ -371,7 +371,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
               className="cursor-pointer flex flex-col items-center py-2"
             >
               {/* Clean Raw Cover Image Container */}
-              <div className={`${isLandscape ? 'w-[600px] max-w-full xs:w-[780px] sm:w-[1140px] md:w-[1380px] lg:w-[1530px] h-[540px] sm:h-[800px] md:h-[960px]' : 'w-56 sm:w-72 h-[320px] sm:h-[420px]'} bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
+              <div className={`${isLandscape ? 'w-[240px] max-w-full xs:w-[300px] sm:w-[420px] md:w-[500px] lg:w-[560px] h-[160px] sm:h-[280px] md:h-[330px] lg:h-[370px]' : 'w-56 sm:w-72 h-[320px] sm:h-[420px]'} bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
                 <img
                   src={item.coverUrl}
                   alt={item.title}
@@ -394,17 +394,17 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
               {currentInfoItem.title}
             </h3>
 
-            <p className="text-xs sm:text-sm font-medium mb-1 sm:mb-2">
-              par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.authorPseudo || currentInfoItem.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author}</span>
+            <p className="text-sm sm:text-base font-medium mb-1 sm:mb-2">
+              réalisé par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.authorPseudo || currentInfoItem.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author || currentInfoItem.authorPseudo || 'Auteur'}</span>
             </p>
 
-            <p className="text-[11px] sm:text-xs font-mono mb-2 sm:mb-4 text-slate-600">
+            <p className="text-xs sm:text-sm font-mono mb-2 sm:mb-4 text-slate-600">
               {currentInfoItem.school} — {currentInfoItem.year} • {currentInfoItem.field}
             </p>
 
-            {currentInfoItem.abstract && (
-              <p className="text-sm text-slate-700 leading-relaxed mb-4 text-right">
-                {currentInfoItem.abstract}
+            {currentInfoItem.description && (
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4 text-right">
+                {currentInfoItem.description}
               </p>
             )}
 

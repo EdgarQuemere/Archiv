@@ -100,10 +100,10 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
               </p>
             )}
 
-            {/* Abstract */}
-            {item.abstract && (
+            {/* Description */}
+            {item.description && (
               <p className="text-base text-slate-700 leading-relaxed mb-6">
-                {item.abstract}
+                {item.description}
               </p>
             )}
           </div>
