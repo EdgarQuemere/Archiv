@@ -114,6 +114,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const isNavigatingRef = useRef(false);
   const navTimerRef = useRef(null);
   const isInitialMount = useRef(true);
+  const rafRef = useRef(null);
+  const scrollStopTimerRef = useRef(null);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const focalRatioRef = useRef(0.5);
 
@@ -128,32 +131,51 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     const handleScroll = () => {
       if (isNavigatingRef.current) return;
 
-      const viewportCenter = el.scrollTop + el.clientHeight / 2;
-      let closestPage = 1;
-      let minDistance = Infinity;
+      // Throttle via RAF to avoid hammering state on every pixel
+      if (rafRef.current) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
 
-      pageRefs.current.forEach((ref, idx) => {
-        if (ref && ref.current) {
-          const pageTop = ref.current.offsetTop;
-          const pageCenter = pageTop + ref.current.clientHeight / 2;
-          const dist = Math.abs(pageCenter - viewportCenter);
-          if (dist < minDistance) {
-            minDistance = dist;
-            closestPage = idx + 1;
+        // Mark as scrolling (disables heavy layers)
+        setIsScrolling(true);
+
+        // Debounce: re-enable layers 150ms after scroll stops
+        if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
+        scrollStopTimerRef.current = setTimeout(() => {
+          setIsScrolling(false);
+        }, 150);
+
+        const viewportCenter = el.scrollTop + el.clientHeight / 2;
+        let closestPage = 1;
+        let minDistance = Infinity;
+
+        pageRefs.current.forEach((ref, idx) => {
+          if (ref && ref.current) {
+            const pageTop = ref.current.offsetTop;
+            const pageCenter = pageTop + ref.current.clientHeight / 2;
+            const dist = Math.abs(pageCenter - viewportCenter);
+            if (dist < minDistance) {
+              minDistance = dist;
+              closestPage = idx + 1;
+            }
           }
+        });
+
+        setCurrentPage(closestPage);
+
+        const activeElem = pageRefs.current[closestPage - 1]?.current;
+        if (activeElem && activeElem.clientHeight > 0) {
+          focalRatioRef.current = (viewportCenter - activeElem.offsetTop) / activeElem.clientHeight;
         }
       });
-
-      setCurrentPage(closestPage);
-
-      const activeElem = pageRefs.current[closestPage - 1]?.current;
-      if (activeElem && activeElem.clientHeight > 0) {
-        focalRatioRef.current = (viewportCenter - activeElem.offsetTop) / activeElem.clientHeight;
-      }
     };
 
     el.addEventListener('scroll', handleScroll, { passive: true });
-    return () => el.removeEventListener('scroll', handleScroll);
+    return () => {
+      el.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
+    };
   }, [numPages]);
 
   useEffect(() => {
@@ -418,6 +440,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           <div
             ref={scrollContainerRef}
             className="w-full h-full overflow-y-auto overflow-x-auto bg-[#EEEEEE] py-20 sm:py-28 pb-32 px-3 sm:px-8"
+            style={{ willChange: 'scroll-position' }}
           >
             <div className="w-max min-w-full mx-auto flex flex-col items-center space-y-6 sm:space-y-8">
               {spreads.map((pages, spreadIdx) => {
@@ -439,10 +462,10 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                               ? (isPortrait ? zoomLevel * 6.5 : zoomLevel * 7.5)
                               : (isPortrait ? zoomLevel * 9 : zoomLevel * 11)
                           }
-                          renderTextLayer={true}
-                          renderAnnotationLayer={true}
-                          devicePixelRatio={Math.max(window.devicePixelRatio || 1, 2)}
-                          className="block  pointer-events-none"
+                          renderTextLayer={!isScrolling}
+                          renderAnnotationLayer={!isScrolling}
+                          devicePixelRatio={Math.min(window.devicePixelRatio || 1, 1.5)}
+                          className="block pointer-events-none"
                         />
                       </div>
                     ))}
