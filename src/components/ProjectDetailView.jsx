@@ -16,6 +16,19 @@ const pdfOptions = {
   wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
 };
 
+const getFileUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  const backendUrl = import.meta.env.VITE_API_URL || 'https://api.artchiv.fr/api';
+  let cleanPath = url;
+  if (cleanPath.startsWith('/api/')) {
+    cleanPath = cleanPath.replace('/api', '');
+  }
+  return `${backendUrl.replace(/\/+$/, '')}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
+};
+
 const decodeHTMLEntities = (str) => {
   if (!str || typeof str !== 'string') return str || '';
   return str
@@ -70,7 +83,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       if (!item.allowDownload) return alert("Le téléchargement n'est pas autorisé par l'auteur.");
       const res = await api.post(`/projects/${item.id}/download`);
       if (res.data && res.data.pdfUrl) {
-        window.open(res.data.pdfUrl, '_blank');
+        window.open(getFileUrl(res.data.pdfUrl), '_blank');
       }
     } catch (error) {
       console.error("Erreur de téléchargement", error);
@@ -451,7 +464,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
         {/* DOCUMENT READER VIEW AREA */}
         <Document
-          file={item.pdfUrl}
+          file={getFileUrl(item.pdfUrl)}
           options={pdfOptions}
           onLoadSuccess={({ numPages }) => {
             setNumPages(numPages);
