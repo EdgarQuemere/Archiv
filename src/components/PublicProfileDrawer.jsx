@@ -258,7 +258,7 @@ export function PublicProfileDrawer({
                   className="text-[#111111] hover:opacity-75 transition-opacity"
                   title="Behance"
                 >
-                  <IconBehance className="w-5 h-5 xs:w-6 xs:h-6" />
+                  <IconBehance className="w-7 h-7 xs:w-8 xs:h-8" />
                 </a>
               )}
               {profileData.instaLink && profileData.instaLink !== '#' && (
@@ -269,7 +269,7 @@ export function PublicProfileDrawer({
                   className="text-[#111111] hover:opacity-75 transition-opacity"
                   title="Instagram"
                 >
-                  <IconInstagram className="w-5 h-5 xs:w-6 xs:h-6" />
+                  <IconInstagram className="w-7 h-7 xs:w-8 xs:h-8" />
                 </a>
               )}
               {profileData.personalLink && profileData.personalLink !== '#' && (
@@ -280,7 +280,7 @@ export function PublicProfileDrawer({
                   className="text-[#111111] hover:opacity-75 transition-opacity"
                   title="Site Web"
                 >
-                  <IconLink className="w-5 h-5 xs:w-6 xs:h-6" />
+                  <IconLink className="w-7 h-7 xs:w-8 xs:h-8" />
                 </a>
               )}
             </div>

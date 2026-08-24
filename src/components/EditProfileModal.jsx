@@ -234,37 +234,37 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
           </div>
 
           {/* Role & School */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div>
-              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
-                Statut / Rôle
-              </label>
-              <div className="relative">
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
-                >
-                  <option value="Etudiant">Étudiant(e)</option>
-                  <option value="Enseignant">Enseignant(e)</option>
-                  <option value="Alumni">Alumni</option>
-                  <option value="Autre">Autre</option>
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
-                Établissement / École
-              </label>
-              <SearchableSchoolSelect
-                value={formData.currentSchool}
-                onChange={(sch) => setFormData(prev => ({ ...prev, currentSchool: sch }))}
-                placeholder="Rechercher une école..."
-              />
+
+          <div>
+            <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+              Statut / Rôle
+            </label>
+            <div className="relative">
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
+              >
+                <option value="Etudiant">Étudiant(e)</option>
+                <option value="Enseignant">Enseignant(e)</option>
+                <option value="Alumni">Alumni</option>
+                <option value="Autre">Autre</option>
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 stroke-[2.25] text-[#111111] pointer-events-none" />
             </div>
           </div>
+          <div>
+            <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
+              Établissement / École
+            </label>
+            <SearchableSchoolSelect
+              value={formData.currentSchool}
+              onChange={(sch) => setFormData(prev => ({ ...prev, currentSchool: sch }))}
+              placeholder="Rechercher une école..."
+            />
+          </div>
+
 
           {/* Bio / Description */}
           <div>
@@ -322,7 +322,7 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
 
               <div>
                 <label className="text-xs font-medium text-[#111111] block mb-1 flex items-center gap-1.5">
-                  <IconLink className="w-4 h-4 text-[#111111]" /> Site web personnel / Book
+                  <IconLink className="w-4 h-4 text-[#111111]" /> Site web personnel
                 </label>
                 <input
                   type="url"

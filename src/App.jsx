@@ -360,11 +360,20 @@ export function App() {
 
       if (searchQuery.trim().length > 0) {
         const q = searchQuery.toLowerCase();
-        const matchesTitle = item.title.toLowerCase().includes(q);
-        const matchesAuthor = item.author.toLowerCase().includes(q);
-        const matchesSchool = item.school.toLowerCase().includes(q);
-        const matchesField = item.field.toLowerCase().includes(q);
-        const matchesTags = item.tags?.some((t) => t.toLowerCase().includes(q));
+        const matchesTitle = item.title?.toLowerCase().includes(q) || false;
+
+        // 🛡️ Extraction sécurisée de l'auteur (string ou objet)
+        let authorStr = '';
+        if (typeof item.author === 'string') authorStr = item.author;
+        else if (item.author && typeof item.author === 'object') {
+          authorStr = `${item.author.firstName || ''} ${item.author.lastName || ''} ${item.author.pseudo || ''}`;
+        }
+        const matchesAuthor = authorStr.toLowerCase().includes(q);
+
+        const matchesSchool = item.school?.toLowerCase().includes(q) || false;
+        const matchesField = item.field?.toLowerCase().includes(q) || false;
+        const matchesTags = item.tags?.some((t) => t.toLowerCase().includes(q)) || false;
+
         if (!matchesTitle && !matchesAuthor && !matchesSchool && !matchesField && !matchesTags) {
           return false;
         }

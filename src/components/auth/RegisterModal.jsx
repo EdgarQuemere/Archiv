@@ -119,6 +119,18 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
     reader.readAsDataURL(file);
   };
 
+  const handleAvatarDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.addEventListener('load', () => setAvatarPreview(reader.result?.toString() || null));
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -493,6 +505,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
                     <div
                       className="relative w-20 h-20 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[10px] overflow-hidden cursor-pointer group shadow-sm flex items-center justify-center"
                       onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onDrop={handleAvatarDrop}
                     >
                       {avatarPreview ? (
                         <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
@@ -503,6 +517,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
                         <span className="text-[9px] font-bold uppercase text-center leading-tight">Photo</span>
                       </div>
                     </div>
+                    <span className="text-[11px] font-mono text-slate-500 mt-1.5">Max 5 Mo (JPEG, PNG, WebP)</span>
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -512,7 +527,6 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
                     />
                   </div>
 
-                  {/* Pseudo TOUJOURS affiché et obligatoire à l'étape 2 */}
                   <div>
                     <label className="text-xs sm:text-sm font-medium block mb-1">Pseudo *</label>
                     <input
@@ -582,7 +596,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
                   </div>
 
                   <div>
-                    <label className="text-xs sm:text-sm font-medium block mb-1">Lien Perso / Book (Optionnel)</label>
+                    <label className="text-xs sm:text-sm font-medium block mb-1">Lien Perso (Optionnel)</label>
                     <input
                       type="url"
                       name="personalLink"

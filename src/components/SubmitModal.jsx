@@ -394,7 +394,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                 onChange={(sch) => setFormData({ ...formData, school: sch })}
                 placeholder={isBook ? "École visée par le book..." : "École du mémoire..."}
               />
-              <span className="text-[10px] text-slate-500 block mt-1 leading-tight">
+              <span className="text-sm text-slate-500 block mt-1 leading-tight">
                 {isBook
                   ? "🎯 Indiquez l'école ou le concours auquel ce book est destiné."
                   : "🎓 L'école dans laquelle vous avez soutenu ce mémoire."}

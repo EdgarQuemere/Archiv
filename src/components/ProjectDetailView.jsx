@@ -369,7 +369,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               </p>
 
               <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
-                {item.school} — {item.year} • {item.type || item.field}
+                {item.school} - {item.year} • {item.type || item.field} {item.domain?.name || item.field ? ` - ${item.domain?.name || item.field}` : ''}
               </p>
 
               {(item.description || item.abstract) && (
@@ -429,9 +429,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           onLoadError={(error) => {
             console.error("Erreur de chargement du PDF:", error);
           }}
-          className="w-full h-full overflow-hidden"
+          className="w-full h-full"
           loading={
-            <div className="flex flex-col items-center justify-center h-full w-full bg-[#EEEEEE] gap-3">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#EEEEEE] gap-3">
               <div className="w-6 h-6 border-2 border-[#111111]/20 border-t-[#111111] rounded-full animate-spin" />
               <span className="text-[#111111] font-mono text-xs sm:text-sm font-semibold tracking-tight">
                 Chargement du document...
@@ -439,35 +439,37 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             </div>
           }
           error={
-            <div className="flex flex-col items-center justify-center h-full w-full bg-[#EEEEEE] p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] flex items-center justify-center mb-4 shadow-sm">
-                <AlertCircle className="w-7 h-7 text-[#111111]" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#111111] mb-1.5">
-                Impossible d'afficher le document
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 max-w-sm mb-6 leading-relaxed">
-                Le fichier PDF n'a pas pu être chargé ou son format n'est pas pris en charge par le visualiseur.
-              </p>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => window.location.reload()}
-                  className="h-10 px-5 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-xs sm:text-sm font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
-                >
-                  <RefreshCw className="w-3.5 h-3.5 stroke-[2.25]" />
-                  <span>Réessayer</span>
-                </button>
-                {item.allowDownload && item.pdfUrl && (
-                  <a
-                    href={item.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-10 px-5 rounded-full bg-[#111111] hover:bg-black text-xs sm:text-sm font-medium text-white flex items-center gap-2 transition-colors shadow-sm"
+            <div className="absolute inset-0 flex items-center justify-center bg-[#EEEEEE] p-4">
+              <div className="flex flex-col items-center text-center max-w-sm">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] flex items-center justify-center mb-4 shadow-sm">
+                  <AlertCircle className="w-6 h-6 sm:w-7 sm:h-7 text-[#111111]" />
+                </div>
+                <h3 className="text-base sm:text-xl font-bold text-[#111111] mb-1.5 leading-tight">
+                  Impossible d'afficher le document
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 mb-5 leading-relaxed">
+                  Le fichier PDF n'a pas pu être chargé ou son format n'est pas pris en charge par le visualiseur.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2.5">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="h-9 sm:h-10 px-4 sm:px-5 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-xs sm:text-sm font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
                   >
-                    <Download className="w-3.5 h-3.5 stroke-[2.25]" />
-                    <span>Télécharger directement</span>
-                  </a>
-                )}
+                    <RefreshCw className="w-3.5 h-3.5 stroke-[2.25]" />
+                    <span>Réessayer</span>
+                  </button>
+                  {item.allowDownload && item.pdfUrl && (
+                    <a
+                      href={item.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="h-9 sm:h-10 px-4 sm:px-5 rounded-full bg-[#111111] hover:bg-black text-xs sm:text-sm font-medium text-white flex items-center gap-2 transition-colors shadow-sm"
+                    >
+                      <Download className="w-3.5 h-3.5 stroke-[2.25]" />
+                      <span>Télécharger directement</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           }
