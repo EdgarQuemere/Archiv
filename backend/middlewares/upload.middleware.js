@@ -1,10 +1,10 @@
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const { S3Client, PutBucketPolicyCommand } = require('@aws-sdk/client-s3');
+const { S3Client } = require('@aws-sdk/client-s3'); // 👈 On a retiré PutBucketPolicyCommand
 const path = require('path');
 require('dotenv').config();
 
-// Configuration du client S3 pour MinIO
+// Configuration du client S3 pour Garage / MinIO
 const s3 = new S3Client({
   endpoint: process.env.MINIO_ENDPOINT,
   region: 'us-east-1',
@@ -16,37 +16,6 @@ const s3 = new S3Client({
 });
 
 const bucketName = process.env.MINIO_BUCKET_NAME || 'archiv-uploads';
-
-// Fonction pour forcer le bucket en public
-const makeBucketPublic = async () => {
-  const policy = {
-    Version: "2012-10-17",
-    Statement: [
-      {
-        Effect: "Allow",
-        Principal: "*",
-        Action: ["s3:GetObject"],
-        Resource: [`arn:aws:s3:::${bucketName}/*`]
-      }
-    ]
-  };
-
-  try {
-    await s3.send(new PutBucketPolicyCommand({
-      Bucket: bucketName,
-      Policy: JSON.stringify(policy)
-    }));
-    console.log(`Bucket ${bucketName} configuré en accès public !`);
-  } catch (error) {
-    if (error.name === 'NoSuchBucket') {
-      console.error(`Le bucket ${bucketName} n'existe pas. Crée-le d'abord dans MinIO !`);
-    } else {
-      console.error('Erreur lors de la configuration de la policy du bucket:', error);
-    }
-  }
-};
-
-makeBucketPublic();
 
 // 1. Configuration pour les Avatars / Photos de profil (Max 5 Mo - Images uniquement)
 const uploadAvatar = multer({
@@ -61,7 +30,7 @@ const uploadAvatar = multer({
       cb(null, 'avatars/' + uniqueSuffix + path.extname(file.originalname));
     }
   }),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 👈 5 Mo max pour les avatars
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
@@ -85,7 +54,7 @@ const uploadProject = multer({
       cb(null, 'projects/' + uniqueSuffix + path.extname(file.originalname));
     }
   }),
-  limits: { fileSize: 30 * 1024 * 1024 }, // 👈 30 Mo max pour les projets / PDFs
+  limits: { fileSize: 30 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
@@ -96,12 +65,9 @@ const uploadProject = multer({
   }
 });
 
-// On attache uploadAvatar à uploadProject pour garder la rétrocompatibilité
 uploadProject.uploadAvatar = uploadAvatar;
 uploadProject.uploadProject = uploadProject;
 
-// Export par défaut = uploadProject (évite de casser auth.routes.js et project.routes.js)
-// Mais on permet aussi la déstructuration { uploadAvatar }
 module.exports = uploadProject;
 module.exports.uploadAvatar = uploadAvatar;
 module.exports.uploadProject = uploadProject;

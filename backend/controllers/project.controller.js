@@ -35,7 +35,7 @@ async function generateUniqueSlug(title, excludeId = null) {
 
 const s3 = new S3Client({
   endpoint: process.env.MINIO_ENDPOINT,
-  region: 'us-east-1',
+  region: "us-east-1",
   credentials: {
     accessKeyId: process.env.MINIO_ACCESS_KEY,
     secretAccessKey: process.env.MINIO_SECRET_KEY,
@@ -118,7 +118,7 @@ exports.getProjects = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const { type, domain, school } = req.query;
-    
+
     let where = {};
     if (type && type !== 'Tous') where.type = type;
     if (domain && domain !== 'Tous les domaines') where.domain = domain;
