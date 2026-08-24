@@ -1,6 +1,13 @@
 const prisma = require('../config/db');
 const bcrypt = require('bcrypt');
 
+// Fonction utilitaire pour formater l'URL vers le proxy backend
+const formatFileUrl = (file) => {
+  if (!file) return null;
+  const key = file.key || (file.location ? file.location.split('/').slice(-2).join('/') : null);
+  return key ? `/api/files/${key}` : file.location;
+};
+
 exports.getProfile = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -100,9 +107,9 @@ exports.updateProfile = async (req, res) => {
       updateData.pseudo = cleanPseudo;
     }
 
-    // Image de profil
+    // Image de profil formatée via le proxy backend
     if (req.file) {
-      updateData.profilePicture = req.file.location;
+      updateData.profilePicture = formatFileUrl(req.file);
     }
 
     const user = await prisma.user.update({
