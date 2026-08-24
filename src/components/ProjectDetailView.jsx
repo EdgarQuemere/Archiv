@@ -16,6 +16,18 @@ const pdfOptions = {
   wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
 };
 
+const decodeHTMLEntities = (str) => {
+  if (!str || typeof str !== 'string') return str || '';
+  return str
+    .replace(/&#x27;/g, "'")
+    .replace(/&#x2F;/g, "/")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+};
+
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
@@ -44,6 +56,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const { user, setUser } = useContext(AuthContext);
   const [showInfo, setShowInfo] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
   const isPortrait = item?.orientation === 'portrait' || (item?.aspectRatio && item?.aspectRatio > 1.1);
 
   const isSaved = user?.savedProjects?.some(sp => sp.projectId === item?.id);
@@ -342,9 +355,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       <div className="relative flex-1 w-full h-full overflow-hidden flex bg-[#EEEEEE]">
 
         {/* BOTTOM LEFT PROJECT INFORMATION PANEL */}
-        <div className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-1.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
+        <div className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-6.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
           {showInfo && (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-4 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none">
+            <div className={`animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDescExpanded ? 'max-h-[60vh] sm:max-h-[70vh]' : 'max-h-[35vh] sm:max-h-none'}`}>
               <h1 className="text-base sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
                 {item.title}
               </h1>
@@ -364,14 +377,29 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 </span>
               </p>
 
-              <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
-                {item.school} - {item.year} • {item.type || item.field} {item.domain?.name || item.field ? ` - ${item.domain?.name || item.field}` : ''}
+              <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-0.5">
+                {item.year || '2026'} — {item.type || 'Mémoire'}{item.domain?.name || item.field ? ` — ${item.domain?.name || item.field}` : ''}
               </p>
+              {item.school && (
+                <p className="text-[11px] sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
+                  {item.school}
+                </p>
+              )}
 
               {item.description && (
-                <p className="text-xs sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md line-clamp-4 sm:line-clamp-none">
-                  {item.description}
-                </p>
+                <div>
+                  <p className={`text-xs sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md ${isDescExpanded ? 'line-clamp-none' : 'line-clamp-3 sm:line-clamp-none'}`}>
+                    {decodeHTMLEntities(item.description)}
+                  </p>
+                  {(item.description.length > 90 || item.description.includes('\n')) && (
+                    <button
+                      onClick={() => setIsDescExpanded(prev => !prev)}
+                      className="mt-1 text-xs font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block sm:hidden"
+                    >
+                      {isDescExpanded ? 'voir moins' : 'voir plus'}
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -381,36 +409,39 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setShowInfo((prev) => !prev)}
               title={showInfo ? 'Masquer les informations' : 'Afficher les informations'}
-              className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
             >
               {showInfo ? (
-                <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+                <ChevronDown className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
               ) : (
-                <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+                <ChevronUp className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
               )}
             </button>
 
             {item.allowDownload && (
               <button
                 onClick={handleDownload}
-                className="h-9 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
+                className="h-10 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-xs sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
                 title="Télécharger le PDF"
               >
-                <span>Télécharger {item.pdfSize ? `(${item.pdfSize})` : ''}</span>
-                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+                <Download className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25] sm:order-2" />
+                <span className="sm:order-1">
+                  <span className="hidden sm:inline">Télécharger </span>
+                  {item.pdfSize ? `(${item.pdfSize})` : ''}
+                </span>
               </button>
             )}
 
             <button
               onClick={toggleSave}
               disabled={isSaving}
-              className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0 ${isSaved
+              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0 ${isSaved
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                 } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
               title={isSaved ? "Retirer des enregistrements" : "Enregistrer"}
             >
-              <Bookmark className={`w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25] ${isSaved ? 'fill-current' : ''}`} />
+              <Bookmark className={`w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25] ${isSaved ? 'fill-current' : ''}`} />
             </button>
           </div>
         </div>
@@ -512,16 +543,16 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR */}
         <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end sm:flex-row sm:items-center gap-2 sm:gap-3.5 pointer-events-auto font-sans max-w-full">
           {/* Segment 1: Single / Double View */}
-          <div className="flex h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
+          <div className="flex h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={() => setViewMode('single')}
               title="Page Simple"
-              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'single'
+              className={`w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'single'
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                 }`}
             >
-              <PageSingleSVG className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <PageSingleSVG className="w-4 h-4 sm:w-4 sm:h-4" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
@@ -529,23 +560,23 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setViewMode('double')}
               title="Double Page"
-              className={`w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'double'
+              className={`w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'double'
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                 }`}
             >
-              <PageDoubleSVG className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <PageDoubleSVG className="w-4 h-4 sm:w-4 sm:h-4" />
             </button>
           </div>
 
           {/* Segment 2: Zoom */}
-          <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
+          <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handleZoomOut}
               title="Dézoomer (-)"
-              className="w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+              <ZoomOut className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
@@ -553,20 +584,20 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handleZoomIn}
               title="Zoomer (+)"
-              className="w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+              <ZoomIn className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
             </button>
           </div>
 
           {/* Segment 3: Pagination */}
-          <div className="h-9 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
+          <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handlePrevPage}
               title="Page précédente"
-              className="w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+              <ChevronUp className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />
@@ -574,9 +605,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handleNextPage}
               title="Page suivante"
-              className="w-8 xs:w-9 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
+              className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
-              <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+              <ChevronDown className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
             </button>
 
             <div className="w-[1.5px] h-full bg-[#111111]" />

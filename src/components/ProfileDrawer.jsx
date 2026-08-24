@@ -332,24 +332,24 @@ export function ProfileDrawer({
             onOpenInfo?.();
           }}
           title="Informations"
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] flex items-center justify-center shrink-0 shadow-sm hover:bg-[#E2E2E2] transition-colors cursor-pointer"
         >
-          <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+          <Info className="w-4 h-4 stroke-[2.25]" />
         </button>
         <button
           onClick={handleClose}
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm transition-colors cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] flex items-center justify-center shrink-0 shadow-sm transition-colors cursor-pointer"
           title="Fermer le Profil"
         >
-          <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <IconUserProfile className="w-4 h-4" />
         </button>
 
         <button
           onClick={() => onOpenSubmit?.()}
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] hover:bg-[#E2E2E2] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] hover:bg-[#E2E2E2] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
           title="Ajouter mon travail"
         >
-          <IconAddDocument className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <IconAddDocument className="w-4 h-4" />
         </button>
       </div>
 
@@ -357,9 +357,9 @@ export function ProfileDrawer({
       <button
         onClick={handleClose}
         title="Fermer"
-        className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 w-9 h-9 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-sm"
+        className="fixed top-3 right-3 sm:top-6 sm:right-6 z-50 w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-sm"
       >
-        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+        <X className="w-4 h-4 stroke-[2.25]" />
       </button>
 
       {/* VERTICAL SEPARATOR LINE */}
