@@ -7,7 +7,7 @@ require('dotenv').config();
 // Configuration du client S3 pour Garage / MinIO
 const s3 = new S3Client({
   endpoint: process.env.MINIO_ENDPOINT,
-  region: 'us-east-1',
+  region: 'garage',
   credentials: {
     accessKeyId: process.env.MINIO_ACCESS_KEY,
     secretAccessKey: process.env.MINIO_SECRET_KEY,
