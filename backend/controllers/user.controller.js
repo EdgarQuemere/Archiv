@@ -8,7 +8,10 @@ exports.getProfile = async (req, res) => {
       select: {
         id: true,
         email: true,
-        firstName: true, lastName: true, pseudo: true, displayPreference: true,
+        firstName: true,
+        lastName: true,
+        pseudo: true,
+        displayPreference: true,
         role: true,
         currentSchool: true,
         behanceLink: true,
@@ -19,7 +22,24 @@ exports.getProfile = async (req, res) => {
         isAdmin: true,
         createdAt: true,
         projects: true,
-        savedProjects: { include: { project: { include: { domain: true, author: { select: { firstName: true, lastName: true, pseudo: true, displayPreference: true, profilePicture: true } } } } } }
+        savedProjects: {
+          include: {
+            project: {
+              include: {
+                domain: true,
+                author: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                    pseudo: true,
+                    displayPreference: true,
+                    profilePicture: true
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
 
@@ -40,10 +60,47 @@ exports.updateProfile = async (req, res) => {
       return res.status(400).json({ error: "La modification de l'adresse e-mail n'est pas autorisée." });
     }
 
-    const { name, role, currentSchool, behanceLink, instaLink, personalLink } = req.body;
-    let updateData = { name, role, currentSchool, behanceLink, instaLink, personalLink };
+    const {
+      firstName,
+      lastName,
+      pseudo,
+      displayPreference,
+      role,
+      currentSchool,
+      behanceLink,
+      instaLink,
+      personalLink
+    } = req.body;
 
-    // Si une image a été uploadée, on met à jour l'URL
+    let updateData = {};
+
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (lastName !== undefined) updateData.lastName = lastName;
+    if (displayPreference !== undefined) updateData.displayPreference = displayPreference;
+    if (role !== undefined) updateData.role = role;
+    if (currentSchool !== undefined) updateData.currentSchool = currentSchool;
+    if (behanceLink !== undefined) updateData.behanceLink = behanceLink;
+    if (instaLink !== undefined) updateData.instaLink = instaLink;
+    if (personalLink !== undefined) updateData.personalLink = personalLink;
+
+    // Vérification et unicité du pseudo s'il est modifié
+    if (pseudo) {
+      const cleanPseudo = pseudo.trim().toLowerCase();
+      const existing = await prisma.user.findFirst({
+        where: {
+          pseudo: cleanPseudo,
+          NOT: { id: req.userId }
+        }
+      });
+
+      if (existing) {
+        return res.status(400).json({ error: 'Ce pseudo est déjà utilisé.' });
+      }
+
+      updateData.pseudo = cleanPseudo;
+    }
+
+    // Image de profil
     if (req.file) {
       updateData.profilePicture = req.file.location;
     }
@@ -54,7 +111,10 @@ exports.updateProfile = async (req, res) => {
       select: {
         id: true,
         email: true,
-        firstName: true, lastName: true, pseudo: true, displayPreference: true,
+        firstName: true,
+        lastName: true,
+        pseudo: true,
+        displayPreference: true,
         role: true,
         currentSchool: true,
         behanceLink: true,
@@ -62,7 +122,7 @@ exports.updateProfile = async (req, res) => {
         personalLink: true,
         profilePicture: true,
         isOmniscient: true,
-        isAdmin: true,
+        isAdmin: true
       }
     });
 
@@ -77,17 +137,22 @@ exports.deleteAccount = async (req, res) => {
   try {
     const { reason } = req.body;
 
-    // Récupérer les infos de l'utilisateur avant suppression
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
-      select: { email: true, firstName: true, lastName: true, pseudo: true, role: true, currentSchool: true }
+      select: {
+        email: true,
+        firstName: true,
+        lastName: true,
+        pseudo: true,
+        role: true,
+        currentSchool: true
+      }
     });
 
     if (!user) {
       return res.status(404).json({ error: 'Utilisateur introuvable.' });
     }
 
-    // Enregistrer la raison de suppression AVANT de supprimer le compte
     await prisma.deletedAccount.create({
       data: {
         email: user.email,
@@ -96,51 +161,83 @@ exports.deleteAccount = async (req, res) => {
         pseudo: user.pseudo,
         role: user.role,
         school: user.currentSchool,
-        reason: reason || 'Aucune raison fournie',
+        reason: reason || 'Aucune raison fournie'
       }
     });
 
-    // Supprimer d'abord les projets sauvegardés, puis les projets, pour éviter les erreurs de clés étrangères
     await prisma.savedProject.deleteMany({ where: { userId: req.userId } });
     await prisma.project.deleteMany({ where: { userId: req.userId } });
 
-    // Supprimer l'utilisateur
     await prisma.user.delete({
       where: { id: req.userId }
     });
 
-    // Déconnecter l'utilisateur en supprimant le cookie
-    res.clearCookie("auth_token", {
+    res.clearCookie('auth_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none'
     });
 
     res.json({ message: 'Compte supprimé avec succès' });
   } catch (error) {
-    console.error("Delete Account Error:", error);
+    console.error('Delete Account Error:', error);
     res.status(500).json({ error: 'Erreur lors de la suppression du compte.' });
   }
 };
 
 exports.getPublicProfile = async (req, res) => {
   try {
-    const { id } = req.params;
-    const user = await prisma.user.findUnique({
-      where: { id },
+    const identifier = req.params.id || req.params.identifier;
+
+    if (!identifier || identifier === 'undefined' || identifier === 'null') {
+      return res.status(400).json({ error: 'Identifiant ou pseudo manquant.' });
+    }
+
+    const cleanIdentifier = decodeURIComponent(identifier).trim();
+
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { pseudo: cleanIdentifier },
+          { pseudo: cleanIdentifier.toLowerCase() },
+          { id: cleanIdentifier }
+        ]
+      },
       select: {
         id: true,
         firstName: true,
-        lastName: true, pseudo: true, displayPreference: true,
+        lastName: true,
+        pseudo: true,
+        displayPreference: true,
         role: true,
         currentSchool: true,
         behanceLink: true,
         instaLink: true,
         personalLink: true,
         profilePicture: true,
+        isOmniscient: true,
         createdAt: true,
         projects: {
-          include: { domain: true }
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            description: true,
+            type: true,
+            school: true,
+            year: true,
+            coverUrl: true,
+            pdfUrl: true,
+            pdfSize: true,
+            orientation: true,
+            aspectRatio: true,
+            allowDownload: true,
+            createdAt: true,
+            domain: {
+              select: { name: true }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
         }
       }
     });
@@ -151,15 +248,15 @@ exports.getPublicProfile = async (req, res) => {
 
     res.json(user);
   } catch (error) {
-    console.error(error);
+    console.error('Erreur getPublicProfile:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération du profil public.' });
   }
 };
 
 exports.getSavedProjects = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
 
     const savedProjects = await prisma.savedProject.findMany({
@@ -168,14 +265,22 @@ exports.getSavedProjects = async (req, res) => {
         project: {
           include: {
             domain: true,
-            author: { select: { firstName: true, lastName: true, pseudo: true, displayPreference: true, profilePicture: true } }
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                pseudo: true,
+                displayPreference: true,
+                profilePicture: true
+              }
+            }
           }
         }
       },
       skip,
       take: limit
     });
-    
+
     const total = await prisma.savedProject.count({ where: { userId: req.userId } });
 
     res.json({

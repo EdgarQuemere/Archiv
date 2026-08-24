@@ -145,7 +145,7 @@ exports.getProjects = async (req, res) => {
         pdfUrl: true,
         allowDownload: true,
         author: {
-          select: { firstName: true, lastName: true, profilePicture: true, isOmniscient: true }
+          select: { firstName: true, lastName: true, pseudo: true, profilePicture: true, isOmniscient: true }
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -203,6 +203,7 @@ exports.getProject = async (req, res) => {
             id: true,
             firstName: true,
             lastName: true,
+            pseudo: true,
             profilePicture: true,
             isOmniscient: true
           }

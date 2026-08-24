@@ -4,9 +4,24 @@ const prisma = require('../config/db');
 
 router.get('/sitemap.xml', async (req, res) => {
   try {
+    // 1. Récupération des projets
     const projects = await prisma.project.findMany({
       select: { slug: true, updatedAt: true },
       orderBy: { updatedAt: 'desc' }
+    });
+
+    // 2. Récupération des utilisateurs ayant au moins un projet public
+    const users = await prisma.user.findMany({
+      where: {
+        projects: {
+          some: {} // Uniquement les utilisateurs avec au moins 1 projet
+        }
+      },
+      select: {
+        id: true,
+        pseudo: true,
+        updatedAt: true
+      }
     });
 
     const now = new Date().toISOString().split('T')[0];
@@ -45,19 +60,32 @@ router.get('/sitemap.xml', async (req, res) => {
     <priority>0.3</priority>
   </url>
 
-  <!-- Pages Projets (Générées automatiquement) -->
+  <!-- Projets (Priorité Haute : 0.9) -->
   ${projects
-    .filter((p) => Boolean(p.slug))
-    .map(
-      (p) => `
+        .filter((p) => Boolean(p.slug))
+        .map(
+          (p) => `
   <url>
     <loc>https://artchiv.fr/projet/${p.slug}</loc>
     <lastmod>${p.updatedAt ? p.updatedAt.toISOString().split('T')[0] : now}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>`
-    )
-    .join('')}
+        )
+        .join('')}
+
+  <!-- Profils Créateurs (Priorité Modérée : 0.6) -->
+  ${users
+        .map(
+          (u) => `
+  <url>
+    <loc>https://artchiv.fr/profil/${encodeURIComponent(u.pseudo || u.id)}</loc>
+    <lastmod>${u.updatedAt ? u.updatedAt.toISOString().split('T')[0] : now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`
+        )
+        .join('')}
 </urlset>`;
 
     res.header('Content-Type', 'application/xml');
