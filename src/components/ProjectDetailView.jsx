@@ -293,7 +293,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       />
 
       {/* TOP LEFT BUTTONS */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
+      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto">
         <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
           <img
@@ -308,9 +308,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             onOpenInfo?.();
           }}
           title="Informations"
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+          <Info className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>
 
         <button
@@ -323,9 +323,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             }
           }}
           title={user ? user.name || user.pseudo || 'Profil' : 'Se connecter'}
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <IconUserProfile className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <IconUserProfile className="w-4 h-4 sm:w-4 sm:h-4" />
         </button>
 
         <button
@@ -334,9 +334,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             onOpenSubmit?.();
           }}
           title="Ajouter mon travail"
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
         >
-          <IconAddDocument className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <IconAddDocument className="w-4 h-4 sm:w-4 sm:h-4" />
         </button>
       </div>
 
@@ -345,9 +345,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         <button
           onClick={onClose}
           title="Fermer la vue produit"
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
         >
-          <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.25]" />
+          <X className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
         </button>
       </div>
 

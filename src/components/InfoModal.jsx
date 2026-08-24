@@ -44,7 +44,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
         url="/info"
       />
       {/* TOP LEFT NAVBAR (Logo, Info Active, User Profile) */}
-      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto">
+      <div className="fixed top-3 left-3 sm:top-6 sm:left-6 z-50 flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto">
         <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
           <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
           <img
