@@ -27,6 +27,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- IMPORT DES ROUTES & SWAGGER ---
 const authRoutes = require('./routes/auth.routes');
+const fileRoutes = require('./routes/file.routes');
 const projectRoutes = require('./routes/project.routes');
 const domainRoutes = require('./routes/domain.routes');
 const userRoutes = require('./routes/user.routes');
@@ -37,6 +38,7 @@ const swaggerDocument = require('./swagger.json');
 
 // --- DÉCLARATION DES ROUTES ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/files', fileRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/domains', domainRoutes);

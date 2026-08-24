@@ -1,5 +1,6 @@
 const prisma = require('../config/db');
-const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { s3, bucketName } = require('../config/s3');
 require('dotenv').config();
 
 // Fonction utilitaire pour nettoyer et créer un slug
@@ -33,30 +34,35 @@ async function generateUniqueSlug(title, excludeId = null) {
   }
 }
 
-const s3 = new S3Client({
-  endpoint: process.env.MINIO_ENDPOINT,
-  region: 'garage', 
-  credentials: {
-    accessKeyId: process.env.MINIO_ACCESS_KEY,
-    secretAccessKey: process.env.MINIO_SECRET_KEY,
-  },
-  forcePathStyle: true,
-});
-const bucketName = process.env.MINIO_BUCKET_NAME || 'archiv-uploads';
+// Fonction utilitaire pour formater l'URL vers le proxy backend
+const formatFileUrl = (file) => {
+  if (!file) return null;
+  // Si multer-s3 renvoie une key, on l'utilise, sinon on extrait de la location
+  const key = file.key || (file.location ? file.location.split('/').slice(-2).join('/') : null);
+  return key ? `/api/files/${key}` : file.location;
+};
 
 const deleteFile = async (fileUrl) => {
   if (!fileUrl) return;
   try {
-    const urlParts = fileUrl.split(`/${bucketName}/`);
-    if (urlParts.length > 1) {
-      const key = urlParts[1];
+    let key = null;
+    if (fileUrl.startsWith('/api/files/')) {
+      key = fileUrl.replace('/api/files/', '');
+    } else {
+      const urlParts = fileUrl.split(`/${bucketName}/`);
+      if (urlParts.length > 1) {
+        key = urlParts[1];
+      }
+    }
+
+    if (key) {
       await s3.send(new DeleteObjectCommand({
         Bucket: bucketName,
         Key: key
       }));
     }
   } catch (error) {
-    console.error('Erreur lors de la suppression sur MinIO:', error);
+    console.error('Erreur lors de la suppression sur Garage:', error);
   }
 };
 
@@ -74,10 +80,10 @@ exports.createProject = async (req, res) => {
     }
 
     const slug = await generateUniqueSlug(title);
-    const pdfUrl = req.files['pdf'][0].location;
+    const pdfUrl = formatFileUrl(req.files['pdf'][0]);
     const pdfSizeRaw = req.files['pdf'][0].size || 0;
     const pdfSize = req.body.pdfSizeStr || (pdfSizeRaw ? (pdfSizeRaw / (1024 * 1024)).toFixed(1) + ' Mo' : 'Inconnu');
-    const coverUrl = req.files['cover'] ? req.files['cover'][0].location : null;
+    const coverUrl = req.files['cover'] ? formatFileUrl(req.files['cover'][0]) : null;
     const isDownloadAllowed = req.body.allowDownload === 'true' || req.body.allowDownload === true;
 
     const project = await prisma.project.create({
@@ -260,13 +266,13 @@ exports.updateProject = async (req, res) => {
 
     if (req.files && req.files['pdf']) {
       await deleteFile(project.pdfUrl);
-      updateData.pdfUrl = req.files['pdf'][0].location;
+      updateData.pdfUrl = formatFileUrl(req.files['pdf'][0]);
       updateData.pdfSize = req.body.pdfSizeStr || (req.files['pdf'][0].size ? (req.files['pdf'][0].size / (1024 * 1024)).toFixed(1) + ' Mo' : 'Inconnu');
     }
 
     if (req.files && req.files['cover']) {
       if (project.coverUrl) await deleteFile(project.coverUrl);
-      updateData.coverUrl = req.files['cover'][0].location;
+      updateData.coverUrl = formatFileUrl(req.files['cover'][0]);
     }
 
     const updatedProject = await prisma.project.update({

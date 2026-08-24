@@ -1,23 +1,10 @@
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const { S3Client } = require('@aws-sdk/client-s3'); // 👈 On a retiré PutBucketPolicyCommand
+const { s3, bucketName } = require('../config/s3');
 const path = require('path');
 require('dotenv').config();
 
-// Configuration du client S3 pour Garage / MinIO
-const s3 = new S3Client({
-  endpoint: process.env.MINIO_ENDPOINT,
-  region: 'garage',
-  credentials: {
-    accessKeyId: process.env.MINIO_ACCESS_KEY,
-    secretAccessKey: process.env.MINIO_SECRET_KEY,
-  },
-  forcePathStyle: true,
-});
-
-const bucketName = process.env.MINIO_BUCKET_NAME || 'archiv-uploads';
-
-// 1. Configuration pour les Avatars / Photos de profil (Max 5 Mo - Images uniquement)
+// 1. Configuration Multer S3 pour les Avatars (single)
 const uploadAvatar = multer({
   storage: multerS3({
     s3: s3,
@@ -41,7 +28,7 @@ const uploadAvatar = multer({
   }
 });
 
-// 2. Configuration pour les Projets (Max 30 Mo - PDF et Images)
+// 2. Configuration Multer S3 pour les Projets (fields)
 const uploadProject = multer({
   storage: multerS3({
     s3: s3,
@@ -65,9 +52,7 @@ const uploadProject = multer({
   }
 });
 
-uploadProject.uploadAvatar = uploadAvatar;
-uploadProject.uploadProject = uploadProject;
-
-module.exports = uploadProject;
-module.exports.uploadAvatar = uploadAvatar;
-module.exports.uploadProject = uploadProject;
+module.exports = {
+  uploadAvatar,
+  uploadProject
+};

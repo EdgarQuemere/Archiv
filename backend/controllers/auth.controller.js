@@ -5,6 +5,8 @@ const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy');
 const prisma = require('../config/db');
+const { s3, bucketName } = require('../config/s3');
+const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 // Initialisation Mailjet via API HTTP
 const Mailjet = require('node-mailjet');
@@ -12,6 +14,13 @@ const mailjet = Mailjet.apiConnect(
   process.env.MAILJET_API_KEY,
   process.env.MAILJET_API_SECRET
 );
+
+// Fonction utilitaire pour formater l'URL vers le proxy backend
+const formatFileUrl = (file) => {
+  if (!file) return null;
+  const key = file.key || (file.location ? file.location.split('/').slice(-2).join('/') : null);
+  return key ? `/api/files/${key}` : file.location;
+};
 
 exports.register = async (req, res) => {
   const errors = validationResult(req);
@@ -24,7 +33,8 @@ exports.register = async (req, res) => {
       email, password, firstName, lastName, pseudo, displayPreference, role, currentSchool,
       behanceLink, instaLink, personalLink
     } = req.body;
-    let profilePicture = req.file ? req.file.location : req.body.profilePicture;
+    
+    let profilePicture = req.file ? formatFileUrl(req.file) : req.body.profilePicture;
     if (!profilePicture) {
       profilePicture = `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`;
     }
@@ -153,7 +163,6 @@ exports.googleAuth = async (req, res) => {
   try {
     const { token, role, currentSchool, behanceLink, instaLink, personalLink } = req.body;
 
-    // MOCK VERIFICATION
     let payload;
     if (token && token.startsWith('TEST_TOKEN')) {
       const suffix = token.slice('TEST_TOKEN'.length) || '';
@@ -326,7 +335,6 @@ exports.forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
 
-    // Envoi via Mailjet API HTTP
     try {
       await mailjet.post('send', { version: 'v3.1' }).request({
         Messages: [
@@ -442,7 +450,6 @@ exports.verifyEmail = async (req, res) => {
       }
     });
 
-    // Connexion automatique après vérification (renommé en jwtToken)
     const jwtToken = jwt.sign({ userId: verifiedUser.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.cookie('auth_token', jwtToken, {
       httpOnly: true,
@@ -519,7 +526,7 @@ exports.resendVerification = async (req, res) => {
             Subject: 'Vérification de votre adresse email Artchiv',
             HTMLPart: `
     <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #111111; text-align: center;">
-      <div style="background-color: #000f; padding: 40px 20px; border-radius: 12px 12px 0 0;">
+      <div style="background-color: #000; padding: 40px 20px; border-radius: 12px 12px 0 0;">
         <img src="${process.env.FRONTEND_URL || 'http://localhost:3000'}/artchiv-logo.webp" alt="Artchiv" style="height: 40px; margin-bottom: 0;" />
       </div>
       <div style="background-color: #FFFFFF; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
