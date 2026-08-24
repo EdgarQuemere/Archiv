@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, X, List, LayoutGrid, Info, User } from 'lucide-react';
+import { Search, X, List, LayoutGrid, Info, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -44,12 +44,33 @@ export function Navbar({
   setSearchQuery
 }) {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [cellProposal, setCellProposal] = useState('P1'); // 'P1' | 'P2' | 'P3'
+
+  const cycleView = () => {
+    if (activeView === 'canvas') setActiveView('network');
+    else if (activeView === 'network') setActiveView('list');
+    else setActiveView('canvas');
+  };
+
+  const currentViewIcon = () => {
+    if (activeView === 'network') {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 stroke-[2.25]" fill="currentColor" viewBox="0 0 256 256">
+          <path d="M200,152a35.77,35.77,0,0,0-16.46,4l-21.39-16.64A35.49,35.49,0,0,0,164,128.65l10.35-3.44A36,36,0,1,0,164,100c0,1.11.06,2.21.16,3.3l-7.78,2.59A36,36,0,0,0,128,92c-1,0-1.88,0-2.81.12l-4.45-10A36,36,0,1,0,96,92c1,0,1.88,0,2.81-.12l4.45,10a35.91,35.91,0,0,0-8.59,39.7L73.39,160.49a36,36,0,1,0,15.94,17.93l21.28-18.91a35.91,35.91,0,0,0,36.8-1.21L167,173.56A36,36,0,1,0,200,152Zm0-64a12,12,0,1,1-12,12A12,12,0,0,1,200,88ZM84,56A12,12,0,1,1,96,68,12,12,0,0,1,84,56ZM56,204a12,12,0,1,1,12-12A12,12,0,0,1,56,204Zm60-76a12,12,0,1,1,12,12A12,12,0,0,1,116,128Zm84,72a12,12,0,1,1,12-12A12,12,0,0,1,200,200Z"></path>
+        </svg>
+      );
+    }
+    if (activeView === 'list') {
+      return <List className="w-4 h-4 stroke-[2.25]" />;
+    }
+    return <LayoutGrid className="w-4 h-4 stroke-[2.25]" />;
+  };
 
   return (
     <>
-      <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-50 flex items-start sm:items-center justify-between gap-2 sm:gap-3.5 pointer-events-none font-sans max-w-full">
+      <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-50 flex items-center justify-between gap-1 sm:gap-3.5 pointer-events-none font-sans max-w-full">
         {/* Top Left Buttons Group */}
-        <div className="flex items-center gap-1.5 xs:gap-2.5 sm:gap-3.5 pointer-events-auto shrink-0">
+        <div className="flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto shrink-0">
           {/* Logo (Condensé sur mobile, Grand sur desktop) */}
           <picture onClick={() => setActiveView && setActiveView('canvas')} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
             <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
@@ -97,78 +118,95 @@ export function Navbar({
         </div>
 
         {/* Top Right Controls Group */}
-        <div className="pointer-events-auto flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-3.5 shrink-0">
+        <div className="pointer-events-auto flex items-center gap-1 xs:gap-1.5 sm:gap-3.5 shrink-0">
+          {/* Filtres Button */}
+          <button
+            onClick={onOpenFilter}
+            className={`h-10 sm:h-11 ${activeFilterCount > 0 ? 'w-auto px-2.5 sm:px-8' : 'w-10 sm:w-auto px-0 sm:px-8'
+              } border-[1.5px] border-[#111111] text-xs sm:text-base font-medium rounded-full flex items-center justify-center transition-all shadow-sm relative shrink-0 ${isFilterOpen
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              }`}
+          >
+            <span className="hidden sm:inline">Filtres</span>
+            <span className="inline sm:hidden flex items-center justify-center">
+              <FilterIconSVG className="w-4 h-4" />
+            </span>
+            {activeFilterCount > 0 && (
+              <span className={`ml-1.5 sm:ml-2 text-[10px] sm:text-xs font-mono px-1.5 sm:px-2 py-0.5 rounded-full font-bold ${isFilterOpen ? 'bg-[#EEEEEE] text-[#111111]' : 'bg-[#111111] text-[#EEEEEE]'
+                }`}>
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
 
-          {/* Ligne 1 (mobile) : Filtres + View Switcher */}
-          <div className="flex items-center gap-1.5 sm:gap-3.5">
-            {/* Filtres Button */}
+          {/* Search Button - Mobile (loupe alignée sur 1 seule ligne) */}
+          <button
+            onClick={() => setIsMobileSearchOpen(true)}
+            className="flex sm:hidden w-10 h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] items-center justify-center transition-colors shadow-sm cursor-pointer shrink-0"
+            title="Rechercher"
+          >
+            <Search className="w-4 h-4 stroke-[2.25]" />
+          </button>
+
+          {/* Mobile View Switcher Pill (P2: Canva / Liens / Liste - Fixed width 94px) */}
+          <button
+            onClick={cycleView}
+            className="flex sm:hidden h-10 w-[94px] px-2 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] items-center justify-center gap-1 shadow-sm cursor-pointer shrink-0"
+            title="Changer de vue"
+          >
+            {currentViewIcon()}
+            <span className="font-sans text-[11px] font-bold tracking-tight w-[38px] text-center inline-block">
+              {activeView === 'canvas' ? 'Canva' : activeView === 'network' ? 'Liens' : 'Liste'}
+            </span>
+            <ChevronRight className="w-3 h-3 text-[#EEEEEE]/60 stroke-[2.25] shrink-0" />
+          </button>
+
+          {/* Desktop View Switcher Segmented Control (3-Icon) */}
+          <div className="hidden sm:flex h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] items-center rounded-full overflow-hidden p-0 shrink-0 shadow-sm">
+            {/* 1. Canvas / Grid View */}
             <button
-              onClick={onOpenFilter}
-              className={`h-10 sm:h-11 ${activeFilterCount > 0 ? 'w-auto px-2.5 sm:px-8' : 'w-10 sm:w-auto px-0 sm:px-8'
-                } border-[1.5px] border-[#111111] text-xs sm:text-base font-medium rounded-full flex items-center justify-center transition-all shadow-sm relative shrink-0 ${isFilterOpen
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+              onClick={() => setActiveView('canvas')}
+              title="Vue Canva Infini"
+              className={`w-11 h-full flex items-center justify-center transition-colors ${activeView === 'canvas'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                 }`}
             >
-              <span className="hidden sm:inline">Filtres</span>
-              <span className="inline sm:hidden flex items-center justify-center">
-                <FilterIconSVG className="w-4 h-4" />
-              </span>
-              {activeFilterCount > 0 && (
-                <span className={`ml-1.5 sm:ml-2 text-[10px] sm:text-xs font-mono px-1.5 sm:px-2 py-0.5 rounded-full font-bold ${isFilterOpen ? 'bg-[#EEEEEE] text-[#111111]' : 'bg-[#111111] text-[#EEEEEE]'
-                  }`}>
-                  {activeFilterCount}
-                </span>
-              )}
+              <LayoutGrid className="w-4 h-4 stroke-[2.25]" />
             </button>
 
-            {/* View Switcher Segmented Control */}
-            <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shrink-0 shadow-sm">
-              {/* 1. Canvas / Grid View */}
-              <button
-                onClick={() => setActiveView('canvas')}
-                title="Vue Canva Infini"
-                className={`w-10 xs:w-10 sm:w-11 h-full flex items-center justify-center transition-colors ${activeView === 'canvas'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-                  }`}
-              >
-                <LayoutGrid className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
-              </button>
+            <div className="w-[1.5px] h-full bg-[#111111]" />
 
-              <div className="w-[1.5px] h-full bg-[#111111]" />
+            {/* 2. Network Graph View */}
+            <button
+              onClick={() => setActiveView('network')}
+              title="Vue Graphe Relationnel"
+              className={`w-11 h-full flex items-center justify-center transition-colors ${activeView === 'network'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M200,152a35.77,35.77,0,0,0-16.46,4l-21.39-16.64A35.49,35.49,0,0,0,164,128.65l10.35-3.44A36,36,0,1,0,164,100c0,1.11.06,2.21.16,3.3l-7.78,2.59A36,36,0,0,0,128,92c-1,0-1.88,0-2.81.12l-4.45-10A36,36,0,1,0,96,92c1,0,1.88,0,2.81-.12l4.45,10a35.91,35.91,0,0,0-8.59,39.7L73.39,160.49a36,36,0,1,0,15.94,17.93l21.28-18.91a35.91,35.91,0,0,0,36.8-1.21L167,173.56A36,36,0,1,0,200,152Zm0-64a12,12,0,1,1-12,12A12,12,0,0,1,200,88ZM84,56A12,12,0,1,1,96,68,12,12,0,0,1,84,56ZM56,204a12,12,0,1,1,12-12A12,12,0,0,1,56,204Zm60-76a12,12,0,1,1,12,12A12,12,0,0,1,116,128Zm84,72a12,12,0,1,1,12-12A12,12,0,0,1,200,200Z"></path>
+              </svg>
+            </button>
 
-              {/* 2. Network Graph View */}
-              <button
-                onClick={() => setActiveView('network')}
-                title="Vue Graphe Relationnel"
-                className={`w-10 xs:w-10 sm:w-11 h-full flex items-center justify-center transition-colors ${activeView === 'network'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-                  }`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 256 256">
-                  <path d="M200,152a35.77,35.77,0,0,0-16.46,4l-21.39-16.64A35.49,35.49,0,0,0,164,128.65l10.35-3.44A36,36,0,1,0,164,100c0,1.11.06,2.21.16,3.3l-7.78,2.59A36,36,0,0,0,128,92c-1,0-1.88,0-2.81.12l-4.45-10A36,36,0,1,0,96,92c1,0,1.88,0,2.81-.12l4.45,10a35.91,35.91,0,0,0-8.59,39.7L73.39,160.49a36,36,0,1,0,15.94,17.93l21.28-18.91a35.91,35.91,0,0,0,36.8-1.21L167,173.56A36,36,0,1,0,200,152Zm0-64a12,12,0,1,1-12,12A12,12,0,0,1,200,88ZM84,56A12,12,0,1,1,96,68,12,12,0,0,1,84,56ZM56,204a12,12,0,1,1,12-12A12,12,0,0,1,56,204Zm60-76a12,12,0,1,1,12,12A12,12,0,0,1,116,128Zm84,72a12,12,0,1,1,12-12A12,12,0,0,1,200,200Z"></path>
-                </svg>
-              </button>
+            <div className="w-[1.5px] h-full bg-[#111111]" />
 
-              <div className="w-[1.5px] h-full bg-[#111111]" />
-
-              {/* 3. List View */}
-              <button
-                onClick={() => setActiveView('list')}
-                title="Vue Liste"
-                className={`w-10 xs:w-10 sm:w-11 h-full flex items-center justify-center transition-colors ${activeView === 'list'
-                  ? 'bg-[#111111] text-[#EEEEEE]'
-                  : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
-                  }`}
-              >
-                <List className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
-              </button>
-            </div>
+            {/* 3. List View */}
+            <button
+              onClick={() => setActiveView('list')}
+              title="Vue Liste"
+              className={`w-11 h-full flex items-center justify-center transition-colors ${activeView === 'list'
+                ? 'bg-[#111111] text-[#EEEEEE]'
+                : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
+                }`}
+            >
+              <List className="w-4 h-4 stroke-[2.25]" />
+            </button>
           </div>
 
-          {/* Ligne 2 (mobile) : Search — Desktop: inline */}
           {/* Search Bar - Desktop */}
           <div className="hidden sm:flex h-11 w-64 md:w-72 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full items-center px-4 relative shadow-sm">
             <Search className="w-4 h-4 text-[#111111] opacity-75 shrink-0 mr-2 stroke-[2.25]" />
@@ -188,18 +226,6 @@ export function Navbar({
               </button>
             )}
           </div>
-
-          {/* Search Bar - Mobile (icone loupe seule, deuxième ligne) */}
-          <button
-            onClick={() => setIsMobileSearchOpen(true)}
-            className="flex sm:hidden w-full justify-end pointer-events-auto"
-            title="Rechercher"
-          >
-            <span className="w-10 h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shadow-sm cursor-pointer">
-              <Search className="w-4 h-4 stroke-[2.25]" />
-            </span>
-          </button>
-
         </div>
       </header>
 
