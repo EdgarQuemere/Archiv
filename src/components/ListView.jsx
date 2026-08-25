@@ -375,7 +375,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
               className="cursor-pointer flex flex-col items-center py-2"
             >
               {/* Clean Raw Cover Image Container */}
-              <div className={`${isLandscape ? 'w-[240px] max-w-full xs:w-[300px] sm:w-[420px] md:w-[500px] lg:w-[560px] h-[160px] sm:h-[280px] md:h-[330px] lg:h-[370px]' : 'w-56 sm:w-72 h-[320px] sm:h-[420px]'} bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
+              <div className={`${isLandscape ? 'w-[210px] max-w-full xs:w-[260px] sm:w-[350px] md:w-[420px] lg:w-[460px] h-[140px] sm:h-[230px] md:h-[275px] lg:h-[300px]' : 'w-56 sm:w-72 h-[320px] sm:h-[420px]'} bg-transparent flex items-center justify-center overflow-hidden transition-all duration-300`}>
                 <img
                   src={getFileUrl(item.coverUrl)}
                   alt={item.title}
