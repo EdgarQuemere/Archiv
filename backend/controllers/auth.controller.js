@@ -225,24 +225,27 @@ exports.omniscientAuth = async (req, res) => {
   try {
     const { code, role, currentSchool, behanceLink, instaLink, personalLink, omniToken } = req.body;
 
-    let email, first_name, last_name;
+    let email, first_name, last_name, pseudo, profile_picture;
 
     if (omniToken) {
       const decoded = jwt.verify(omniToken, process.env.JWT_SECRET);
       email = decoded.email;
       first_name = decoded.firstName;
       last_name = decoded.lastName;
+      pseudo = decoded.pseudo;
+      profile_picture = decoded.profilePicture;
     } else {
       const tokenResponse = await axios.post(`${process.env.OMNISCIENT_URL}/oauth/token`, {
         client_id: process.env.OMNISCIENT_CLIENT_ID,
         client_secret: process.env.OMNISCIENT_CLIENT_SECRET,
         code,
         grant_type: "authorization_code",
-        redirect_uri: req.body.redirectUri || "http://localhost:3006/auth/omniscient/callback"
+        redirect_uri: req.body.redirectUri || "https://artchiv.fr/auth/omniscient/callback"
       });
 
       const accessToken = tokenResponse.data.access_token;
 
+      // Récupération des informations détaillées depuis l'API distante
       const profileResponse = await axios.get(`${process.env.OMNISCIENT_URL}/api/me`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
@@ -250,6 +253,8 @@ exports.omniscientAuth = async (req, res) => {
       email = profileResponse.data.email;
       first_name = profileResponse.data.first_name;
       last_name = profileResponse.data.last_name;
+      pseudo = profileResponse.data.pseudo || null;
+      profile_picture = profileResponse.data.profile_picture || null;
     }
 
     let user = await prisma.user.findUnique({ where: { email } });
@@ -258,41 +263,54 @@ exports.omniscientAuth = async (req, res) => {
       if (user.isBanned) {
         return res.status(403).json({ error: 'Votre compte a été banni. Contactez l\'administrateur.' });
       }
-      if (!user.isOmniscient) {
-        user = await prisma.user.update({ where: { email }, data: { isOmniscient: true } });
-      }
+      // Met à jour les infos si elles ont changé sur Omniscient
+      user = await prisma.user.update({ 
+        where: { email }, 
+        data: { 
+          isOmniscient: true,
+          firstName: first_name || user.firstName,
+          lastName: last_name || user.lastName,
+          pseudo: pseudo || user.pseudo,
+          profilePicture: profile_picture || user.profilePicture
+        } 
+      });
+
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
       res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
-      return res.json({ message: "Connexion réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } });
+      return res.json({ 
+        message: "Connexion réussie", 
+        user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } 
+      });
     }
 
     if (!role || !currentSchool) {
-      const tempToken = jwt.sign({ email, firstName: first_name, lastName: last_name }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      const tempToken = jwt.sign({ email, firstName: first_name, lastName: last_name, pseudo, profilePicture: profile_picture }, process.env.JWT_SECRET, { expiresIn: "1h" });
       return res.status(400).json({
         error: "Informations manquantes",
         requireMoreInfo: true,
         omniToken: tempToken,
-        partialData: { email, firstName: first_name, lastName: last_name }
+        partialData: { email, firstName: first_name, lastName: last_name, pseudo, profilePicture: profile_picture }
       });
     }
 
     const randomPassword = require("crypto").randomBytes(16).toString("hex");
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
+    // Création de l'utilisateur avec toutes les données récupérées
     user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         firstName: first_name || "",
         lastName: last_name || "",
-        pseudo: req.body.pseudo || null,
+        pseudo: pseudo || null,
         displayPreference: req.body.displayPreference || 'prénom nom',
         role,
         currentSchool,
         behanceLink,
         instaLink,
         personalLink,
-        profilePicture: req.body.profilePicture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`,
+        profilePicture: profile_picture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`,
         isOmniscient: true,
         isEmailVerified: true
       },
@@ -300,7 +318,10 @@ exports.omniscientAuth = async (req, res) => {
 
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
-    res.status(201).json({ message: "Inscription réussie", user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } });
+    res.status(201).json({ 
+      message: "Inscription réussie", 
+      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } 
+    });
   } catch (error) {
     console.error("Erreur Omniscient Auth:", error.response ? error.response.data : error.message);
     res.status(500).json({ error: "Erreur lors de l'authentification avec Omniscient" });
