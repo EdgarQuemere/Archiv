@@ -32,6 +32,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
     confirmPassword: '',
     role: 'Etudiant',
     currentSchool: '',
+    bio: '',
     behanceLink: '',
     instaLink: '',
     personalLink: ''
@@ -579,6 +580,19 @@ const handleOmniscientLogin = () => {
                         />
                       </div>
                     )}
+                  </div>
+
+                  <div>
+                    <label className="text-xs sm:text-sm font-medium block mb-1">Bio (Optionnel)</label>
+                    <textarea
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleChange}
+                      maxLength={300}
+                      rows={2}
+                      placeholder="Présente-toi en quelques mots..."
+                      className="w-full bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] p-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20 resize-none"
+                    />
                   </div>
 
                   <div>
