@@ -107,7 +107,7 @@ export function ProfileDrawer({
 
   const handleSelectProject = (project) => {
     if (onSelectProject) {
-      const domainName = project.domain ? (project.domain.name || project.domain) : (project.field || 'Inconnu');
+      const domainName = project.domain ? (project.domain.name || project.domain) : (project.field || 'Autre');
       onSelectProject({
         id: project.id,
         slug: project.slug,

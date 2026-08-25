@@ -46,7 +46,6 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
     currentSchool: '',
     email: '',
     newPassword: '',
-    bio: '',
     behanceLink: '',
     instaLink: '',
     personalLink: ''
@@ -66,7 +65,6 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
         currentSchool: userProfile.currentSchool || '',
         email: userProfile.email || '',
         newPassword: '',
-        bio: userProfile.bio || '',
         behanceLink: userProfile.behanceLink || '',
         instaLink: userProfile.instaLink || '',
         personalLink: userProfile.personalLink || ''
@@ -279,21 +277,6 @@ export function EditProfileModal({ isOpen, onClose, userProfile, onSaveProfile }
             />
           </div>
 
-
-          {/* Bio / Description */}
-          <div>
-            <label className="text-xs sm:text-sm font-medium text-[#111111] block mb-1">
-              Biographie & Présentation
-            </label>
-            <textarea
-              name="bio"
-              rows={3}
-              value={formData.bio}
-              onChange={handleChange}
-              placeholder="Décris tes compétences, domaines de recherche ou intentions créatives..."
-              className="w-full p-3.5 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all placeholder:text-slate-500 leading-relaxed resize-none"
-            />
-          </div>
 
           {/* Social Links Section */}
           <div className="pt-2">

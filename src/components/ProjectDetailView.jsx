@@ -257,16 +257,62 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     const el = scrollContainerRef.current;
     if (!el) return;
 
+    let initialPinchDistance = null;
+    let initialZoomLevel = 100;
+
+    const getDistance = (touch1, touch2) => {
+      const dx = touch1.clientX - touch2.clientX;
+      const dy = touch1.clientY - touch2.clientY;
+      return Math.hypot(dx, dy);
+    };
+
     const handleWheel = (e) => {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         const factor = e.deltaY > 0 ? 0.9 : 1.1;
-        setZoomLevel((prev) => Math.max(25, Math.min(220, prev * factor)));
+        setZoomLevel((prev) => Math.max(25, Math.min(220, Math.round(prev * factor))));
+      }
+    };
+
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        initialPinchDistance = getDistance(e.touches[0], e.touches[1]);
+        setZoomLevel((currentZoom) => {
+          initialZoomLevel = currentZoom;
+          return currentZoom;
+        });
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 2 && initialPinchDistance) {
+        if (e.cancelable) e.preventDefault();
+        const currentDistance = getDistance(e.touches[0], e.touches[1]);
+        const scaleFactor = currentDistance / initialPinchDistance;
+        const newZoom = Math.max(25, Math.min(220, Math.round(initialZoomLevel * scaleFactor)));
+        setZoomLevel(newZoom);
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      if (e.touches.length < 2) {
+        initialPinchDistance = null;
       }
     };
 
     el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
+    el.addEventListener('touchmove', handleTouchMove, { passive: false });
+    el.addEventListener('touchend', handleTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener('wheel', handleWheel);
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchmove', handleTouchMove);
+      el.removeEventListener('touchend', handleTouchEnd);
+      el.removeEventListener('touchcancel', handleTouchEnd);
+    };
   }, []);
 
   const spreads = useMemo(() => {

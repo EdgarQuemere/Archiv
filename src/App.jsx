@@ -59,7 +59,7 @@ const formatProjectData = (p) => {
     school: decodeHTMLEntities(p.school),
     year: p.year ? p.year.toString() : '',
     type: decodeHTMLEntities(p.type),
-    field: decodeHTMLEntities(p.domain ? (p.domain.name || p.domain) : 'Inconnu'),
+    field: decodeHTMLEntities(p.domain ? (p.domain.name || p.domain) : 'Autre'),
     description: decodeHTMLEntities(p.description),
     coverUrl: p.coverUrl,
     imageUrl: p.coverUrl,
