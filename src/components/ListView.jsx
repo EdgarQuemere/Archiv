@@ -344,6 +344,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
   }
 
   const currentInfoItem = activeItem || items[0];
+  const domainName = currentInfoItem.domain?.name || currentInfoItem.field;
 
   return (
     <div
@@ -403,8 +404,17 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             </p>
 
             <p className="text-xs sm:text-sm font-mono mb-2 sm:mb-4 text-slate-600">
-              {decodeHTMLEntities(currentInfoItem.school)} — {currentInfoItem.year} • {decodeHTMLEntities(currentInfoItem.field)}
+              {[
+                currentInfoItem.year ? String(currentInfoItem.year) : null,
+                currentInfoItem.type ? decodeHTMLEntities(currentInfoItem.type) : null,
+                domainName && domainName.trim() !== '' && domainName !== 'Inconnu' ? decodeHTMLEntities(domainName) : null
+              ].filter(Boolean).join(' — ')}
             </p>
+            {currentInfoItem.school && currentInfoItem.school.trim() !== '' && currentInfoItem.school !== 'Inconnu' && (
+              <p className="text-xs sm:text-sm font-mono mb-2 sm:mb-4 text-slate-600 -mt-2">
+                {decodeHTMLEntities(currentInfoItem.school)}
+              </p>
+            )}
 
             {currentInfoItem.description && (
               <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4 text-right">

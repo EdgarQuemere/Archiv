@@ -22,7 +22,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     school: '',
     year: '2026',
     type: 'Mémoire',
-    domain: 'Design Graphique',
+    domain: '',
     description: '',
     allowDownload: true,
     orientation: 'portrait',
@@ -64,7 +64,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
           school: '',
           year: '2026',
           type: 'Mémoire',
-          domain: 'Design Graphique',
+          domain: '',
           description: '',
           allowDownload: true,
           orientation: 'portrait',
@@ -365,16 +365,15 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
               <div>
                 <label className="text-sm font-medium text-[#111111] block mb-1">
-                  Domaine {isBook ? <span className="text-[#999999] font-normal">(optionnel)</span> : '*'}
+                  Domaine <span className="text-[#999999] font-normal">(optionnel)</span>
                 </label>
                 <div className="relative">
                   <select
-                    required={!isBook}
                     value={formData.domain}
                     onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
                     className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full pl-4 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#111111]/20 transition-all appearance-none cursor-pointer"
                   >
-                    <option value="">{isBook ? 'Tous les domaines' : 'Sélectionner un domaine'}</option>
+                    <option value="">Autre</option>
                     {domains.map((dom) => (
                       <option key={dom} value={dom}>
                         {dom}
@@ -403,7 +402,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
             </div>
             <div>
               <label className="text-sm font-medium text-[#111111] block mb-1">
-                {isBook ? "École / Institution ciblée (optionnel)" : "École / Institution d'origine *"}
+                École / Institution {isBook ? <span className="text-[#999999] font-normal">(optionnel)</span> : '*'}
               </label>
               <SearchableSchoolSelect
                 value={formData.school}

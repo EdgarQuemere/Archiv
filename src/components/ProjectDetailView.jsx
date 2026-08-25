@@ -263,6 +263,8 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
   if (!item) return null;
 
+  const domainName = item.domain?.name || item.field;
+
   return (
     <div className="fixed inset-0 z-[70] bg-[#EEEEEE] text-[#111111] flex flex-col font-sans font-medium overflow-hidden animate-in fade-in duration-200">
       <SEO
@@ -364,9 +366,13 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               </p>
 
               <p className="text-sm sm:text-base font-mono text-slate-600 mb-0.5">
-                {item.year || '2026'} — {decodeHTMLEntities(item.type || 'Mémoire')}{item.domain?.name || item.field ? ` — ${decodeHTMLEntities(item.domain?.name || item.field)}` : ''}
+                {[
+                  item.year ? String(item.year) : null,
+                  item.type ? decodeHTMLEntities(item.type) : null,
+                  domainName && domainName.trim() !== '' && domainName !== 'Inconnu' ? decodeHTMLEntities(domainName) : null
+                ].filter(Boolean).join(' — ')}
               </p>
-              {item.school && (
+              {item.school && item.school.trim() !== '' && item.school !== 'Inconnu' && (
                 <p className="text-sm sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
                   {decodeHTMLEntities(item.school)}
                 </p>

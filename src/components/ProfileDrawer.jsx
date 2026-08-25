@@ -121,7 +121,7 @@ export function ProfileDrawer({
         userId: project.userId || profileData?.id,
         allowDownload: project.allowDownload ?? true,
         tags: project.tags || []
-      }); f
+      });
       if (onClose) onClose();
     }
   };
@@ -591,91 +591,96 @@ export function ProfileDrawer({
                   <p className="text-base font-medium text-[#111111]">Vous n'avez aucun document publié.</p>
                 </div>
               ) : (
-                userProjects.map((project) => (
-                  <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
-                    <div
-                      className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() => handleSelectProject(project)}
-                    >
-                      {project.coverUrl ? (
-                        <img
-                          src={getFileUrl(project.coverUrl)}
-                          alt={project.title}
-                          className="w-full h-auto object-contain block"
-                        />
-                      ) : (
-                        <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
-                      )}
-                    </div>
-
-                    <div className="flex-1 flex flex-col justify-start py-0">
-                      <div>
-                        <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
-                          <IconEye className="w-3.5 h-3.5 text-[#111111]" />
-                          <span>{project.viewsCount ?? project.views ?? 0}</span>
-                        </div>
-                        <h3
-                          className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
-                          onClick={() => handleSelectProject(project)}
-                        >
-                          {decodeHTMLEntities(project.title)}
-                        </h3>
-                        <p className="text-base font-medium text-[#111111] mb-0.5">
-                          {project.year || '2026'} — {decodeHTMLEntities(project.type || 'Mémoire')}{project.domain?.name || project.field ? ` — ${decodeHTMLEntities(project.domain?.name || project.field)}` : ''}
-                        </p>
-                        <p className="text-base font-medium text-[#111111] mb-4">
-                          {getUserDisplayName(profileData)}{project.school ? ` — ${decodeHTMLEntities(project.school)}` : ''}
-                        </p>
-                        <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
-                          {decodeHTMLEntities(project.description) || "Pas de description"}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3">
-                        {deletingId === project.id ? (
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleDeleteProjectItem(project.id)}
-                              className="h-10 px-5 rounded-full bg-red-600 text-white text-base font-medium border border-[#111111] hover:bg-red-700 cursor-pointer"
-                            >
-                              Confirmer
-                            </button>
-                            <button
-                              onClick={() => setDeletingId(null)}
-                              className="h-10 px-5 rounded-full bg-[#EEEEEE] text-[#111111] text-base font-medium border border-[#111111] hover:bg-[#E2E2E2] cursor-pointer"
-                            >
-                              Annuler
-                            </button>
-                          </div>
+                userProjects.map((project) => {
+                  const domainName = project.domain?.name || project.field;
+                  return (
+                    <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
+                      <div
+                        className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => handleSelectProject(project)}
+                      >
+                        {project.coverUrl ? (
+                          <img
+                            src={getFileUrl(project.coverUrl)}
+                            alt={project.title}
+                            className="w-full h-auto object-contain block"
+                          />
                         ) : (
-                          <>
-                            <button
-                              onClick={() => handleSelectProject(project)}
-                              className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
-                            >
-                              <span>Consulter</span>
-                              <ExternalLink className="w-4 h-4 stroke-[2.25]" />
-                            </button>
-                            <button
-                              onClick={() => onEditProject && onEditProject(project)}
-                              className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer"
-                            >
-                              <span>Modifier</span>
-                              <IconPencil className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => setDeletingId(project.id)}
-                              className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
-                            >
-                              <span>Supprimer</span>
-                              <IconDelete className="w-4 h-4 text-[#FF0000]" />
-                            </button>
-                          </>
+                          <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
                         )}
                       </div>
+
+                      <div className="flex-1 flex flex-col justify-start py-0">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
+                            <IconEye className="w-3.5 h-3.5 text-[#111111]" />
+                            <span>{project.viewsCount ?? project.views ?? 0}</span>
+                          </div>
+                          <h3
+                            className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
+                            onClick={() => handleSelectProject(project)}
+                          >
+                            {decodeHTMLEntities(project.title)}
+                          </h3>
+                          <p className="text-base font-medium text-[#111111] mb-0.5">
+                            {[
+                              project.year ? String(project.year) : null,
+                              project.type ? decodeHTMLEntities(project.type) : null,
+                              domainName && domainName.trim() !== '' && domainName !== 'Inconnu' ? decodeHTMLEntities(domainName) : null
+                            ].filter(Boolean).join(' — ')}
+                          </p>
+
+                          <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
+                            {decodeHTMLEntities(project.description) || "Pas de description"}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3">
+                          {deletingId === project.id ? (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleDeleteProjectItem(project.id)}
+                                className="h-10 px-5 rounded-full bg-red-600 text-white text-base font-medium border border-[#111111] hover:bg-red-700 cursor-pointer"
+                              >
+                                Confirmer
+                              </button>
+                              <button
+                                onClick={() => setDeletingId(null)}
+                                className="h-10 px-5 rounded-full bg-[#EEEEEE] text-[#111111] text-base font-medium border border-[#111111] hover:bg-[#E2E2E2] cursor-pointer"
+                              >
+                                Annuler
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => handleSelectProject(project)}
+                                className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+                              >
+                                <span>Consulter</span>
+                                <ExternalLink className="w-4 h-4 stroke-[2.25]" />
+                              </button>
+                              <button
+                                onClick={() => onEditProject && onEditProject(project)}
+                                className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer"
+                              >
+                                <span>Modifier</span>
+                                <IconPencil className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => setDeletingId(project.id)}
+                                className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
+                              >
+                                <span>Supprimer</span>
+                                <IconDelete className="w-4 h-4 text-[#FF0000]" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )
             ) : (
               savedProjects.length === 0 ? (
@@ -683,61 +688,72 @@ export function ProfileDrawer({
                   <p className="text-base font-medium text-[#111111]">Vous n'avez aucun enregistrement.</p>
                 </div>
               ) : (
-                savedProjects.map((project) => (
-                  <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
-                    <div
-                      className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() => handleSelectProject(project)}
-                    >
-                      {project.coverUrl ? (
-                        <img src={getFileUrl(project.coverUrl)} alt={project.title} className="w-full h-auto object-contain block" />
-                      ) : (
-                        <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
-                      )}
-                    </div>
+                savedProjects.map((project) => {
+                  const domainName = project.domain?.name || project.field;
+                  const authorName = project.author ? (typeof project.author === 'object' ? getUserDisplayName(project.author) : decodeHTMLEntities(project.author)) : null;
+                  return (
+                    <div key={project.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
+                      <div
+                        className="w-48 sm:w-56 shrink-0 shadow-sm bg-slate-200 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => handleSelectProject(project)}
+                      >
+                        {project.coverUrl ? (
+                          <img src={getFileUrl(project.coverUrl)} alt={project.title} className="w-full h-auto object-contain block" />
+                        ) : (
+                          <div className="w-full h-44 flex items-center justify-center text-sm font-medium text-slate-400">PDF</div>
+                        )}
+                      </div>
 
-                    <div className="flex-1 flex flex-col justify-start py-0">
-                      <div>
-                        <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
-                          <IconEye className="w-3.5 h-3.5 text-[#111111]" />
-                          <span>{project.viewsCount ?? project.views ?? 0}</span>
+                      <div className="flex-1 flex flex-col justify-start py-0">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
+                            <IconEye className="w-3.5 h-3.5 text-[#111111]" />
+                            <span>{project.viewsCount ?? project.views ?? 0}</span>
+                          </div>
+                          <h3
+                            className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
+                            onClick={() => handleSelectProject(project)}
+                          >
+                            {decodeHTMLEntities(project.title)}
+                          </h3>
+                          <p className="text-base font-medium text-[#111111] mb-0.5">
+                            {[
+                              project.year ? String(project.year) : null,
+                              project.type ? decodeHTMLEntities(project.type) : null,
+                              domainName && domainName.trim() !== '' && domainName !== 'Inconnu' ? decodeHTMLEntities(domainName) : null
+                            ].filter(Boolean).join(' — ')}
+                          </p>
+                          <p className="text-base font-medium text-[#111111] mb-4">
+                            {[
+                              authorName,
+                              project.school && project.school.trim() !== '' && project.school !== 'Inconnu' ? decodeHTMLEntities(project.school) : null
+                            ].filter(Boolean).join(' — ')}
+                          </p>
+                          <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
+                            {decodeHTMLEntities(project.description) || "Pas de description"}
+                          </p>
                         </div>
-                        <h3
-                          className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
-                          onClick={() => handleSelectProject(project)}
-                        >
-                          {decodeHTMLEntities(project.title)}
-                        </h3>
-                        <p className="text-base font-medium text-[#111111] mb-0.5">
-                          {project.year || '2026'} — {decodeHTMLEntities(project.type || 'Mémoire')}{project.domain?.name || project.field ? ` — ${decodeHTMLEntities(project.domain?.name || project.field)}` : ''}
-                        </p>
-                        <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.author ? `${typeof project.author === 'object' ? getUserDisplayName(project.author) : decodeHTMLEntities(project.author)}${project.school ? ` — ${decodeHTMLEntities(project.school)}` : ''}` : decodeHTMLEntities(project.school)}
-                        </p>
-                        <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
-                          {decodeHTMLEntities(project.description) || "Pas de description"}
-                        </p>
-                      </div>
 
-                      <div className="flex flex-wrap items-center gap-3">
-                        <button
-                          onClick={() => handleSelectProject(project)}
-                          className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
-                        >
-                          <span>Consulter</span>
-                          <ExternalLink className="w-4 h-4 stroke-[2.25]" />
-                        </button>
-                        <button
-                          onClick={() => handleRemoveSavedProject(project.id)}
-                          className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
-                        >
-                          <span>Retirer des enregistrements</span>
-                          <IconDelete className="w-4 h-4 text-[#FF0000]" />
-                        </button>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <button
+                            onClick={() => handleSelectProject(project)}
+                            className="h-10 px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
+                          >
+                            <span>Consulter</span>
+                            <ExternalLink className="w-4 h-4 stroke-[2.25]" />
+                          </button>
+                          <button
+                            onClick={() => handleRemoveSavedProject(project.id)}
+                            className="h-10 px-6 border-[1.5px] border-[#FF0000] bg-[#EEEEEE] hover:bg-red-50 rounded-full text-base font-medium text-[#FF0000] flex items-center gap-2.5 transition-colors cursor-pointer"
+                          >
+                            <span>Retirer des enregistrements</span>
+                            <IconDelete className="w-4 h-4 text-[#FF0000]" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )
             )}
           </div>
