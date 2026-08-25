@@ -232,7 +232,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
           {/* LOGOS PARTENAIRES */}
           <div className="flex items-center gap-4 pt-3">
             <a
-              href="https://omniscientdesign.fr/"
+              href="https://www.instagram.com/omniscientproject/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:opacity-80 transition-opacity"
@@ -302,7 +302,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             {/* LOGOS PARTENAIRES */}
             <div className="flex items-center gap-4 pt-3 lg:pt-4">
               <a
-                href="https://omniscientdesign.fr/"
+                href="https://www.instagram.com/omniscientproject/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:opacity-80 transition-opacity"

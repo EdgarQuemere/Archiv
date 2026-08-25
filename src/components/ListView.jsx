@@ -395,7 +395,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       {currentInfoItem && (
         <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 z-30 sm:w-[400px] max-w-[calc(100vw-2rem)] text-center sm:text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
           <div className="flex flex-col items-center sm:items-end gap-1 pointer-events-auto bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-4 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none">
-            <h3 className="text-base sm:text-xl font-bold leading-tight mb-0.5 sm:mb-1">
+            <h3 className="text-base sm:text-xl font-bold leading-tight mb-0.5 sm:mb-1 line-clamp-1 sm:line-clamp-none">
               {decodeHTMLEntities(currentInfoItem.title)}
             </h3>
 
@@ -417,7 +417,7 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
             )}
 
             {currentInfoItem.description && (
-              <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4 text-right">
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4 text-center sm:text-right line-clamp-2 sm:line-clamp-none">
                 {decodeHTMLEntities(currentInfoItem.description)}
               </p>
             )}

@@ -65,7 +65,24 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const [showInfo, setShowInfo] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const infoPanelRef = useRef(null);
   const isPortrait = item?.orientation === 'portrait' || (item?.aspectRatio && item?.aspectRatio > 1.1);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showInfo && infoPanelRef.current && !infoPanelRef.current.contains(event.target)) {
+        setShowInfo(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [showInfo]);
 
   const isSaved = user?.savedProjects?.some(sp => sp.projectId === item?.id);
 
@@ -338,7 +355,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       <div className="relative flex-1 w-full h-full overflow-hidden flex bg-[#EEEEEE]">
 
         {/* BOTTOM LEFT PROJECT INFORMATION PANEL */}
-        <div className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-6.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
+        <div ref={infoPanelRef} className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-6.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
           {showInfo && (
             <div className={`animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDescExpanded ? 'max-h-[75vh] sm:max-h-[70vh]' : 'max-h-[52vh] sm:max-h-none'}`}>
               <div className="flex items-center gap-1.5 text-xs sm:text-sm font-mono text-slate-600 mb-1 font-semibold">

@@ -536,6 +536,9 @@ export function ProfileDrawer({
           </div>
         </div>
 
+        {/* MOBILE SEPARATOR LINE (2px) */}
+        <div className="w-full h-[2px] bg-[#111111] md:hidden shrink-0" />
+
         {/* RIGHT COLUMN - DOCUMENTS / ENREGISTREMENTS */}
         <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col pt-8 md:pt-28 pb-10 md:pb-0 px-4 xs:px-6 md:pl-6 md:pr-14 md:overflow-hidden bg-[#EEEEEE]">
 
