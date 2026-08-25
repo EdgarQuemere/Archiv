@@ -74,6 +74,7 @@ exports.updateProfile = async (req, res) => {
       displayPreference,
       role,
       currentSchool,
+      bio,
       behanceLink,
       instaLink,
       personalLink
@@ -86,6 +87,7 @@ exports.updateProfile = async (req, res) => {
     if (displayPreference !== undefined) updateData.displayPreference = displayPreference;
     if (role !== undefined) updateData.role = role;
     if (currentSchool !== undefined) updateData.currentSchool = currentSchool;
+    if (bio !== undefined) updateData.bio = bio;
     if (behanceLink !== undefined) updateData.behanceLink = behanceLink;
     if (instaLink !== undefined) updateData.instaLink = instaLink;
     if (personalLink !== undefined) updateData.personalLink = personalLink;

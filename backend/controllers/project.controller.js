@@ -88,7 +88,9 @@ exports.createProject = async (req, res) => {
       return res.status(400).json({ error: errors.array()[0].msg });
     }
 
-    const { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
+    let { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
+    if (typeof title === 'string') title = title.replace(/\r\n/g, '\n');
+    if (typeof description === 'string') description = description.replace(/\r\n/g, '\n');
 
     if (title && title.length > 100) {
       return res.status(400).json({ error: 'Le titre ne peut pas dépasser 100 caractères.' });
@@ -290,7 +292,9 @@ exports.updateProject = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
+    let { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
+    if (typeof title === 'string') title = title.replace(/\r\n/g, '\n');
+    if (typeof description === 'string') description = description.replace(/\r\n/g, '\n');
 
     if (title && title.length > 100) {
       return res.status(400).json({ error: 'Le titre ne peut pas dépasser 100 caractères.' });
