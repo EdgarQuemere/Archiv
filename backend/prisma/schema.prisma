@@ -50,11 +50,11 @@ model Project {
   userId         String
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-  domainId       String
+  domainId       String?
   allowDownload  Boolean        @default(false)
   downloadsCount Int            @default(0)
   viewsCount     Int            @default(0)
-  domain         Domain         @relation(fields: [domainId], references: [id])
+  domain         Domain?        @relation(fields: [domainId], references: [id])
   author         User           @relation(fields: [userId], references: [id])
   savedBy        SavedProject[]
 }

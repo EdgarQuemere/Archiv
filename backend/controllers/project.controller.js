@@ -99,11 +99,11 @@ exports.createProject = async (req, res) => {
     }
 
     const isBook = type === 'Book';
-    if (!title || !type || !year || !domain || (!isBook && !school)) {
+    if (!title || !type || !year || (!isBook && !school)) {
       return res.status(400).json({
         error: isBook
-          ? 'Veuillez remplir tous les champs obligatoires (Titre, Type, Année, Domaine).'
-          : 'Veuillez remplir tous les champs obligatoires (Titre, Type, École, Année, Domaine).'
+          ? 'Veuillez remplir tous les champs obligatoires (Titre, Type, Année).'
+          : 'Veuillez remplir tous les champs obligatoires (Titre, Type, École, Année).'
       });
     }
 
@@ -118,23 +118,30 @@ exports.createProject = async (req, res) => {
     const coverUrl = req.files['cover'] ? formatFileUrl(req.files['cover'][0]) : null;
     const isDownloadAllowed = req.body.allowDownload === 'true' || req.body.allowDownload === true;
 
+    // Construction propre des données de base
+    const projectData = {
+      title,
+      slug,
+      description,
+      type,
+      orientation: orientation || 'portrait',
+      aspectRatio: aspectRatio ? parseFloat(aspectRatio) : 1.414,
+      school: school || '',
+      year: parseInt(year, 10),
+      pdfUrl,
+      pdfSize,
+      coverUrl,
+      allowDownload: isDownloadAllowed,
+      author: { connect: { id: req.userId } }
+    };
+
+    // Ajout conditionnel du domaine s'il est valide
+    if (domain && domain.trim() !== '' && domain !== 'Tous les domaines') {
+      projectData.domain = { connect: { name: domain } };
+    }
+
     const project = await prisma.project.create({
-      data: {
-        title,
-        slug,
-        description,
-        type,
-        orientation: orientation || 'portrait',
-        aspectRatio: aspectRatio ? parseFloat(aspectRatio) : 1.414,
-        school: school || '',
-        year: parseInt(year, 10),
-        domain: { connectOrCreate: { where: { name: domain }, create: { name: domain } } },
-        pdfUrl,
-        pdfSize,
-        coverUrl,
-        allowDownload: isDownloadAllowed,
-        author: { connect: { id: req.userId } }
-      }
+      data: projectData
     });
 
     res.status(201).json({ message: 'Projet créé avec succès', project });
@@ -142,6 +149,9 @@ exports.createProject = async (req, res) => {
     console.error(error);
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ error: 'Le fichier est trop volumineux.' });
+    }
+    if (error.code === 'P2025') {
+      return res.status(400).json({ error: 'Le domaine sélectionné n\'existe pas en base de données.' });
     }
     res.status(500).json({ error: 'Erreur lors de la création du projet' });
   }
@@ -245,7 +255,7 @@ exports.getProject = async (req, res) => {
         aspectRatio: true,
         allowDownload: true,
         downloadsCount: true,
-        viewsCount: true, // <-- Bien présent ici
+        viewsCount: true,
         userId: true,
         createdAt: true,
         author: {
@@ -310,9 +320,12 @@ exports.updateProject = async (req, res) => {
     if (orientation) updateData.orientation = orientation;
     if (aspectRatio) updateData.aspectRatio = parseFloat(aspectRatio);
 
-    if (domain) {
-      updateData.domain = { connectOrCreate: { where: { name: domain }, create: { name: domain } } };
+    if (domain && domain.trim() !== '' && domain !== 'Tous les domaines') {
+      updateData.domain = { connect: { name: domain } };
+    } else {
+      updateData.domain = { disconnect: true }; // Permet de retirer le domaine si l'utilisateur le vide
     }
+
     if (year) updateData.year = parseInt(year, 10);
     if (req.body.allowDownload !== undefined) {
       updateData.allowDownload = req.body.allowDownload === 'true' || req.body.allowDownload === true;
@@ -339,6 +352,9 @@ exports.updateProject = async (req, res) => {
     console.error(error);
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ error: 'Le fichier est trop volumineux.' });
+    }
+    if (error.code === 'P2025') {
+      return res.status(400).json({ error: 'Le domaine sélectionné n\'existe pas en base de données.' });
     }
     res.status(500).json({ error: 'Erreur lors de la mise à jour du projet' });
   }
@@ -375,7 +391,6 @@ exports.deleteProject = async (req, res) => {
 exports.saveProject = async (req, res) => {
   try {
     const { id } = req.params;
-    $userId = req.userId;
 
     const project = await prisma.project.findUnique({ where: { id } });
     if (!project) return res.status(404).json({ error: 'Projet introuvable.' });
