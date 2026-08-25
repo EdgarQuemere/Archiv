@@ -10,7 +10,7 @@ export function MentionsLegales() {
       <div className="max-w-3xl mx-auto bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] p-6 md:p-12 shadow-sm">
         <button
           onClick={handleBack}
-          className="mb-8 px-5 h-10 border-[1.5px] border-[#111111] rounded-full text-sm font-medium hover:bg-[#E2E2E2] transition-colors flex items-center gap-2"
+          className="mb-8 px-5 h-10 border-[1.5px] border-[#111111] rounded-full text-sm font-medium hover:bg-[#E2E2E2] transition-colors flex items-center gap-2 cursor-pointer"
         >
           &larr; Retour
         </button>
@@ -18,66 +18,109 @@ export function MentionsLegales() {
         <h1 className="text-3xl md:text-4xl font-bold mb-8">Mentions Légales</h1>
 
         <div className="space-y-8 text-sm md:text-base leading-relaxed">
+          <p>
+            Conformément aux dispositions des articles 6-III et 19 de la Loi n°2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique (L.C.E.N.), il est porté à la connaissance des utilisateurs et visiteurs du site <strong>https://artchiv.fr</strong>, ci-après dénommé "le Site", les présentes mentions légales.
+            <br /><br />
+            La connexion et la navigation sur le Site par tout utilisateur, ci-après dénommé "l'Utilisateur", impliquent l'acceptation pleine et entière des présentes mentions légales. Ces dernières sont accessibles à tout moment dans la rubrique « Mentions légales » du Site.
+          </p>
+
           <section>
-            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">1. Éditeur du site</h2>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">1 - Informations légales</h2>
             <p>
-              Le site <strong>Archiv</strong> (ci-après "le Site") est édité par l'association / collectif <strong>Omniscient Design</strong>.
+              <strong>Propriétaires et co-éditeurs du site :</strong>
               <br />
-              <strong>Siège social :</strong> [Adresse, ex: 123 Rue de la République, 75001 Paris]
+              • <strong>QUEMERE Edgar</strong> — Tél : 06 95 81 77 27 — Email : edgarquemere2645@gmail.com
               <br />
-              <strong>Email de contact :</strong> contact@omniscientdesign.fr
+              • <strong>RIQUIER Thomas</strong> — Tél : 07 89 42 64 95 — Email : viturnapro@gmail.com
               <br />
-              <strong>Directeur de la publication :</strong>
+              • <strong>PLANCHENAULT Olwen</strong> — Tél : [Numéro de téléphone] — Email : [Adresse email]
+              <br /><br />
+              <strong>Responsables de la publication :</strong>
+              <br />
+              Edgar Quéméré, Thomas Riquier et Olwen Planchenault
+              <br />
+              Adresse email de contact : contact@artchiv.fr
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">2. Hébergement</h2>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">2 - Hébergement</h2>
             <p>
-              Ce site est hébergé par :
+              Le site est hébergé par :
               <br />
               <strong>Hetzner Online GmbH</strong>
               <br />
-              Industriestr. 25, 91710 Gunzenhausen, Allemagne
+              Siège social : Industriestr. 25, 91710 Gunzenhausen, Allemagne
+              <br />
+              Contact : info@hetzner.com
               <br />
               Site web : https://www.hetzner.com
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">3. Propriété Intellectuelle</h2>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">3 - Principe général</h2>
             <p>
-              L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle.
-              Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.
+              Est considéré comme Utilisateur toute personne accédant au site artchiv.fr et l’utilisant.
               <br /><br />
-              Les travaux (documents, images, books, mémoires) hébergés sur le Site restent la propriété intellectuelle exclusive de leurs auteurs respectifs.
-              Toute reproduction, distribution, modification, adaptation, retransmission ou publication, même partielle, de ces différents éléments est strictement interdite sans l'accord exprès par écrit de l'auteur.
+              Le Site est régulièrement mis à jour par les éditeurs. Ceux-ci s'efforcent de fournir des informations aussi précises que possible sur le Site. Toutefois, ils ne peuvent garantir l'exactitude, la complétude ou l'actualité des informations publiées, qu'elles soient de leur fait ou fournies par des partenaires tiers. Par conséquent, l'Utilisateur reconnaît utiliser ces informations à titre indicatif, sous sa responsabilité exclusive.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">4. Données Personnelles (RGPD)</h2>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">4 - Accès au site</h2>
             <p>
-              Conformément à la loi "Informatique et Libertés" du 6 janvier 1978 modifiée, et au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, d'opposition et de suppression des données vous concernant.
-              <br /><br />
-              Les données personnelles collectées via le Site (création de compte, dépôt de book, informations de profil) sont strictement utilisées pour le fonctionnement du service Archiv. Vous pouvez exercer vos droits en nous contactant à l'adresse email mentionnée dans l'article 1, ou en supprimant directement votre compte depuis les paramètres de votre profil.
+              Le site artchiv.fr est accessible 24 heures sur 24, 7 jours sur 7, sauf en cas d'interruption pour des besoins de maintenance ou de force majeure. En cas d'indisponibilité du service, artchiv.fr s'efforcera de rétablir l'accès au plus vite et de communiquer à l'avance aux utilisateurs les dates et heures de l'intervention. Le site ne saurait être tenu pour responsable de tout dommage résultant d'une indisponibilité du service.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">5. Cookies</h2>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">5 - Propriété Intellectuelle</h2>
             <p>
-              Le Site peut être amené à vous demander l'acceptation des cookies pour des besoins de statistiques et d'affichage. Un cookie est une information déposée sur votre disque dur par le serveur du site que vous visitez.
+              Les contenus soumis par les Utilisateurs restent la propriété de ces derniers.
               <br /><br />
-              Le Site utilise principalement des cookies de session strictement nécessaires au fonctionnement de l'application (comme le maintien de votre session de connexion et la sécurité).
+              En soumettant un contenu, l’Utilisateur accorde à l’Éditeur une licence non exclusive, perpétuelle, mondiale, gratuite, pour utiliser, reproduire, modifier, diffuser et afficher ce contenu dans le cadre du fonctionnement et de la promotion du Site.
+              <br /><br />
+              L’Utilisateur s’engage à détenir l’ensemble des droits nécessaires ou à avoir obtenu toutes les autorisations requises pour publier ce contenu.
+              <br /><br />
+              En cas d’utilisation de contenus protégés par des licences (Creative Commons, etc.), l’Utilisateur s’engage à en respecter les conditions.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">6. Responsabilité</h2>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">6 - Liens externes</h2>
             <p>
-              Les informations contenues sur ce site sont aussi précises que possible et le site est périodiquement remis à jour. Omniscient Design ne saurait être tenu pour responsable des erreurs, d'une absence de disponibilité des informations ou de la présence de virus sur le site.
-              Les auteurs des documents publiés sur le Site sont seuls responsables du contenu qu'ils diffusent.
+              Le Site peut contenir des liens vers des sites web externes. artchiv.fr ne peut être tenu responsable du contenu de ces sites tiers ni de leurs pratiques en matière de confidentialité. L'Utilisateur accède à ces liens externes à ses propres risques.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">7 - Responsabilité des Contenus Utilisateurs</h2>
+            <p>
+              Les éditeurs ne peuvent être tenus responsables de la vérification systématique de la licéité de chaque contenu soumis par les Utilisateurs, mais s’engagent à retirer tout contenu dont la contrefaçon ou l’illégalité leur est signalée. En cas de violation de droits de tiers par un Utilisateur, celui‑ci s’engage à indemniser les éditeurs pour tout dommage résultant de cette violation.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">8 - Cookies et Mesure d'audience</h2>
+            <p>
+              Le Site utilise des cookies techniques strictement nécessaires au bon fonctionnement de l'application (authentification et gestion de session).
+              <br /><br />
+              Pour la mesure d'audience, le Site utilise <strong>Umami</strong>, un outil d'analyse respectueux de la vie privée. Ce système ne stocke aucun cookie publicitaire ni donnée personnelle, ce qui le dispense de l'affichage d'un bandeau de consentement conformément aux règles de la CNIL.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">9 - Modifications des mentions légales</h2>
+            <p>
+              Nous nous réservons le droit de modifier ces mentions légales à tout moment. Toute modification prendra effet dès sa publication sur ce site.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-3 border-b-[1.5px] border-[#111111] pb-2 inline-block">10 - Contact</h2>
+            <p>
+              Pour toute question ou remarque concernant ces mentions légales, vous pouvez nous contacter à l'adresse suivante : contact@artchiv.fr.
             </p>
           </section>
         </div>
