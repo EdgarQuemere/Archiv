@@ -219,7 +219,7 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
     const clientId = import.meta.env.VITE_OMNISCIENT_CLIENT_ID;
 
     if (clientId) {
-      window.location.href = `${omniUrl}/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+      window.location.href = `${omniUrl}/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=profile`;
     }
   };
 
