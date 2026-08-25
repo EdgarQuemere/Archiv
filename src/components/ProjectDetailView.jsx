@@ -60,6 +60,12 @@ const IconEye = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
+const IconDownload = ({ className = "w-4 h-4 text-[#111111]" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z" />
+  </svg>
+);
+
 export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, onOpenInfo, onOpenSubmit, onOpenPublicProfile }) {
   const { user, setUser } = useContext(AuthContext);
   const [showInfo, setShowInfo] = useState(true);
@@ -358,9 +364,15 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         <div ref={infoPanelRef} className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-6.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
           {showInfo && (
             <div className={`animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDescExpanded ? 'max-h-[75vh] sm:max-h-[70vh]' : 'max-h-[52vh] sm:max-h-none'}`}>
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-mono text-slate-600 mb-1 font-semibold">
-                <IconEye className="w-4 h-4 text-[#111111]" />
-                <span>{item.viewsCount ?? item.views ?? 0}</span>
+              <div className="flex items-center gap-3 text-xs sm:text-sm font-mono text-slate-600 mb-1 font-semibold">
+                <div className="flex items-center gap-1.5">
+                  <IconEye className="w-4 h-4 text-[#111111]" />
+                  <span>{item.viewsCount ?? item.views ?? 0}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <IconDownload className="w-4 h-4 text-[#111111]" />
+                  <span>{item.downloadsCount ?? 0}</span>
+                </div>
               </div>
 
               <h1 className="text-base sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">

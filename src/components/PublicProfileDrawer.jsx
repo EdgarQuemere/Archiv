@@ -15,6 +15,12 @@ const IconEye = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
+const IconDownload = ({ className = "w-3.5 h-3.5 text-[#111111]" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z" />
+  </svg>
+);
+
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
@@ -230,8 +236,8 @@ export function PublicProfileDrawer({
         </div>
       </header>
 
-      {/* VERTICAL SEPARATOR LINE */}
-      <div className="hidden md:block absolute top-28 bottom-0 left-1/2 w-[1.5px] bg-[#111111] z-10 pointer-events-none" />
+      {/* VERTICAL SEPARATOR LINE (1px) */}
+      <div className="hidden md:block absolute top-28 bottom-0 left-1/2 w-[1px] bg-[#111111] z-10 pointer-events-none" />
 
       {/* MAIN CONTENT AREA */}
       <div className="flex flex-col md:flex-row h-full w-full overflow-y-auto md:overflow-hidden">
@@ -312,8 +318,8 @@ export function PublicProfileDrawer({
           </div>
         </div>
 
-        {/* MOBILE SEPARATOR LINE (2px) */}
-        <div className="w-full h-[2px] bg-[#111111] md:hidden shrink-0" />
+        {/* MOBILE SEPARATOR LINE (1px) */}
+        <div className="w-full h-[1px] bg-[#111111] md:hidden shrink-0" />
 
         {/* RIGHT COLUMN - DOCUMENTS */}
         <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col pt-8 md:pt-28 pb-10 md:pb-0 px-4 xs:px-6 md:pl-6 md:pr-14 md:overflow-hidden bg-[#EEEEEE]">
@@ -351,9 +357,15 @@ export function PublicProfileDrawer({
 
                   <div className="flex-1 flex flex-col justify-start py-0">
                     <div>
-                      <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
-                        <IconEye className="w-3.5 h-3.5 text-[#111111]" />
-                        <span>{project.viewsCount ?? project.views ?? 0}</span>
+                      <div className="flex items-center gap-3 text-xs font-mono text-slate-500 mb-1 font-semibold">
+                        <div className="flex items-center gap-1">
+                          <IconEye className="w-3.5 h-3.5 text-[#111111]" />
+                          <span>{project.viewsCount ?? project.views ?? 0}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <IconDownload className="w-3.5 h-3.5 text-[#111111]" />
+                          <span>{project.downloadsCount ?? 0}</span>
+                        </div>
                       </div>
                       <h3
                         className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
