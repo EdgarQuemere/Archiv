@@ -25,7 +25,7 @@ function decodeHTMLEntities(text) {
              .replace(/&#39;/g, "'");
 }
 
-app.get('*', async (req, res) => {
+app.get(/(.*)/, async (req, res) => {
   const userAgent = req.get('user-agent');
   let indexPath = path.join(__dirname, 'dist', 'index.html');
   
