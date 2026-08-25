@@ -213,15 +213,15 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
     }
   };
 
-  const handleOmniscientLogin = () => {
-    const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.fr';
-    const redirectUri = `${window.location.origin}/auth/omniscient/callback`;
-    const clientId = import.meta.env.VITE_OMNISCIENT_CLIENT_ID;
+const handleOmniscientLogin = () => {
+  const omniUrl = import.meta.env.VITE_OMNISCIENT_URL || 'https://omniscientdesign.fr';
+  const redirectUri = `${window.location.origin}/auth/omniscient/callback`;
+  const clientId = import.meta.env.VITE_OMNISCIENT_CLIENT_ID;
 
-    if (clientId) {
-      window.location.href = `${omniUrl}/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=profile`;
-    }
-  };
+  if (clientId) {
+    window.location.href = `${omniUrl}/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
