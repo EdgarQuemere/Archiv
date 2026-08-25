@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
 
   try {
     const {
-      email, password, firstName, lastName, pseudo, displayPreference, role, currentSchool,
+      email, password, firstName, lastName, pseudo, displayPreference, role, currentSchool, bio,
       behanceLink, instaLink, personalLink
     } = req.body;
     
@@ -53,7 +53,7 @@ exports.register = async (req, res) => {
 
     const user = await prisma.user.create({
       data: {
-        email, password: hashedPassword, firstName, lastName, pseudo: pseudo || null, displayPreference, role, currentSchool,
+        email, password: hashedPassword, firstName, lastName, pseudo: pseudo || null, displayPreference, role, currentSchool, bio,
         behanceLink, instaLink, personalLink, profilePicture,
         emailVerificationToken, emailVerificationExpires
       },
