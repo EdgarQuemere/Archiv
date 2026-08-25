@@ -98,8 +98,13 @@ exports.createProject = async (req, res) => {
       return res.status(400).json({ error: 'La description ne peut pas dépasser 1000 caractères.' });
     }
 
-    if (!title || !type || !school || !year || !domain) {
-      return res.status(400).json({ error: 'Veuillez remplir tous les champs obligatoires (Titre, Type, École, Année, Domaine).' });
+    const isBook = type === 'Book';
+    if (!title || !type || !year || !domain || (!isBook && !school)) {
+      return res.status(400).json({
+        error: isBook
+          ? 'Veuillez remplir tous les champs obligatoires (Titre, Type, Année, Domaine).'
+          : 'Veuillez remplir tous les champs obligatoires (Titre, Type, École, Année, Domaine).'
+      });
     }
 
     if (!req.files || !req.files['pdf']) {
@@ -121,7 +126,7 @@ exports.createProject = async (req, res) => {
         type,
         orientation: orientation || 'portrait',
         aspectRatio: aspectRatio ? parseFloat(aspectRatio) : 1.414,
-        school,
+        school: school || '',
         year: parseInt(year, 10),
         domain: { connectOrCreate: { where: { name: domain }, create: { name: domain } } },
         pdfUrl,
@@ -175,6 +180,7 @@ exports.getProjects = async (req, res) => {
         createdAt: true,
         pdfSize: true,
         pdfUrl: true,
+        viewsCount: true,
         allowDownload: true,
         downloadsCount: true,
         author: {
@@ -222,7 +228,7 @@ exports.getProject = async (req, res) => {
 
     const updatedProject = await prisma.project.update({
       where: { id: project.id },
-      data: { viewsCount: { increment: 1 } },
+      data: { viewsCount: (project.viewsCount || 0) + 1 },
       select: {
         id: true,
         slug: true,
@@ -239,6 +245,7 @@ exports.getProject = async (req, res) => {
         aspectRatio: true,
         allowDownload: true,
         downloadsCount: true,
+        viewsCount: true, // <-- Bien présent ici
         userId: true,
         createdAt: true,
         author: {
@@ -293,7 +300,7 @@ exports.updateProject = async (req, res) => {
       return res.status(403).json({ error: 'Action non autorisée.' });
     }
 
-    let updateData = { description, type, school };
+    let updateData = { description, type, school: school || '' };
 
     if (title && title !== project.title) {
       updateData.title = title;
