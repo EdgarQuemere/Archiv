@@ -143,7 +143,7 @@ exports.login = async (req, res) => {
     res.cookie('auth_token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -183,7 +183,7 @@ exports.googleAuth = async (req, res) => {
         return res.status(403).json({ error: 'Votre compte a été banni. Contactez l\'administrateur.' });
       }
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-      res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
+      res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
       return res.json({ message: 'Connexion réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } });
     }
 
@@ -213,7 +213,7 @@ exports.googleAuth = async (req, res) => {
     });
 
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie('auth_token', jwtToken, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
     res.status(201).json({ message: 'Inscription réussie', user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } });
   } catch (error) {
     console.error(error);
@@ -276,7 +276,7 @@ exports.omniscientAuth = async (req, res) => {
       });
 
       const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-      res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
+      res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
       return res.json({ 
         message: "Connexion réussie", 
         user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } 
@@ -317,7 +317,7 @@ exports.omniscientAuth = async (req, res) => {
     });
 
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie("auth_token", jwtToken, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
     res.status(201).json({ 
       message: "Inscription réussie", 
       user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pseudo: user.pseudo, displayPreference: user.displayPreference, profilePicture: user.profilePicture, isAdmin: user.isAdmin } 
@@ -475,7 +475,7 @@ exports.verifyEmail = async (req, res) => {
     res.cookie('auth_token', jwtToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 

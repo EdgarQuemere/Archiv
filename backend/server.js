@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 // Initialisation de l'application
 const app = express();
@@ -13,11 +14,22 @@ app.set('trust proxy', 1);
 
 // --- MIDDLEWARES GLOBAUX ---
 app.use(helmet());
+
+const isProd = process.env.NODE_ENV === 'production';
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:3006', 'https://artchiv.fr', 'https://www.artchiv.fr'],
+  origin: isProd 
+    ? ['https://artchiv.fr', 'https://www.artchiv.fr'] 
+    : ['http://localhost:5173', 'http://localhost:3006', 'https://artchiv.fr', 'https://www.artchiv.fr'],
   credentials: true,
 };
 app.use(cors(corsOptions));
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000, // 1000 requests per IP
+  message: { error: 'Trop de requêtes depuis cette IP, veuillez réessayer plus tard.' }
+});
+app.use(globalLimiter);
 app.use(express.json());
 app.use(cookieParser());
 

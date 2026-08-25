@@ -504,12 +504,36 @@ exports.downloadProject = async (req, res) => {
       return res.status(403).json({ error: 'L\'auteur n\'a pas autorisé le téléchargement de ce projet.' });
     }
 
-    const updatedProject = await prisma.project.update({
-      where: { id },
-      data: { downloadsCount: { increment: 1 } }
-    });
+    let downloadedProjects = [];
+    if (req.cookies.downloaded_projects) {
+      try {
+        downloadedProjects = JSON.parse(req.cookies.downloaded_projects);
+      } catch (e) {
+        downloadedProjects = [];
+      }
+    }
 
-    res.json({ pdfUrl: project.pdfUrl, downloadsCount: updatedProject.downloadsCount });
+    const hasDownloaded = downloadedProjects.includes(project.id);
+    let downloadsCount = project.downloadsCount || 0;
+
+    if (!hasDownloaded) {
+      downloadedProjects.push(project.id);
+      if (downloadedProjects.length > 100) downloadedProjects = downloadedProjects.slice(-100);
+      
+      res.cookie('downloaded_projects', JSON.stringify(downloadedProjects), {
+        maxAge: 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+      });
+
+      const updatedProject = await prisma.project.update({
+        where: { id: project.id },
+        data: { downloadsCount: { increment: 1 } }
+      });
+      downloadsCount = updatedProject.downloadsCount;
+    }
+
+    res.json({ pdfUrl: project.pdfUrl, downloadsCount });
   } catch (error) {
     console.error("Download Project Error:", error);
     res.status(500).json({ error: 'Erreur lors de la demande de téléchargement.' });
