@@ -239,6 +239,8 @@ exports.getPublicProfile = async (req, res) => {
             orientation: true,
             aspectRatio: true,
             allowDownload: true,
+            viewsCount: true,
+            downloadsCount: true,
             createdAt: true,
             domain: {
               select: { name: true }

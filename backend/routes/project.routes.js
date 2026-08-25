@@ -6,8 +6,8 @@ const requireAuth = require('../middlewares/auth.middleware');
 const { uploadProject } = require('../middlewares/upload.middleware');
 
 const projectValidation = [
-  body('title').optional().trim().escape(),
-  body('description').optional().trim().escape(),
+  body('title').optional().trim().isLength({ max: 100 }).withMessage('Le titre ne peut pas dépasser 100 caractères.').escape(),
+  body('description').optional().trim().isLength({ max: 1000 }).withMessage('La description ne peut pas dépasser 1000 caractères.').escape(),
   body('type').optional().trim().escape(),
   body('school').optional().trim().escape(),
   body('year').optional().trim().escape(),

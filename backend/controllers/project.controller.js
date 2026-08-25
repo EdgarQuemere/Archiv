@@ -1,4 +1,5 @@
 const prisma = require('../config/db');
+const { validationResult } = require('express-validator');
 const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { s3, bucketName } = require('../config/s3');
 require('dotenv').config();
@@ -82,7 +83,20 @@ const deleteFile = async (fileUrl) => {
 // 1. Création d'un projet
 exports.createProject = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.array()[0].msg });
+    }
+
     const { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
+
+    if (title && title.length > 100) {
+      return res.status(400).json({ error: 'Le titre ne peut pas dépasser 100 caractères.' });
+    }
+
+    if (description && description.length > 1000) {
+      return res.status(400).json({ error: 'La description ne peut pas dépasser 1000 caractères.' });
+    }
 
     if (!title || !type || !school || !year || !domain) {
       return res.status(400).json({ error: 'Veuillez remplir tous les champs obligatoires (Titre, Type, École, Année, Domaine).' });
@@ -162,6 +176,8 @@ exports.getProjects = async (req, res) => {
         pdfSize: true,
         pdfUrl: true,
         allowDownload: true,
+        viewsCount: true,
+        downloadsCount: true,
         author: {
           select: { firstName: true, lastName: true, pseudo: true, profilePicture: true, isOmniscient: true }
         }
@@ -198,7 +214,16 @@ exports.getProject = async (req, res) => {
           { slug: identifier },
           { id: identifier }
         ]
-      },
+      }
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Projet non trouvé' });
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id: project.id },
+      data: { viewsCount: { increment: 1 } },
       select: {
         id: true,
         slug: true,
@@ -214,6 +239,8 @@ exports.getProject = async (req, res) => {
         orientation: true,
         aspectRatio: true,
         allowDownload: true,
+        viewsCount: true,
+        downloadsCount: true,
         userId: true,
         createdAt: true,
         author: {
@@ -229,11 +256,7 @@ exports.getProject = async (req, res) => {
       }
     });
 
-    if (!project) {
-      return res.status(404).json({ error: 'Projet non trouvé' });
-    }
-
-    res.json({ project });
+    res.json({ project: updatedProject });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur lors de la récupération du projet' });
@@ -246,8 +269,21 @@ exports.getProjectById = exports.getProject;
 // 5. Mise à jour d'un projet
 exports.updateProject = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.array()[0].msg });
+    }
+
     const { id } = req.params;
     const { title, description, type, school, year, domain, orientation, aspectRatio } = req.body;
+
+    if (title && title.length > 100) {
+      return res.status(400).json({ error: 'Le titre ne peut pas dépasser 100 caractères.' });
+    }
+
+    if (description && description.length > 1000) {
+      return res.status(400).json({ error: 'La description ne peut pas dépasser 1000 caractères.' });
+    }
 
     const project = await prisma.project.findUnique({ where: { id } });
 
