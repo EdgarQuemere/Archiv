@@ -26,6 +26,28 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
   const isSnappingRef = useRef(false);
   const wrapCooldownRef = useRef(false); // blocks snaps right after a wrap
   const snapTweenRef = useRef(null);
+  const touchStartYRef = useRef(null);
+
+  const handleInfoPanelWheel = (e) => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop += e.deltaY;
+    }
+  };
+
+  const handleInfoPanelTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      touchStartYRef.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleInfoPanelTouchMove = (e) => {
+    if (touchStartYRef.current !== null && e.touches.length === 1 && containerRef.current) {
+      const touchY = e.touches[0].clientY;
+      const deltaY = touchStartYRef.current - touchY;
+      touchStartYRef.current = touchY;
+      containerRef.current.scrollTop += deltaY;
+    }
+  };
 
   // Triple items array for seamless infinite looping scroll (Set 0, Set 1, Set 2)
   // Small item lists (e.g. 1 filter result) are repeated within each set to ensure total set height > viewport height
@@ -394,7 +416,12 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
       {/* Fixed Bottom-Right Information Card (Right-aligned text style) */}
       {currentInfoItem && (
         <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 z-30 sm:w-[400px] max-w-[calc(100vw-2rem)] text-center sm:text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
-          <div className="flex flex-col items-center sm:items-end gap-1 pointer-events-auto bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-4 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none">
+          <div
+            onWheel={handleInfoPanelWheel}
+            onTouchStart={handleInfoPanelTouchStart}
+            onTouchMove={handleInfoPanelTouchMove}
+            className="flex flex-col items-center sm:items-end gap-1 pointer-events-auto bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-4 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none"
+          >
             <h3 className="text-base sm:text-xl font-bold leading-tight mb-0.5 sm:mb-1 line-clamp-1 sm:line-clamp-none">
               {decodeHTMLEntities(currentInfoItem.title)}
             </h3>
