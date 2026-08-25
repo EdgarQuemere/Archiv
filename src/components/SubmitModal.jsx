@@ -176,12 +176,10 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
       return;
     }
 
-    if (!formData.school.trim()) {
-      setError(
-        formData.type === 'Book'
-          ? "Veuillez indiquer l'école ou institution ciblée pour ce book."
-          : "Veuillez sélectionner l'école où le mémoire a été soutenu."
-      );
+    // L'école est obligatoire uniquement si ce n'est pas un Book
+    const isBook = formData.type === 'Book';
+    if (!isBook && !formData.school.trim()) {
+      setError("Veuillez sélectionner l'école où le mémoire a été soutenu.");
       return;
     }
 
@@ -197,7 +195,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     const submitData = new FormData();
     submitData.append('title', formData.title);
     submitData.append('type', formData.type);
-    submitData.append('school', formData.school);
+    submitData.append('school', formData.school || '');
     submitData.append('year', formData.year);
     submitData.append('domain', formData.domain);
     submitData.append('description', formData.description);
@@ -405,16 +403,16 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
             </div>
             <div>
               <label className="text-sm font-medium text-[#111111] block mb-1">
-                {isBook ? "École / Institution ciblée *" : "École / Institution d'origine *"}
+                {isBook ? "École / Institution ciblée (optionnel)" : "École / Institution d'origine *"}
               </label>
               <SearchableSchoolSelect
                 value={formData.school}
                 onChange={(sch) => setFormData({ ...formData, school: sch })}
-                placeholder={isBook ? "École visée par le book..." : "École du mémoire..."}
+                placeholder={isBook ? "École visée par le book (optionnel)..." : "École du mémoire..."}
               />
               <span className="text-sm text-slate-500 block mt-1 leading-tight">
                 {isBook
-                  ? "🎯 Indiquez l'école ou le concours auquel ce book est destiné."
+                  ? "🎯 Indiquez l'école ou le concours visé (facultatif)."
                   : "🎓 L'école dans laquelle vous avez soutenu ce mémoire."}
               </span>
             </div>

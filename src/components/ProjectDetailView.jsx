@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
 import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Info, Download, Bookmark, AlertCircle, RefreshCw } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import SEO from './SEO';
@@ -29,8 +29,6 @@ const getFileUrl = (url) => {
   }
   return `${backendUrl.replace(/\/+$/, '')}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
 };
-
-
 
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -116,9 +114,9 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const [zoomLevel, setZoomLevel] = useState(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
     if (isMobile) {
-      return isPortrait ? 24 : 28;
+      return isPortrait ? 22 : 26;
     }
-    return isPortrait ? 36 : 50;
+    return isPortrait ? 32 : 44;
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,7 +130,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const rafRef = useRef(null);
   const scrollStopTimerRef = useRef(null);
   const [isScrolling, setIsScrolling] = useState(false);
-  const focalRatioRef = useRef(0.5);
 
   if (pageRefs.current.length !== numPages) {
     pageRefs.current = Array(numPages).fill(0).map((_, i) => pageRefs.current[i] || React.createRef());
@@ -172,11 +169,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         });
 
         setCurrentPage(closestPage);
-
-        const activeElem = pageRefs.current[closestPage - 1]?.current;
-        if (activeElem && activeElem.clientHeight > 0) {
-          focalRatioRef.current = (viewportCenter - activeElem.offsetTop) / activeElem.clientHeight;
-        }
       });
     };
 
@@ -187,26 +179,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
     };
   }, [numPages]);
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    const content = container?.firstElementChild;
-    if (!container || !content) return;
-
-    const observer = new ResizeObserver(() => {
-      if (isNavigatingRef.current) return;
-
-      const targetRef = pageRefs.current[currentPage - 1];
-      if (targetRef && targetRef.current) {
-        const activeElem = targetRef.current;
-        const targetScrollTop = activeElem.offsetTop + focalRatioRef.current * activeElem.clientHeight - container.clientHeight / 2;
-        container.scrollTop = targetScrollTop;
-      }
-    });
-
-    observer.observe(content);
-    return () => observer.disconnect();
-  }, [currentPage]);
 
   const scrollToPage = (pageNumber) => {
     isNavigatingRef.current = true;
@@ -274,22 +246,20 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
-  const getSpreads = () => {
+  const spreads = useMemo(() => {
     if (viewMode === 'single') {
       return Array.from({ length: numPages }, (_, i) => [i + 1]);
     }
-    const spreads = [[1]];
+    const result = [[1]];
     for (let i = 2; i <= numPages; i += 2) {
       if (i + 1 <= numPages) {
-        spreads.push([i, i + 1]);
+        result.push([i, i + 1]);
       } else {
-        spreads.push([i]);
+        result.push([i]);
       }
     }
-    return spreads;
-  };
-
-  const spreads = getSpreads();
+    return result;
+  }, [numPages, viewMode]);
 
   if (!item) return null;
 
@@ -302,9 +272,8 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         url={`/projet/${item.slug || item.id}`}
       />
 
-      {/* TOP HEADER (Exact clone of Navbar.jsx header wrapper) */}
+      {/* TOP HEADER */}
       <header className="fixed top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-50 flex items-center justify-between gap-1 sm:gap-3.5 pointer-events-none font-sans max-w-full">
-        {/* Top Left Buttons Group */}
         <div className="flex items-center gap-1 xs:gap-2 sm:gap-3.5 pointer-events-auto shrink-0">
           <picture onClick={onClose} className="cursor-pointer mr-0.5 shrink-0 flex items-center">
             <source media="(max-width: 639px)" srcSet="/archiv_logo_condesed.webp" />
@@ -352,7 +321,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           </button>
         </div>
 
-        {/* Top Right Close Button */}
         <div className="pointer-events-auto flex items-center gap-1 xs:gap-1.5 sm:gap-3.5 shrink-0">
           <button
             onClick={onClose}
@@ -422,7 +390,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             </div>
           )}
 
-          {/* Action Buttons Row */}
           <div className="flex items-center gap-1.5 sm:gap-2.5">
             <button
               onClick={() => setShowInfo((prev) => !prev)}
@@ -528,12 +495,12 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               {spreads.map((pages, spreadIdx) => {
                 return (
                   <div
-                    key={spreadIdx}
+                    key={`spread-${pages.join('-')}`}
                     className={`flex flex-row items-center justify-center ${viewMode === 'double' ? 'gap-0 shadow-2xl' : 'gap-4'} shrink-0`}
                   >
                     {pages.map((pageNum) => (
                       <div
-                        key={pageNum}
+                        key={`page-${pageNum}`}
                         ref={pageRefs.current[pageNum - 1]}
                         className={`${viewMode === 'double' ? 'shadow-none' : 'shadow-2xl'} bg-white flex items-center justify-center shrink-0 border-0`}
                       >
@@ -547,6 +514,11 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                           renderTextLayer={!isScrolling}
                           renderAnnotationLayer={!isScrolling}
                           devicePixelRatio={Math.min(window.devicePixelRatio || 1, 1.5)}
+                          loading={
+                            <div className="w-[300px] h-[420px] bg-white animate-pulse flex items-center justify-center text-xs font-mono text-slate-400 border-[1.5px] border-[#111111]/10 shadow-sm">
+                              Chargement page {pageNum}...
+                            </div>
+                          }
                           className="block pointer-events-none"
                         />
                       </div>
@@ -560,7 +532,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
         {/* BOTTOM RIGHT FLOATING HUD CONTROLS BAR */}
         <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end sm:flex-row sm:items-center gap-2 sm:gap-3.5 pointer-events-auto font-sans max-w-full">
-          {/* Segment 1: Single / Double View */}
           <div className="flex h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={() => setViewMode('single')}
@@ -587,7 +558,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             </button>
           </div>
 
-          {/* Segment 2: Zoom */}
           <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handleZoomOut}
@@ -608,7 +578,6 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             </button>
           </div>
 
-          {/* Segment 3: Pagination */}
           <div className="h-10 sm:h-11 border-[1.5px] border-[#111111] bg-[#EEEEEE] flex items-center rounded-full overflow-hidden p-0 shadow-sm shrink-0">
             <button
               onClick={handlePrevPage}
