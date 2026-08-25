@@ -176,7 +176,6 @@ exports.getProjects = async (req, res) => {
         pdfSize: true,
         pdfUrl: true,
         allowDownload: true,
-        viewsCount: true,
         downloadsCount: true,
         author: {
           select: { firstName: true, lastName: true, pseudo: true, profilePicture: true, isOmniscient: true }
@@ -239,7 +238,6 @@ exports.getProject = async (req, res) => {
         orientation: true,
         aspectRatio: true,
         allowDownload: true,
-        viewsCount: true,
         downloadsCount: true,
         userId: true,
         createdAt: true,
