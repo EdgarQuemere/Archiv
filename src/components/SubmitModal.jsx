@@ -228,10 +228,11 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
           onUpdateCover({
             ...editData,
             title: p.title,
+            slug: p.slug || editData.slug,
             school: p.school,
             year: p.year ? p.year.toString() : editData.year,
             type: p.type,
-            field: formData.domain || editData.field,
+            field: formData.domain || 'Autre',
             description: p.description,
             coverUrl: p.coverUrl,
             imageUrl: p.coverUrl,
@@ -239,6 +240,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
             pdfSize: p.pdfSize,
             orientation: p.orientation,
             aspectRatio: p.aspectRatio,
+            allowDownload: formData.allowDownload,
           });
         }
       } else {

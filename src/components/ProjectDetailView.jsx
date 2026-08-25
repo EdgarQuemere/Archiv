@@ -122,7 +122,28 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
       if (!item.allowDownload && !isAuthor) return alert("Le téléchargement n'est pas autorisé par l'auteur.");
       const res = await api.post(`/projects/${item.id}/download`);
       if (res.data && res.data.pdfUrl) {
-        window.open(getFileUrl(res.data.pdfUrl), '_blank');
+        const fileUrl = getFileUrl(res.data.pdfUrl);
+        try {
+          const response = await fetch(fileUrl);
+          if (!response.ok) throw new Error("Erreur réseau lors du téléchargement");
+          const blob = await response.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          
+          const cleanTitle = item.title.replace(/[^a-zA-Z0-9À-ÿ\s-]/g, '').trim().replace(/\s+/g, '_');
+          link.download = `${cleanTitle}.pdf`;
+          
+          document.body.appendChild(link);
+          link.click();
+          
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        } catch (fetchError) {
+          console.error("Impossible de forcer le nom du fichier, ouverture classique...", fetchError);
+          window.open(fileUrl, '_blank');
+        }
       }
     } catch (error) {
       console.error("Erreur de téléchargement", error);

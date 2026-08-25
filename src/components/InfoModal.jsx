@@ -101,7 +101,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
       </header>
 
       {/* MOBILE LAYOUT (< 768px): SCROLLABLE VERTICAL FLOW WITH 3 HORIZONTAL PHOTOS */}
-      <div className="md:hidden absolute top-20 bottom-0 left-4 right-4 overflow-y-auto pb-32 pt-2 text-[#111111] flex flex-col gap-9">
+      <div className="md:hidden absolute top-20 bottom-0 left-4 right-4 overflow-y-auto pb-24 pt-2 text-[#111111] flex flex-col gap-9">
         {/* 1. TEXT SECTION */}
         <div className="space-y-4 pt-1">
           <h1 className="text-2xl font-bold italic mb-4 text-[#111111] leading-tight">Artchiv’</h1>
