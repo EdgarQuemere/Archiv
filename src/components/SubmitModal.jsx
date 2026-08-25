@@ -278,7 +278,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   const isBook = formData.type === 'Book';
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111] ">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 font-sans font-medium text-[#111111] h-[100dvh] w-full">
       <div
         ref={backdropRef}
         className="fixed inset-0 bg-[#111111]/70 backdrop-blur-xs transition-opacity"
@@ -287,7 +287,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
 
       <div
         ref={dialogRef}
-        className="relative bg-[#EEEEEE] rounded-[14px] shadow-2xl max-w-lg w-full overflow-hidden z-10 my-auto border-[1.5px] border-[#111111] p-6 sm:p-8 transform-gpu max-h-[90vh] flex flex-col"
+        className="relative bg-[#EEEEEE] rounded-[14px] shadow-2xl max-w-lg w-full overflow-hidden z-10 my-auto border-[1.5px] border-[#111111] p-6 sm:p-8 transform-gpu max-h-[85dvh] flex flex-col"
       >
         <button
           onClick={handleClose}

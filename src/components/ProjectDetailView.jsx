@@ -115,9 +115,11 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
   const authorIdentifier = item?.authorPseudo || item?.author?.pseudo || item?.userId;
 
+  const isAuthor = user && user.id === item?.userId;
+
   const handleDownload = async () => {
     try {
-      if (!item.allowDownload) return alert("Le téléchargement n'est pas autorisé par l'auteur.");
+      if (!item.allowDownload && !isAuthor) return alert("Le téléchargement n'est pas autorisé par l'auteur.");
       const res = await api.post(`/projects/${item.id}/download`);
       if (res.data && res.data.pdfUrl) {
         window.open(getFileUrl(res.data.pdfUrl), '_blank');
@@ -515,7 +517,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               )}
             </button>
 
-            {item.allowDownload && (
+            {(item.allowDownload || isAuthor) && (
               <button
                 onClick={handleDownload}
                 className="h-10 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-sm sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
@@ -582,7 +584,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                     <RefreshCw className="w-3.5 h-3.5 stroke-[2.25]" />
                     <span>Réessayer</span>
                   </button>
-                  {item.allowDownload && item.pdfUrl && (
+                  {(item.allowDownload || isAuthor) && item.pdfUrl && (
                     <a
                       href={getDownloadUrl(item.pdfUrl, item.title)}
                       target="_blank"
