@@ -356,7 +356,7 @@ exports.updateProject = async (req, res) => {
 
     if (domain && domain.trim() !== '' && domain !== 'Tous les domaines') {
       updateData.domain = { connect: { name: domain } };
-    } else {
+    } else if (project.domainId) {
       updateData.domain = { disconnect: true }; // Permet de retirer le domaine si l'utilisateur le vide
     }
 
@@ -488,7 +488,19 @@ exports.downloadProject = async (req, res) => {
       return res.status(404).json({ error: 'Projet introuvable.' });
     }
 
-    if (!project.allowDownload) {
+    let isAuthor = false;
+    const token = req.cookies?.auth_token;
+    if (token) {
+      try {
+        const jwt = require('jsonwebtoken');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.userId === project.userId) {
+          isAuthor = true;
+        }
+      } catch(e) {}
+    }
+
+    if (!project.allowDownload && !isAuthor) {
       return res.status(403).json({ error: 'L\'auteur n\'a pas autorisé le téléchargement de ce projet.' });
     }
 
