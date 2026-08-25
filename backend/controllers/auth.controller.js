@@ -207,7 +207,7 @@ exports.googleAuth = async (req, res) => {
         behanceLink,
         instaLink,
         personalLink,
-        profilePicture: picture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`,
+        profilePicture: req.body.profilePicture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`,
         isEmailVerified: true
       },
     });

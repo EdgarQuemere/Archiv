@@ -23,6 +23,14 @@ router.get('/*', async (req, res) => {
             res.setHeader('Content-Type', response.ContentType);
         }
 
+        if (req.query.download) {
+            const safeName = req.query.download.replace(/[^a-zA-Z0-9_.-]/g, '_');
+            const filename = safeName.endsWith('.pdf') ? safeName : `${safeName}.pdf`;
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        } else {
+            res.setHeader('Content-Disposition', 'inline');
+        }
+
         response.Body.pipe(res);
     } catch (error) {
         console.error('Erreur proxy S3:', error);

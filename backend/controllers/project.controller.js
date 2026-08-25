@@ -238,42 +238,72 @@ exports.getProject = async (req, res) => {
       return res.status(404).json({ error: 'Projet non trouvé' });
     }
 
-    const updatedProject = await prisma.project.update({
-      where: { id: project.id },
-      data: { viewsCount: (project.viewsCount || 0) + 1 },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        type: true,
-        school: true,
-        year: true,
-        domain: true,
-        description: true,
-        coverUrl: true,
-        pdfUrl: true,
-        pdfSize: true,
-        orientation: true,
-        aspectRatio: true,
-        allowDownload: true,
-        downloadsCount: true,
-        viewsCount: true,
-        userId: true,
-        createdAt: true,
-        author: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            pseudo: true,
-            profilePicture: true,
-            isOmniscient: true
-          }
+    let viewedProjects = [];
+    if (req.cookies.viewed_projects) {
+      try {
+        viewedProjects = JSON.parse(req.cookies.viewed_projects);
+      } catch (e) {
+        viewedProjects = [];
+      }
+    }
+
+    const hasViewed = viewedProjects.includes(project.id);
+    let finalProject;
+
+    const selectObj = {
+      id: true,
+      slug: true,
+      title: true,
+      type: true,
+      school: true,
+      year: true,
+      domain: true,
+      description: true,
+      coverUrl: true,
+      pdfUrl: true,
+      pdfSize: true,
+      orientation: true,
+      aspectRatio: true,
+      allowDownload: true,
+      downloadsCount: true,
+      viewsCount: true,
+      userId: true,
+      createdAt: true,
+      author: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          pseudo: true,
+          profilePicture: true,
+          isOmniscient: true
         }
       }
-    });
+    };
 
-    res.json({ project: updatedProject });
+    if (!hasViewed) {
+      viewedProjects.push(project.id);
+      if (viewedProjects.length > 100) viewedProjects = viewedProjects.slice(-100);
+      
+      res.cookie('viewed_projects', JSON.stringify(viewedProjects), {
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+      });
+
+      finalProject = await prisma.project.update({
+        where: { id: project.id },
+        data: { viewsCount: (project.viewsCount || 0) + 1 },
+        select: selectObj
+      });
+    } else {
+      finalProject = await prisma.project.findUnique({
+        where: { id: project.id },
+        select: selectObj
+      });
+    }
+
+    res.json({ project: finalProject });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur lors de la récupération du projet' });
