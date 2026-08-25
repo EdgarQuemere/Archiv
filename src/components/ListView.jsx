@@ -418,7 +418,10 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
 
             {currentInfoItem.description && (
               <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4 text-center sm:text-right line-clamp-2 sm:line-clamp-none">
-                {decodeHTMLEntities(currentInfoItem.description)}
+                {(() => {
+                  const desc = decodeHTMLEntities(currentInfoItem.description);
+                  return desc.length > 200 ? `${desc.slice(0, 200).trim()}...` : desc;
+                })()}
               </p>
             )}
 

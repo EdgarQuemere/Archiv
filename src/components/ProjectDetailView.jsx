@@ -453,21 +453,33 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 </p>
               )}
 
-              {item.description && (
-                <div>
-                  <p className={`text-sm sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md ${isDescExpanded ? 'line-clamp-none' : 'line-clamp-3 sm:line-clamp-none'}`}>
-                    {decodeHTMLEntities(item.description)}
-                  </p>
-                  {(item.description.length > 150 || item.description.includes('\n')) && (
-                    <button
-                      onClick={() => setIsDescExpanded(prev => !prev)}
-                      className="mt-1 text-sm font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block sm:hidden"
-                    >
-                      {isDescExpanded ? 'voir moins' : 'voir plus'}
-                    </button>
-                  )}
-                </div>
-              )}
+              {item.description && (() => {
+                const fullDesc = decodeHTMLEntities(item.description);
+                const shouldTruncateDesktop = fullDesc.length > 500;
+                const shouldTruncateMobile = fullDesc.length > 150 || fullDesc.includes('\n');
+                const hasVoirPlus = shouldTruncateDesktop || shouldTruncateMobile;
+
+                let displayedText = fullDesc;
+                if (!isDescExpanded && fullDesc.length > 500) {
+                  displayedText = `${fullDesc.slice(0, 500).trim()}...`;
+                }
+
+                return (
+                  <div>
+                    <p className={`text-sm sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md ${isDescExpanded ? 'line-clamp-none max-h-[45vh] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full' : 'line-clamp-3 sm:line-clamp-none'}`}>
+                      {displayedText}
+                    </p>
+                    {hasVoirPlus && (
+                      <button
+                        onClick={() => setIsDescExpanded(prev => !prev)}
+                        className="mt-1 text-sm font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block"
+                      >
+                        {isDescExpanded ? 'voir moins' : 'voir plus'}
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           )}
 
