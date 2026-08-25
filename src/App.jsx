@@ -22,6 +22,7 @@ import { AuthContext } from './context/AuthContext';
 import { getUserDisplayName } from './utils/userUtils';
 import axios from './api/axios';
 import { Toaster } from 'sonner';
+import { decodeHTMLEntities } from './utils/text';
 
 
 // Algorithme de mélange Fisher-Yates
@@ -50,16 +51,16 @@ const formatProjectData = (p) => {
   return {
     id: p.id,
     slug: p.slug,
-    title: p.title,
-    author: authorName,
-    authorPseudo: pseudoVal || p.userId || (typeof p.author === 'string' ? p.author : ''),
+    title: decodeHTMLEntities(p.title),
+    author: decodeHTMLEntities(authorName),
+    authorPseudo: decodeHTMLEntities(pseudoVal || p.userId || (typeof p.author === 'string' ? p.author : '')),
     authorProfilePicture: p.author?.profilePicture || p.user?.profilePicture || null,
     isOmniscient: p.author?.isOmniscient || p.user?.isOmniscient || false,
-    school: p.school,
+    school: decodeHTMLEntities(p.school),
     year: p.year ? p.year.toString() : '',
-    type: p.type,
-    field: p.domain ? (p.domain.name || p.domain) : 'Inconnu',
-    description: p.description,
+    type: decodeHTMLEntities(p.type),
+    field: decodeHTMLEntities(p.domain ? (p.domain.name || p.domain) : 'Inconnu'),
+    description: decodeHTMLEntities(p.description),
     coverUrl: p.coverUrl,
     imageUrl: p.coverUrl,
     pdfUrl: p.pdfUrl,

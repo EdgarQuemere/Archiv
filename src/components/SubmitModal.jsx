@@ -5,6 +5,7 @@ import { pdfjs } from 'react-pdf';
 import SearchableSchoolSelect from './SearchableSchoolSelect';
 import api from '../api/axios';
 import { getFileUrl } from '../utils/url';
+import { decodeHTMLEntities } from '../utils/text';
 
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -47,12 +48,12 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
     if (isOpen) {
       if (editData) {
         setFormData({
-          title: editData.title || '',
-          school: editData.school || '',
+          title: decodeHTMLEntities(editData.title || ''),
+          school: decodeHTMLEntities(editData.school || ''),
           year: editData.year || '2026',
-          type: editData.type || 'Mémoire',
-          domain: editData.field || '',
-          description: editData.description || '',
+          type: decodeHTMLEntities(editData.type || 'Mémoire'),
+          domain: decodeHTMLEntities(editData.field || editData.domain?.name || ''),
+          description: decodeHTMLEntities(editData.description || ''),
           allowDownload: editData.allowDownload !== undefined ? editData.allowDownload : true,
           orientation: editData.orientation || 'portrait',
           aspectRatio: editData.aspectRatio || 1.414
