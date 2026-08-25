@@ -17,6 +17,25 @@ const pdfOptions = {
   wasmUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/wasm/`,
 };
 
+const getDownloadUrl = (url, title) => {
+  if (!url) return "";
+  const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+  let key = url;
+  if (url.startsWith("http")) {
+    try {
+      const urlObj = new URL(url);
+      key = urlObj.pathname.split("/").slice(-2).join("/");
+    } catch (e) {}
+  } else if (key.startsWith("/api/files/")) {
+    key = key.replace("/api/files/", "");
+  } else if (key.startsWith("/api/")) {
+    key = key.replace("/api/", "");
+  } else if (key.startsWith("/")) {
+    key = key.substring(1);
+  }
+  return `${backendUrl.replace(/\/+$/, "")}/files/${key}?download=${encodeURIComponent(title || "projet")}`;
+};
+
 const getFileUrl = (url) => {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -565,7 +584,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                   </button>
                   {item.allowDownload && item.pdfUrl && (
                     <a
-                      href={item.pdfUrl}
+                      href={getDownloadUrl(item.pdfUrl, item.title)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="h-9 sm:h-10 px-4 sm:px-5 rounded-full bg-[#111111] hover:bg-black text-xs sm:text-sm font-medium text-white flex items-center gap-2 transition-colors shadow-sm"

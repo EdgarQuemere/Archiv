@@ -462,13 +462,6 @@ export function ProfileDrawer({
               {profileData.currentSchool && <p className="text-base font-medium text-[#555555]">{profileData.currentSchool}</p>}
             </div>
 
-            {/* Bio */}
-            {profileData.bio && (
-              <p className="text-sm sm:text-base font-medium text-[#333333] whitespace-pre-line leading-relaxed">
-                {profileData.bio}
-              </p>
-            )}
-
             {/* Credentials */}
             <div className="space-y-1">
               <p className="text-base font-medium text-[#111111] break-all">{profileData.email}</p>

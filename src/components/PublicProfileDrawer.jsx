@@ -270,12 +270,6 @@ export function PublicProfileDrawer({
             <p className="text-base font-medium text-[#111111]">{profileData.role || 'Créateur'}</p>
             <p className="text-base font-medium text-[#555555]">{profileData.currentSchool || 'École de design'}</p>
 
-            {profileData.bio && (
-              <p className="text-base font-medium text-[#333333] whitespace-pre-line leading-relaxed">
-                {decodeHTMLEntities(profileData.bio)}
-              </p>
-            )}
-
             {profileData.email && (
               <p className="text-base font-medium text-[#111111] break-all">{profileData.email}</p>
             )}
