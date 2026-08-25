@@ -2,18 +2,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useCallback, useMe
 import { ExternalLink, BookOpen, MapPin, User } from 'lucide-react';
 import gsap from 'gsap';
 import { getFileUrl } from '../utils/url';
+import { decodeHTMLEntities } from '../utils/text';
 
-const decodeHTMLEntities = (str) => {
-  if (!str || typeof str !== 'string') return str || '';
-  return str
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x2F;/g, "/")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-};
+
 
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -404,15 +395,15 @@ export function ListView({ items, focusedCoverId, onActiveCoverChange, onCardCli
         <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 z-30 sm:w-[400px] max-w-[calc(100vw-2rem)] text-center sm:text-right font-sans text-[#111111] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
           <div className="flex flex-col items-center sm:items-end gap-1 pointer-events-auto bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-4 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none">
             <h3 className="text-base sm:text-xl font-bold leading-tight mb-0.5 sm:mb-1">
-              {currentInfoItem.title}
+              {decodeHTMLEntities(currentInfoItem.title)}
             </h3>
 
             <p className="text-sm sm:text-base font-medium mb-1 sm:mb-2">
-              réalisé par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.authorPseudo || currentInfoItem.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{currentInfoItem.author || currentInfoItem.authorPseudo || 'Auteur'}</span>
+              réalisé par <span onClick={() => onOpenPublicProfile && onOpenPublicProfile(currentInfoItem.authorPseudo || currentInfoItem.userId)} className="underline cursor-pointer hover:opacity-80 font-bold">{decodeHTMLEntities(currentInfoItem.author || currentInfoItem.authorPseudo || 'Auteur')}</span>
             </p>
 
             <p className="text-xs sm:text-sm font-mono mb-2 sm:mb-4 text-slate-600">
-              {currentInfoItem.school} — {currentInfoItem.year} • {currentInfoItem.field}
+              {decodeHTMLEntities(currentInfoItem.school)} — {currentInfoItem.year} • {decodeHTMLEntities(currentInfoItem.field)}
             </p>
 
             {currentInfoItem.description && (

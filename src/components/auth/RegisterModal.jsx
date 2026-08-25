@@ -113,6 +113,11 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
   const handleAvatarSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError(<span>L'image de profil ne doit pas dépasser <br /> 5 Mo.</span>);
+      return;
+    }
+    setError('');
     setAvatarFile(file);
     const reader = new FileReader();
     reader.addEventListener('load', () => setAvatarPreview(reader.result?.toString() || null));
@@ -124,6 +129,11 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
     e.stopPropagation();
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError(<span>L'image de profil ne doit pas dépasser <br /> 5 Mo.</span>);
+        return;
+      }
+      setError('');
       setAvatarFile(file);
       const reader = new FileReader();
       reader.addEventListener('load', () => setAvatarPreview(reader.result?.toString() || null));

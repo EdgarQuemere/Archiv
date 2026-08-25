@@ -170,12 +170,22 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (formData.title && formData.title.length > 100) {
+      setError("Le titre ne doit pas dépasser 100 caractères.");
+      return;
+    }
+
     if (!formData.school.trim()) {
       setError(
         formData.type === 'Book'
           ? "Veuillez indiquer l'école ou institution ciblée pour ce book."
           : "Veuillez sélectionner l'école où le mémoire a été soutenu."
       );
+      return;
+    }
+
+    if (formData.description && formData.description.length > 1000) {
+      setError("La description ne doit pas dépasser 1000 caractères.");
       return;
     }
 
@@ -317,12 +327,18 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
             )}
 
             <div>
-              <label className="text-sm font-medium text-[#111111] block mb-1">
-                Titre du travail *
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-sm font-medium text-[#111111] block">
+                  Titre du travail *
+                </label>
+                <span className={`text-xs font-mono ${(formData.title?.length || 0) >= 100 ? 'text-red-500 font-semibold' : 'text-slate-400'}`}>
+                  {formData.title?.length || 0}/100
+                </span>
+              </div>
               <input
                 required
                 type="text"
+                maxLength={100}
                 placeholder={isBook ? "ex: Portfolio 2026 - Direction Artistique" : "ex: L'archéologie des machines"}
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -402,11 +418,17 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
               </span>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#111111] block mb-1">
-                Résumé succinct
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-sm font-medium text-[#111111] block">
+                  Résumé succinct
+                </label>
+                <span className={`text-xs font-mono ${(formData.description?.length || 0) >= 1000 ? 'text-red-500 font-semibold' : 'text-slate-400'}`}>
+                  {formData.description?.length || 0}/1000
+                </span>
+              </div>
               <textarea
                 rows={3}
+                maxLength={1000}
                 placeholder="Décrivez les thématiques principales abordées..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}

@@ -11,8 +11,17 @@ import { LogoutConfirmModal } from './LogoutConfirmModal';
 import { DeleteAccountReasonModal } from './DeleteAccountReasonModal';
 import { DeleteAccountConfirmModal } from './DeleteAccountConfirmModal';
 import { getFileUrl } from '../utils/url';
+import { decodeHTMLEntities } from '../utils/text';
+
+
 
 /* Custom Phosphor Profile User SVG */
+const IconEye = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z" />
+  </svg>
+);
+
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
@@ -165,6 +174,12 @@ export function ProfileDrawer({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(<span>L'image de profil ne doit pas dépasser <br /> 5 Mo.</span>);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.addEventListener('load', () => setCropperImageSrc(reader.result?.toString() || null));
     reader.readAsDataURL(file);
@@ -177,6 +192,10 @@ export function ProfileDrawer({
     e.stopPropagation();
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(<span>L'image de profil ne doit pas dépasser <br /> 5 Mo.</span>);
+        return;
+      }
       const reader = new FileReader();
       reader.addEventListener('load', () => setCropperImageSrc(reader.result?.toString() || null));
       reader.readAsDataURL(file);
@@ -375,35 +394,38 @@ export function ProfileDrawer({
       <div className="flex flex-col md:flex-row h-full w-full overflow-y-auto md:overflow-hidden">
 
         {/* LEFT COLUMN - USER PROFILE INFO */}
-        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-4 xs:p-6 md:p-6 md:pl-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
+        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
 
           <div className="max-w-md space-y-4">
             {/* Avatar */}
-            <div
-              className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]"
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-              onDrop={handleAvatarDrop}
-            >
-              <img
-                src={getFileUrl(profileData.profilePicture) || '/pdp_1.webp'}
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
+            <div className="flex flex-col items-start">
+              <div
+                className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden group cursor-pointer shadow-sm transition-transform hover:scale-[1.02]"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={handleAvatarDrop}
+              >
+                <img
+                  src={getFileUrl(profileData.profilePicture) || '/pdp_1.webp'}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
 
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
-                <UploadCloud className="w-5 h-5 mb-0.5" />
-                <span className="text-[9px] font-bold uppercase text-center leading-tight">Glisser / Modifier</span>
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-1 text-center">
+                  <UploadCloud className="w-4 h-4 mb-0.5" />
+                  <span className="text-[9px] font-bold uppercase leading-tight">Glisser / Modifier</span>
+                  <span className="text-[8px] opacity-80 mt-0.5 font-mono">Max 5 Mo</span>
+                </div>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleAvatarSelect}
+                  disabled={isUploadingAvatar}
+                />
               </div>
-
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={handleAvatarSelect}
-                disabled={isUploadingAvatar}
-              />
             </div>
 
             {/* Name + Pseudo + Logo */}
@@ -588,20 +610,24 @@ export function ProfileDrawer({
 
                     <div className="flex-1 flex flex-col justify-start py-0">
                       <div>
+                        <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
+                          <IconEye className="w-3.5 h-3.5 text-[#111111]" />
+                          <span>{project.viewsCount ?? project.views ?? 0}</span>
+                        </div>
                         <h3
                           className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
                           onClick={() => handleSelectProject(project)}
                         >
-                          {project.title}
+                          {decodeHTMLEntities(project.title)}
                         </h3>
                         <p className="text-base font-medium text-[#111111] mb-0.5">
-                          {project.year || '2026'} — {project.type || 'Mémoire'}{project.domain?.name || project.field ? ` — ${project.domain?.name || project.field}` : ''}
+                          {project.year || '2026'} — {decodeHTMLEntities(project.type || 'Mémoire')}{project.domain?.name || project.field ? ` — ${decodeHTMLEntities(project.domain?.name || project.field)}` : ''}
                         </p>
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {getUserDisplayName(profileData)}{project.school ? ` — ${project.school}` : ''}
+                          {getUserDisplayName(profileData)}{project.school ? ` — ${decodeHTMLEntities(project.school)}` : ''}
                         </p>
                         <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
-                          {project.description || "Pas de description"}
+                          {decodeHTMLEntities(project.description) || "Pas de description"}
                         </p>
                       </div>
 
@@ -672,20 +698,24 @@ export function ProfileDrawer({
 
                     <div className="flex-1 flex flex-col justify-start py-0">
                       <div>
+                        <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
+                          <IconEye className="w-3.5 h-3.5 text-[#111111]" />
+                          <span>{project.viewsCount ?? project.views ?? 0}</span>
+                        </div>
                         <h3
                           className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
                           onClick={() => handleSelectProject(project)}
                         >
-                          {project.title}
+                          {decodeHTMLEntities(project.title)}
                         </h3>
                         <p className="text-base font-medium text-[#111111] mb-0.5">
-                          {project.year || '2026'} — {project.type || 'Mémoire'}{project.domain?.name || project.field ? ` — ${project.domain?.name || project.field}` : ''}
+                          {project.year || '2026'} — {decodeHTMLEntities(project.type || 'Mémoire')}{project.domain?.name || project.field ? ` — ${decodeHTMLEntities(project.domain?.name || project.field)}` : ''}
                         </p>
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.author ? `${typeof project.author === 'object' ? getUserDisplayName(project.author) : project.author}${project.school ? ` — ${project.school}` : ''}` : project.school}
+                          {project.author ? `${typeof project.author === 'object' ? getUserDisplayName(project.author) : decodeHTMLEntities(project.author)}${project.school ? ` — ${decodeHTMLEntities(project.school)}` : ''}` : decodeHTMLEntities(project.school)}
                         </p>
                         <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md">
-                          {project.description || "Pas de description"}
+                          {decodeHTMLEntities(project.description) || "Pas de description"}
                         </p>
                       </div>
 

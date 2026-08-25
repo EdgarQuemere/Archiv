@@ -3,6 +3,7 @@ import { X, ChevronUp, ChevronDown, ZoomIn, ZoomOut, Info, Download, Bookmark, A
 import { AuthContext } from '../context/AuthContext';
 import SEO from './SEO';
 import api from '../api/axios';
+import { decodeHTMLEntities } from '../utils/text';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -29,17 +30,7 @@ const getFileUrl = (url) => {
   return `${backendUrl.replace(/\/+$/, '')}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
 };
 
-const decodeHTMLEntities = (str) => {
-  if (!str || typeof str !== 'string') return str || '';
-  return str
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x2F;/g, "/")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-};
+
 
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -62,6 +53,12 @@ const PageDoubleSVG = ({ className = "w-4 h-4" }) => (
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M216.49,79.51l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.51ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm104-60a12,12,0,0,1-12,12H140v12a12,12,0,0,1-24,0V164H104a12,12,0,0,1,0-24h12V128a12,12,0,0,1,24,0v12h12A12,12,0,0,1,164,152Z" />
+  </svg>
+);
+
+const IconEye = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z" />
   </svg>
 );
 
@@ -299,8 +296,8 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   return (
     <div className="fixed inset-0 z-[70] bg-[#EEEEEE] text-[#111111] flex flex-col font-sans font-medium overflow-hidden animate-in fade-in duration-200">
       <SEO
-        title={`${item.title} - ${authorDisplayName}`}
-        description={`${item.type || 'Projet'} par ${authorDisplayName} (${item.school || ''}, ${item.year || ''})`}
+        title={`${decodeHTMLEntities(item.title)} - ${decodeHTMLEntities(authorDisplayName)}`}
+        description={`${decodeHTMLEntities(item.type || 'Projet')} par ${decodeHTMLEntities(authorDisplayName)} (${decodeHTMLEntities(item.school || '')}, ${item.year || ''})`}
         image={item.coverUrl}
         url={`/projet/${item.slug || item.id}`}
       />
@@ -374,8 +371,13 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         <div className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-6.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
           {showInfo && (
             <div className={`animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDescExpanded ? 'max-h-[60vh] sm:max-h-[70vh]' : 'max-h-[35vh] sm:max-h-none'}`}>
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-mono text-slate-600 mb-1 font-semibold">
+                <IconEye className="w-4 h-4 text-[#111111]" />
+                <span>{item.viewsCount ?? item.views ?? 0}</span>
+              </div>
+
               <h1 className="text-base sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
-                {item.title}
+                {decodeHTMLEntities(item.title)}
               </h1>
 
               <p className="text-sm sm:text-base font-medium mb-1 sm:mb-2 text-[#111111]">
@@ -389,16 +391,16 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                   }}
                   className="underline cursor-pointer hover:opacity-80 font-bold"
                 >
-                  {authorDisplayName}
+                  {decodeHTMLEntities(authorDisplayName)}
                 </span>
               </p>
 
               <p className="text-sm sm:text-base font-mono text-slate-600 mb-0.5">
-                {item.year || '2026'} — {item.type || 'Mémoire'}{item.domain?.name || item.field ? ` — ${item.domain?.name || item.field}` : ''}
+                {item.year || '2026'} — {decodeHTMLEntities(item.type || 'Mémoire')}{item.domain?.name || item.field ? ` — ${decodeHTMLEntities(item.domain?.name || item.field)}` : ''}
               </p>
               {item.school && (
                 <p className="text-sm sm:text-base font-mono text-slate-600 mb-2 sm:mb-3">
-                  {item.school}
+                  {decodeHTMLEntities(item.school)}
                 </p>
               )}
 

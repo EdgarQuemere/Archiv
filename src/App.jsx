@@ -67,6 +67,8 @@ const formatProjectData = (p) => {
     orientation: p.orientation,
     aspectRatio: p.aspectRatio,
     allowDownload: p.allowDownload,
+    viewsCount: p.viewsCount ?? p.views ?? 0,
+    downloadsCount: p.downloadsCount ?? 0,
     userId: p.userId || p.author?.id || p.user?.id,
     tags: [],
     date: p.createdAt
@@ -221,10 +223,8 @@ export function App() {
     const projectSlug = item.slug || item.id;
     window.history.pushState(null, '', `/projet/${projectSlug}`);
 
-    if (item.pdfUrl) {
-      setSelectedCard(item);
-      return;
-    }
+    // Afficher le projet immédiatement pour réactivité UI
+    setSelectedCard(item);
 
     try {
       const response = await axios.get(`/projects/${projectSlug}`);
@@ -235,7 +235,6 @@ export function App() {
       }
     } catch (err) {
       console.error("Erreur lors de la récupération des détails :", err);
-      setSelectedCard(item);
     }
   };
 

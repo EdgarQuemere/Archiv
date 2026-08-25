@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import gsap from 'gsap';
 import { Compass, Grid } from 'lucide-react';
 import { getFileUrl } from '../utils/url';
+import { decodeHTMLEntities } from '../utils/text';
 
 const IconAddDocument = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -531,7 +532,7 @@ export function InfiniteCanvas({
               {/* DOCUMENT TITLE BADGE ON HOVER FOCUS */}
               {isHovered && item.title && (
                 <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 px-3.5 py-1.5 bg-[#111111] text-[#EEEEEE] text-xs font-medium rounded-full shadow-2xl pointer-events-none z-50 flex items-center gap-1.5 whitespace-nowrap max-w-[320px] border border-[#111111] animate-in fade-in zoom-in-95 duration-150">
-                  <span className="truncate">{item.title}</span>
+                  <span className="truncate">{decodeHTMLEntities(item.title)}</span>
                 </div>
               )}
             </div>

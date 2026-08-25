@@ -5,6 +5,15 @@ import gsap from 'gsap';
 import api from '../api/axios';
 import SEO from './SEO';
 import { getFileUrl } from '../utils/url';
+import { decodeHTMLEntities } from '../utils/text';
+
+
+
+const IconEye = ({ className = "w-4 h-4" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z" />
+  </svg>
+);
 
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
@@ -228,7 +237,7 @@ export function PublicProfileDrawer({
       <div className="flex flex-col md:flex-row h-full w-full overflow-y-auto md:overflow-hidden">
 
         {/* LEFT COLUMN - USER PROFILE INFO */}
-        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-4 xs:p-6 md:p-6 md:pl-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
+        <div className="w-full md:w-1/2 shrink-0 md:h-full flex flex-col justify-start md:justify-end p-6 pb-6 pt-20 xs:pt-24 md:pt-32 md:overflow-y-auto">
           <div className="max-w-md space-y-4">
             <div className="relative w-20 h-20 xs:w-24 xs:h-24 bg-[#111111] rounded-[10px] overflow-hidden shadow-sm">
               <img
@@ -257,7 +266,7 @@ export function PublicProfileDrawer({
 
             {profileData.bio && (
               <p className="text-base font-medium text-[#333333] whitespace-pre-line leading-relaxed">
-                {profileData.bio}
+                {decodeHTMLEntities(profileData.bio)}
               </p>
             )}
 
@@ -339,22 +348,26 @@ export function PublicProfileDrawer({
 
                   <div className="flex-1 flex flex-col justify-start py-0">
                     <div>
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
+                        <IconEye className="w-3.5 h-3.5 text-[#111111]" />
+                        <span>{project.viewsCount ?? project.views ?? 0}</span>
+                      </div>
                       <h3
                         className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
                         onClick={() => handleSelectProject(project)}
                       >
-                        {project.title}
+                        {decodeHTMLEntities(project.title)}
                       </h3>
                       <p className="text-base font-medium text-[#111111] mb-0.5">
-                        {project.year?.toString() || (project.createdAt ? new Date(project.createdAt).getFullYear().toString() : '2026')} — {project.type || 'Mémoire'}{project.domain?.name || project.field ? ` — ${project.domain?.name || project.field}` : ''}
+                        {project.year?.toString() || (project.createdAt ? new Date(project.createdAt).getFullYear().toString() : '2026')} — {decodeHTMLEntities(project.type || 'Mémoire')}{project.domain?.name || project.field ? ` — ${decodeHTMLEntities(project.domain?.name || project.field)}` : ''}
                       </p>
                       {(project.school || profileData?.currentSchool) && (
                         <p className="text-base font-medium text-[#111111] mb-4">
-                          {project.school || profileData?.currentSchool}
+                          {decodeHTMLEntities(project.school || profileData?.currentSchool)}
                         </p>
                       )}
                       <p className="text-base font-medium text-[#111111] leading-relaxed mb-6 max-w-md line-clamp-3">
-                        {project.description || "Aucune description fournie."}
+                        {decodeHTMLEntities(project.description) || "Aucune description fournie."}
                       </p>
                     </div>
 
