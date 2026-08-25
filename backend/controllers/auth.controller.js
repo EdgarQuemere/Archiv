@@ -68,7 +68,7 @@ exports.register = async (req, res) => {
           {
             From: {
               Email: process.env.MAILJET_SENDER_EMAIL,
-              Name: 'Artchiv',
+              Name: 'Artchiv\'',
             },
             To: [
               {
@@ -362,7 +362,7 @@ exports.forgotPassword = async (req, res) => {
           {
             From: {
               Email: process.env.MAILJET_SENDER_EMAIL,
-              Name: 'Artchiv',
+              Name: 'Artchiv\'',
             },
             To: [
               {
@@ -536,7 +536,7 @@ exports.resendVerification = async (req, res) => {
           {
             From: {
               Email: process.env.MAILJET_SENDER_EMAIL,
-              Name: 'Artchiv',
+              Name: 'Artchiv\'',
             },
             To: [
               {
@@ -544,7 +544,7 @@ exports.resendVerification = async (req, res) => {
                 Name: user.firstName || user.email,
               },
             ],
-            Subject: 'Vérification de votre adresse email Artchiv',
+            Subject: 'Vérification de votre adresse email Artchiv\'',
             HTMLPart: `
     <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; color: #111111; text-align: center;">
       <div style="background-color: #000; padding: 40px 20px; border-radius: 12px 12px 0 0;">
