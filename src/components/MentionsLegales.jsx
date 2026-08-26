@@ -33,7 +33,7 @@ export function MentionsLegales() {
               <br />
               • <strong>RIQUIER Thomas</strong> — Tél : 07 89 42 64 95 — Email : viturnapro@gmail.com
               <br />
-              • <strong>PLANCHENAULT Olwen</strong> — Tél : [Numéro de téléphone] — Email : [Adresse email]
+              • <strong>PLANCHENAULT Olwen</strong> — Tél : 07 86 15 63 55 — Email : olwen.pht@gmail.com
               <br /><br />
               <strong>Responsables de la publication :</strong>
               <br />
