@@ -442,7 +442,7 @@ export function SubmitModal({ isOpen, onClose, onAddCover, editData, onUpdateCov
                   <label className="text-sm font-medium text-[#111111] block">
                     Fichier PDF {editData ? '' : '*'}
                   </label>
-                  <span className="text-xs text-slate-500 font-mono">Max 10 Mo</span>
+                  <span className="text-xs text-slate-500 font-mono">Max 30 Mo</span>
                 </div>
                 <input
                   required={!editData}
