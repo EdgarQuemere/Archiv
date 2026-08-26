@@ -726,9 +726,21 @@ export function ProfileDrawer({
 
                       <div className="flex-1 flex flex-col justify-start py-0">
                         <div>
-                          <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 mb-1 font-semibold">
-                            <IconEye className="w-3.5 h-3.5 text-[#111111]" />
-                            <span>{project.viewsCount ?? project.views ?? 0}</span>
+                          <div className="flex items-center gap-3 text-xs font-mono text-slate-500 mb-1 font-semibold">
+                            <div className="flex items-center gap-1">
+                              <IconEye className="w-3.5 h-3.5 text-[#111111]" />
+                              <span>{project.viewsCount ?? project.views ?? 0}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <IconBookmarkSave className="w-3.5 h-3.5 text-[#111111]" />
+                              <span>{project.savesCount ?? project._count?.savedBy ?? project.savedCount ?? 0}</span>
+                            </div>
+                            {project.allowDownload && (
+                              <div className="flex items-center gap-1">
+                                <IconDownload className="w-3.5 h-3.5 text-[#111111]" />
+                                <span>{project.downloadsCount ?? 0}</span>
+                              </div>
+                            )}
                           </div>
                           <h3
                             className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"
