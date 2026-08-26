@@ -446,12 +446,19 @@ export function ProfileDrawer({
                 <h1 className="text-2xl xs:text-3xl font-bold text-[#111111] tracking-tight flex items-center gap-2">
                   <span>{getUserDisplayName(profileData)}</span>
                   {profileData.isOmniscient && (
-                    <img
-                      src="/logo-od.svg"
-                      alt="Omniscient Design"
-                      className="h-5 w-auto inline-block align-middle shrink-0 ml-0.5"
-                      title="Membre Omniscient Design"
-                    />
+                    <a
+                      href="https://omniscientdesign.fr/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center hover:opacity-80 transition-opacity"
+                    >
+                      <img
+                        src="/logo-od.svg"
+                        alt="Omniscient Design"
+                        className="h-5 w-auto inline-block align-middle shrink-0 ml-0.5 cursor-pointer"
+                        title="Membre Omniscient Design"
+                      />
+                    </a>
                   )}
                 </h1>
               </div>
