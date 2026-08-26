@@ -133,7 +133,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               className="w-full aspect-square object-cover rounded-[10px] grayscale border-0 shadow-sm"
             />
             <h3 className="text-xs font-semibold mt-2 mb-1 text-[#111111] leading-snug">
-              Edgar Quéméré
+              Edgar<br />Quéméré
             </h3>
             <div className="flex items-center gap-1.5 text-[#111111]">
               <a
@@ -165,7 +165,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               className="w-full aspect-square object-cover rounded-[10px] grayscale border-0 shadow-sm"
             />
             <h3 className="text-xs font-semibold mt-2 mb-1 text-[#111111] leading-snug">
-              Thomas Riquier
+              Thomas<br />Riquier
             </h3>
             <div className="flex items-center gap-1.5 text-[#111111]">
               <a
@@ -197,7 +197,7 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               className="w-full aspect-square object-cover rounded-[10px] grayscale border-0 shadow-sm"
             />
             <h3 className="text-xs font-semibold mt-2 mb-1 text-[#111111] leading-snug">
-              Olwen Planchenault
+              Olwen<br />Planchenault
             </h3>
             <div className="flex items-center gap-1.5 text-[#111111]">
               <a
