@@ -1,5 +1,31 @@
 const prisma = require('../config/db');
 const bcrypt = require('bcrypt');
+const { s3, bucketName } = require('../config/s3');
+const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
+
+const deleteFile = async (fileUrl) => {
+  if (!fileUrl) return;
+  try {
+    let key = null;
+    if (fileUrl.startsWith('/api/files/')) {
+      key = fileUrl.replace('/api/files/', '');
+    } else {
+      const urlParts = fileUrl.split(`/${bucketName}/`);
+      if (urlParts.length > 1) {
+        key = urlParts[1];
+      }
+    }
+
+    if (key) {
+      await s3.send(new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: key
+      }));
+    }
+  } catch (error) {
+    console.error('Erreur lors de la suppression sur Garage:', error);
+  }
+};
 
 // Fonction utilitaire pour formater l'URL vers le proxy backend
 const formatFileUrl = (file) => {
@@ -121,7 +147,12 @@ exports.updateProfile = async (req, res) => {
 
     // Image de profil formatée via le proxy backend
     if (req.file) {
+      const oldUser = await prisma.user.findUnique({ where: { id: req.userId }, select: { profilePicture: true } });
       updateData.profilePicture = formatFileUrl(req.file);
+      
+      if (oldUser && oldUser.profilePicture && (oldUser.profilePicture.startsWith('/api/files/') || oldUser.profilePicture.includes(`/${bucketName}/`))) {
+        await deleteFile(oldUser.profilePicture);
+      }
     }
 
     const user = await prisma.user.update({
@@ -158,18 +189,25 @@ exports.deleteAccount = async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
-      select: {
-        email: true,
-        firstName: true,
-        lastName: true,
-        pseudo: true,
-        role: true,
-        currentSchool: true
+      include: {
+        projects: true
       }
     });
 
     if (!user) {
       return res.status(404).json({ error: 'Utilisateur introuvable.' });
+    }
+
+    // Suppression des fichiers (pp et projets) sur Garage S3
+    if (user.profilePicture && (user.profilePicture.startsWith('/api/files/') || user.profilePicture.includes(`/${bucketName}/`))) {
+      await deleteFile(user.profilePicture);
+    }
+
+    for (const project of user.projects) {
+      await deleteFile(project.pdfUrl);
+      if (project.coverUrl) {
+        await deleteFile(project.coverUrl);
+      }
     }
 
     await prisma.deletedAccount.create({
