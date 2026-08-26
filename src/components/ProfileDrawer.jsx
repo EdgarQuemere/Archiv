@@ -28,6 +28,12 @@ const IconDownload = ({ className = "w-3.5 h-3.5 text-[#111111]" }) => (
   </svg>
 );
 
+const IconBookmarkSave = ({ className = "w-3.5 h-3.5 text-[#111111]" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M184,28H72A20,20,0,0,0,52,48V224a12,12,0,0,0,18.36,10.18l57.63-36,57.65,36A12,12,0,0,0,204,224V48A20,20,0,0,0,184,28Zm-4,174.35-45.65-28.53a12,12,0,0,0-12.72,0L76,202.35V52H180Z" />
+  </svg>
+);
+
 const IconUserProfile = ({ className = "w-4 h-4" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
     <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
@@ -618,6 +624,10 @@ export function ProfileDrawer({
                             <div className="flex items-center gap-1">
                               <IconEye className="w-3.5 h-3.5 text-[#111111]" />
                               <span>{project.viewsCount ?? project.views ?? 0}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <IconBookmarkSave className="w-3.5 h-3.5 text-[#111111]" />
+                              <span>{project.savesCount ?? project._count?.savedBy ?? project.savedCount ?? 0}</span>
                             </div>
                             {project.allowDownload && (
                               <div className="flex items-center gap-1">

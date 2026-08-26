@@ -70,6 +70,7 @@ const formatProjectData = (p) => {
     allowDownload: p.allowDownload,
     viewsCount: p.viewsCount ?? p.views ?? 0,
     downloadsCount: p.downloadsCount ?? 0,
+    savesCount: p.savesCount ?? p._count?.savedBy ?? p.savedCount ?? 0,
     userId: p.userId || p.author?.id || p.user?.id,
     tags: [],
     date: p.createdAt

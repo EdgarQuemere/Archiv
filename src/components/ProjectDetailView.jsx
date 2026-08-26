@@ -85,6 +85,12 @@ const IconDownload = ({ className = "w-4 h-4 text-[#111111]" }) => (
   </svg>
 );
 
+const IconBookmarkSave = ({ className = "w-4 h-4 text-[#111111]" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+    <path d="M184,28H72A20,20,0,0,0,52,48V224a12,12,0,0,0,18.36,10.18l57.63-36,57.65,36A12,12,0,0,0,204,224V48A20,20,0,0,0,184,28Zm-4,174.35-45.65-28.53a12,12,0,0,0-12.72,0L76,202.35V52H180Z" />
+  </svg>
+);
+
 export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, onOpenInfo, onOpenSubmit, onOpenPublicProfile }) {
   const { user, setUser } = useContext(AuthContext);
   const [showInfo, setShowInfo] = useState(true);
@@ -456,6 +462,10 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 <div className="flex items-center gap-1.5">
                   <IconEye className="w-4 h-4 text-[#111111]" />
                   <span>{item.viewsCount ?? item.views ?? 0}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <IconBookmarkSave className="w-4 h-4 text-[#111111]" />
+                  <span>{item.savesCount ?? item._count?.savedBy ?? item.savedCount ?? 0}</span>
                 </div>
                 {item.allowDownload && (
                   <div className="flex items-center gap-1.5">
