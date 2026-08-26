@@ -195,6 +195,9 @@ exports.getProjects = async (req, res) => {
         viewsCount: true,
         allowDownload: true,
         downloadsCount: true,
+        _count: {
+          select: { savedBy: true }
+        },
         author: {
           select: { firstName: true, lastName: true, pseudo: true, profilePicture: true, isOmniscient: true }
         }
@@ -267,6 +270,9 @@ exports.getProject = async (req, res) => {
       allowDownload: true,
       downloadsCount: true,
       viewsCount: true,
+      _count: {
+        select: { savedBy: true }
+      },
       userId: true,
       createdAt: true,
       author: {
