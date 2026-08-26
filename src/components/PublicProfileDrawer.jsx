@@ -356,10 +356,12 @@ export function PublicProfileDrawer({
                           <IconEye className="w-3.5 h-3.5 text-[#111111]" />
                           <span>{project.viewsCount ?? project.views ?? 0}</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <IconDownload className="w-3.5 h-3.5 text-[#111111]" />
-                          <span>{project.downloadsCount ?? 0}</span>
-                        </div>
+                        {project.allowDownload && (
+                          <div className="flex items-center gap-1">
+                            <IconDownload className="w-3.5 h-3.5 text-[#111111]" />
+                            <span>{project.downloadsCount ?? 0}</span>
+                          </div>
+                        )}
                       </div>
                       <h3
                         className="text-xl font-bold text-[#111111] mb-2 leading-snug cursor-pointer hover:underline"

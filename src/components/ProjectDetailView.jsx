@@ -457,10 +457,12 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                   <IconEye className="w-4 h-4 text-[#111111]" />
                   <span>{item.viewsCount ?? item.views ?? 0}</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <IconDownload className="w-4 h-4 text-[#111111]" />
-                  <span>{item.downloadsCount ?? 0}</span>
-                </div>
+                {item.allowDownload && (
+                  <div className="flex items-center gap-1.5">
+                    <IconDownload className="w-4 h-4 text-[#111111]" />
+                    <span>{item.downloadsCount ?? 0}</span>
+                  </div>
+                )}
               </div>
 
               <h1 className="text-base sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
