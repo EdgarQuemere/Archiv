@@ -41,8 +41,8 @@ router.post('/login', loginLimiter, [
 
 router.post('/logout', authController.logout);
 
-router.post('/google', [body('token').notEmpty()], authController.googleAuth);
-router.post('/omniscient', [body('code').notEmpty()], authController.omniscientAuth);
+router.post('/google', uploadAvatar.single('profilePicture'), [body('token').notEmpty()], authController.googleAuth);
+router.post('/omniscient', uploadAvatar.single('profilePicture'), [body('code').notEmpty()], authController.omniscientAuth);
 
 router.post('/forgot-password', emailLimiter, [
   body('email').isEmail().normalizeEmail().withMessage('Veuillez fournir un email valide')

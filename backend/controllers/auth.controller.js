@@ -33,6 +33,14 @@ exports.register = async (req, res) => {
       email, password, firstName, lastName, pseudo, displayPreference, role, currentSchool, bio,
       behanceLink, instaLink, personalLink
     } = req.body;
+
+    if (behanceLink && !behanceLink.includes('behance.net')) {
+      return res.status(400).json({ error: 'Le lien Behance doit être un lien valide (behance.net)' });
+    }
+    if (instaLink && !instaLink.includes('instagram.com')) {
+      return res.status(400).json({ error: 'Le lien Instagram doit être un lien valide (instagram.com)' });
+    }
+
     
     let profilePicture = req.file ? formatFileUrl(req.file) : req.body.profilePicture;
     if (!profilePicture) {
@@ -163,6 +171,14 @@ exports.googleAuth = async (req, res) => {
   try {
     const { token, role, currentSchool, behanceLink, instaLink, personalLink } = req.body;
 
+    if (behanceLink && !behanceLink.includes('behance.net')) {
+      return res.status(400).json({ error: 'Le lien Behance doit être un lien valide (behance.net)' });
+    }
+    if (instaLink && !instaLink.includes('instagram.com')) {
+      return res.status(400).json({ error: 'Le lien Instagram doit être un lien valide (instagram.com)' });
+    }
+
+
     let payload;
     if (token && token.startsWith('TEST_TOKEN')) {
       const suffix = token.slice('TEST_TOKEN'.length) || '';
@@ -207,7 +223,7 @@ exports.googleAuth = async (req, res) => {
         behanceLink,
         instaLink,
         personalLink,
-        profilePicture: req.body.profilePicture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`,
+        profilePicture: req.file ? formatFileUrl(req.file) : (req.body.profilePicture || picture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`),
         isEmailVerified: true
       },
     });
@@ -224,6 +240,14 @@ exports.googleAuth = async (req, res) => {
 exports.omniscientAuth = async (req, res) => {
   try {
     const { code, role, currentSchool, behanceLink, instaLink, personalLink, omniToken } = req.body;
+
+    if (behanceLink && !behanceLink.includes('behance.net')) {
+      return res.status(400).json({ error: 'Le lien Behance doit être un lien valide (behance.net)' });
+    }
+    if (instaLink && !instaLink.includes('instagram.com')) {
+      return res.status(400).json({ error: 'Le lien Instagram doit être un lien valide (instagram.com)' });
+    }
+
 
     let email, first_name, last_name, pseudo, profile_picture;
 
@@ -310,7 +334,7 @@ exports.omniscientAuth = async (req, res) => {
         behanceLink,
         instaLink,
         personalLink,
-        profilePicture: profile_picture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`,
+        profilePicture: req.file ? formatFileUrl(req.file) : (req.body.profilePicture || profile_picture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`),
         isOmniscient: true,
         isEmailVerified: true
       },

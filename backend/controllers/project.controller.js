@@ -138,7 +138,7 @@ exports.createProject = async (req, res) => {
     };
 
     // Ajout conditionnel du domaine s'il est valide
-    if (domain && domain.trim() !== '' && domain !== 'Tous les domaines') {
+    if (domain && domain.trim() !== '' && domain !== 'Tous les domaines' && domain !== 'null' && domain !== 'undefined') {
       projectData.domain = { connect: { name: domain } };
     }
 
@@ -354,7 +354,7 @@ exports.updateProject = async (req, res) => {
     if (orientation) updateData.orientation = orientation;
     if (aspectRatio) updateData.aspectRatio = parseFloat(aspectRatio);
 
-    if (domain && domain.trim() !== '' && domain !== 'Tous les domaines') {
+    if (domain && domain.trim() !== '' && domain !== 'Tous les domaines' && domain !== 'null' && domain !== 'undefined') {
       updateData.domain = { connect: { name: domain } };
     } else if (project.domainId) {
       updateData.domain = { disconnect: true }; // Permet de retirer le domaine si l'utilisateur le vide

@@ -88,8 +88,18 @@ exports.updateProfile = async (req, res) => {
     if (role !== undefined) updateData.role = role;
     if (currentSchool !== undefined) updateData.currentSchool = currentSchool;
     if (bio !== undefined) updateData.bio = bio;
-    if (behanceLink !== undefined) updateData.behanceLink = behanceLink;
-    if (instaLink !== undefined) updateData.instaLink = instaLink;
+    if (behanceLink !== undefined) {
+      if (behanceLink && !behanceLink.includes('behance.net')) {
+        return res.status(400).json({ error: 'Le lien Behance doit être un lien valide (behance.net)' });
+      }
+      updateData.behanceLink = behanceLink;
+    }
+    if (instaLink !== undefined) {
+      if (instaLink && !instaLink.includes('instagram.com')) {
+        return res.status(400).json({ error: 'Le lien Instagram doit être un lien valide (instagram.com)' });
+      }
+      updateData.instaLink = instaLink;
+    }
     if (personalLink !== undefined) updateData.personalLink = personalLink;
 
     // Vérification et unicité du pseudo s'il est modifié
