@@ -72,7 +72,7 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
         <div className="md:w-1/2 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto bg-[#EEEEEE]">
           <div>
             {/* Title */}
-            <h1 className="text-xl sm:text-2xl font-bold text-[#111111] leading-tight mb-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#111111] leading-tight mb-1 whitespace-pre-line break-words [overflow-wrap:anywhere]">
               {item.title}
             </h1>
 
@@ -96,14 +96,14 @@ export function DetailModal({ item, onClose, onOpenPublicProfile }) {
 
             {/* Subtitle if available */}
             {item.subtitle && (
-              <p className="text-base text-slate-700 font-medium mb-3 italic">
+              <p className="text-base text-slate-700 font-medium mb-3 italic whitespace-pre-line break-words [overflow-wrap:anywhere]">
                 {item.subtitle}
               </p>
             )}
 
             {/* Description */}
             {item.description && (
-              <p className="text-base text-slate-700 leading-relaxed mb-6">
+              <p className="text-base text-slate-700 leading-relaxed mb-6 whitespace-pre-line break-words [overflow-wrap:anywhere]">
                 {item.description}
               </p>
             )}

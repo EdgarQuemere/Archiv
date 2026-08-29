@@ -96,6 +96,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
   const [showInfo, setShowInfo] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [isTitleExpanded, setIsTitleExpanded] = useState(false);
   const infoPanelRef = useRef(null);
   const isPortrait = item?.orientation === 'portrait' || (item?.aspectRatio && item?.aspectRatio > 1.1);
 
@@ -457,7 +458,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
         {/* BOTTOM LEFT PROJECT INFORMATION PANEL */}
         <div ref={infoPanelRef} className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-40 max-w-[calc(100vw-6.5rem)] sm:max-w-md pointer-events-auto font-sans text-[#111111]">
           {showInfo && (
-            <div className={`animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 sm:mb-5 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDescExpanded ? 'max-h-[75vh] sm:max-h-[70vh]' : 'max-h-[52vh] sm:max-h-none'}`}>
+            <div className={`animate-in fade-in slide-in-from-bottom-2 duration-200 mb-3 sm:mb-5 bg-[#EEEEEE] sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-3.5 sm:p-0 rounded-[16px] sm:rounded-none border-[1.5px] border-[#111111] sm:border-0 shadow-lg sm:shadow-none overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${(isDescExpanded || isTitleExpanded) ? 'max-h-[75vh] sm:max-h-[70vh]' : 'max-h-[52vh] sm:max-h-none'}`}>
               <div className="flex items-center gap-3 text-xs sm:text-sm font-mono text-slate-600 mb-1 sm:mb-3 font-semibold">
                 <div className="flex items-center gap-1.5">
                   <IconEye className="w-4 h-4 text-[#111111]" />
@@ -475,9 +476,33 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 )}
               </div>
 
-              <h1 className="text-base sm:text-2xl font-bold leading-tight mb-1 text-[#111111]">
-                {decodeHTMLEntities(item.title)}
-              </h1>
+              {(() => {
+                const fullTitle = decodeHTMLEntities(item.title || '');
+                const shouldTruncateDesktop = fullTitle.length > 90;
+                const shouldTruncateMobile = fullTitle.length > 50;
+                const hasVoirPlus = shouldTruncateDesktop || shouldTruncateMobile;
+
+                let displayedTitle = fullTitle;
+                if (!isTitleExpanded && fullTitle.length > 90) {
+                  displayedTitle = `${fullTitle.slice(0, 90).trim()}...`;
+                }
+
+                return (
+                  <div className="mb-1">
+                    <h1 className={`text-base sm:text-2xl font-bold leading-tight text-[#111111] whitespace-pre-line break-words [overflow-wrap:anywhere] ${isTitleExpanded ? 'line-clamp-none' : 'line-clamp-2 sm:line-clamp-none'}`}>
+                      {displayedTitle}
+                    </h1>
+                    {hasVoirPlus && (
+                      <button
+                        onClick={() => setIsTitleExpanded(prev => !prev)}
+                        className="mt-0.5 mb-1 text-xs sm:text-sm font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block"
+                      >
+                        {isTitleExpanded ? 'voir moins' : 'voir plus'}
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
 
               <p className="text-sm sm:text-base font-medium mb-1 sm:mb-4 text-[#111111]">
                 par{' '}
@@ -520,7 +545,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
                 return (
                   <div>
-                    <p className={`text-sm sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md ${isDescExpanded ? 'line-clamp-none max-h-[45vh] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full' : 'line-clamp-3 sm:line-clamp-none'}`}>
+                    <p className={`text-sm sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md whitespace-pre-line break-words [overflow-wrap:anywhere] ${isDescExpanded ? 'line-clamp-none max-h-[45vh] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full' : 'line-clamp-3 sm:line-clamp-none'}`}>
                       {displayedText}
                     </p>
                     {hasVoirPlus && (
