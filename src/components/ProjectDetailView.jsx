@@ -478,24 +478,22 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
               {(() => {
                 const fullTitle = decodeHTMLEntities(item.title || '');
-                const shouldTruncateDesktop = fullTitle.length > 90;
-                const shouldTruncateMobile = fullTitle.length > 50;
-                const hasVoirPlus = shouldTruncateDesktop || shouldTruncateMobile;
+                const hasVoirPlus = fullTitle.length > 100 || fullTitle.split('\n').filter(Boolean).length > 3;
 
                 let displayedTitle = fullTitle;
-                if (!isTitleExpanded && fullTitle.length > 90) {
-                  displayedTitle = `${fullTitle.slice(0, 90).trim()}...`;
+                if (!isTitleExpanded && hasVoirPlus) {
+                  displayedTitle = fullTitle.length > 100 ? `${fullTitle.slice(0, 100).trim()}...` : fullTitle;
                 }
 
                 return (
                   <div className="mb-1">
-                    <h1 className={`text-base sm:text-2xl font-bold leading-tight text-[#111111] whitespace-pre-line break-words [overflow-wrap:anywhere] ${isTitleExpanded ? 'line-clamp-none' : 'line-clamp-2 sm:line-clamp-none'}`}>
+                    <h1 className={`text-base sm:text-2xl font-bold leading-tight text-[#111111] whitespace-pre-line break-words [overflow-wrap:anywhere] ${isTitleExpanded ? 'line-clamp-none' : (hasVoirPlus ? 'line-clamp-2 sm:line-clamp-none' : '')}`}>
                       {displayedTitle}
                     </h1>
                     {hasVoirPlus && (
                       <button
                         onClick={() => setIsTitleExpanded(prev => !prev)}
-                        className="mt-0.5 mb-1 text-xs sm:text-sm font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block"
+                        className="mt-1 text-sm font-bold underline cursor-pointer text-[#111111] hover:opacity-80 inline-block"
                       >
                         {isTitleExpanded ? 'voir moins' : 'voir plus'}
                       </button>
@@ -534,18 +532,16 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
 
               {item.description && (() => {
                 const fullDesc = decodeHTMLEntities(item.description);
-                const shouldTruncateDesktop = fullDesc.length > 500;
-                const shouldTruncateMobile = fullDesc.length > 150 || fullDesc.includes('\n');
-                const hasVoirPlus = shouldTruncateDesktop || shouldTruncateMobile;
+                const hasVoirPlus = fullDesc.length > 300 || fullDesc.split('\n').filter(Boolean).length > 5;
 
                 let displayedText = fullDesc;
-                if (!isDescExpanded && fullDesc.length > 500) {
-                  displayedText = `${fullDesc.slice(0, 500).trim()}...`;
+                if (!isDescExpanded && hasVoirPlus) {
+                  displayedText = fullDesc.length > 300 ? `${fullDesc.slice(0, 300).trim()}...` : fullDesc;
                 }
 
                 return (
                   <div>
-                    <p className={`text-sm sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md whitespace-pre-line break-words [overflow-wrap:anywhere] ${isDescExpanded ? 'line-clamp-none max-h-[45vh] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full' : 'line-clamp-3 sm:line-clamp-none'}`}>
+                    <p className={`text-sm sm:text-base text-slate-700 leading-relaxed max-w-xs sm:max-w-md whitespace-pre-line break-words [overflow-wrap:anywhere] ${isDescExpanded ? 'line-clamp-none max-h-[45vh] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-400 [&::-webkit-scrollbar-thumb]:rounded-full' : (hasVoirPlus ? 'line-clamp-3 sm:line-clamp-none' : '')}`}>
                       {displayedText}
                     </p>
                     {hasVoirPlus && (
