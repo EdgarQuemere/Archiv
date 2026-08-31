@@ -181,6 +181,7 @@ exports.getProjects = async (req, res) => {
         id: true,
         slug: true,
         title: true,
+        description: true,
         type: true,
         school: true,
         year: true,
