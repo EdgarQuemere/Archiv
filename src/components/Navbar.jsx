@@ -85,6 +85,7 @@ export function Navbar({
           <button
             onClick={onOpenInfo}
             title="Informations"
+            aria-label="Informations"
             className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${isInfoOpen
               ? 'bg-[#111111] text-[#EEEEEE]'
               : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -97,6 +98,7 @@ export function Navbar({
           <button
             onClick={onOpenProfile}
             title={user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Mon Profil'}
+            aria-label={user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Profil' : 'Mon Profil'}
             className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] flex items-center justify-center transition-colors shrink-0 shadow-sm ${isProfileOpen
               ? 'bg-[#111111] text-[#EEEEEE]'
               : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -112,6 +114,7 @@ export function Navbar({
               : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
               }`}
             title="Ajouter mon travail"
+            aria-label="Ajouter mon travail"
           >
             <IconAddDocument className="w-4 h-4 sm:w-4 sm:h-4" />
           </button>
@@ -122,6 +125,7 @@ export function Navbar({
           {/* Filtres Button */}
           <button
             onClick={onOpenFilter}
+            aria-label="Filtres"
             className={`h-10 sm:h-11 ${activeFilterCount > 0 ? 'w-auto px-2.5 sm:px-8' : 'w-10 sm:w-auto px-0 sm:px-8'
               } border-[1.5px] border-[#111111] text-xs sm:text-base font-medium rounded-full flex items-center justify-center transition-all shadow-sm relative shrink-0 ${isFilterOpen
                 ? 'bg-[#111111] text-[#EEEEEE]'
@@ -143,6 +147,7 @@ export function Navbar({
           {/* Search Button - Mobile (loupe alignée sur 1 seule ligne) */}
           <button
             onClick={() => setIsMobileSearchOpen(true)}
+            aria-label="Rechercher"
             className="flex sm:hidden w-10 h-10 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2] items-center justify-center transition-colors shadow-sm cursor-pointer shrink-0"
             title="Rechercher"
           >
@@ -152,6 +157,7 @@ export function Navbar({
           {/* Mobile View Switcher Pill (P2: Canva / Liens / Liste - Fixed width 94px) */}
           <button
             onClick={cycleView}
+            aria-label="Changer de vue"
             className="flex sm:hidden h-10 w-[94px] px-2 rounded-full border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] items-center justify-center gap-1 shadow-sm cursor-pointer shrink-0"
             title="Changer de vue"
           >
@@ -168,6 +174,7 @@ export function Navbar({
             <button
               onClick={() => setActiveView('canvas')}
               title="Vue Canva Infini"
+              aria-label="Vue Canva Infini"
               className={`w-11 h-full flex items-center justify-center transition-colors ${activeView === 'canvas'
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -182,6 +189,7 @@ export function Navbar({
             <button
               onClick={() => setActiveView('network')}
               title="Vue Graphe Relationnel"
+              aria-label="Vue Graphe Relationnel"
               className={`w-11 h-full flex items-center justify-center transition-colors ${activeView === 'network'
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -198,6 +206,7 @@ export function Navbar({
             <button
               onClick={() => setActiveView('list')}
               title="Vue Liste"
+              aria-label="Vue Liste"
               className={`w-11 h-full flex items-center justify-center transition-colors ${activeView === 'list'
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'

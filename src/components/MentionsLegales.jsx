@@ -10,6 +10,7 @@ export function MentionsLegales() {
       <div className="max-w-3xl mx-auto bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] p-6 md:p-12 shadow-sm">
         <button
           onClick={handleBack}
+          aria-label="Retour à l'accueil"
           className="mb-8 px-5 h-10 border-[1.5px] border-[#111111] rounded-full text-sm font-medium hover:bg-[#E2E2E2] transition-colors flex items-center gap-2 cursor-pointer"
         >
           &larr; Retour

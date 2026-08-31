@@ -409,6 +409,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               onOpenInfo?.();
             }}
             title="Informations"
+            aria-label="Informations"
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
           >
             <Info className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
@@ -424,6 +425,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               }
             }}
             title={user ? user.name || user.pseudo || 'Profil' : 'Se connecter'}
+            aria-label={user ? user.name || user.pseudo || 'Profil' : 'Se connecter'}
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
           >
             <IconUserProfile className="w-4 h-4 sm:w-4 sm:h-4" />
@@ -435,6 +437,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
               onOpenSubmit?.();
             }}
             title="Ajouter mon travail"
+            aria-label="Ajouter mon travail"
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors shrink-0 shadow-sm cursor-pointer"
           >
             <IconAddDocument className="w-4 h-4 sm:w-4 sm:h-4" />
@@ -445,6 +448,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
           <button
             onClick={onClose}
             title="Fermer la vue produit"
+            aria-label="Fermer la vue produit"
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#EEEEEE] border-[1.5px] border-[#111111] text-[#111111] hover:bg-[#E2E2E2] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
           >
             <X className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
@@ -562,6 +566,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setShowInfo((prev) => !prev)}
               title={showInfo ? 'Masquer les informations' : 'Afficher les informations'}
+              aria-label={showInfo ? 'Masquer les informations' : 'Afficher les informations'}
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] flex items-center justify-center transition-colors cursor-pointer shadow-sm shrink-0"
             >
               {showInfo ? (
@@ -576,6 +581,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 onClick={handleDownload}
                 className="h-10 sm:h-11 px-3.5 sm:px-6 rounded-full border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] text-sm sm:text-base font-medium flex items-center gap-1.5 sm:gap-2 transition-colors cursor-pointer shadow-sm shrink-0"
                 title="Télécharger le PDF"
+                aria-label="Télécharger le PDF"
               >
                 <Download className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25] sm:order-2" />
                 <span className="sm:order-1">
@@ -593,6 +599,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
                 } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
               title={isSaved ? "Retirer des enregistrements" : "Enregistrer"}
+              aria-label={isSaved ? "Retirer des enregistrements" : "Enregistrer"}
             >
               <Bookmark className={`w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25] ${isSaved ? 'fill-current' : ''}`} />
             </button>
@@ -704,6 +711,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setViewMode('single')}
               title="Page Simple"
+              aria-label="Page Simple"
               className={`w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'single'
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -717,6 +725,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={() => setViewMode('double')}
               title="Double Page"
+              aria-label="Double Page"
               className={`w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${viewMode === 'double'
                 ? 'bg-[#111111] text-[#EEEEEE]'
                 : 'bg-[#EEEEEE] text-[#111111] hover:bg-[#E2E2E2]'
@@ -730,6 +739,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handleZoomOut}
               title="Dézoomer (-)"
+              aria-label="Dézoomer"
               className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ZoomOut className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
@@ -740,6 +750,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handleZoomIn}
               title="Zoomer (+)"
+              aria-label="Zoomer"
               className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ZoomIn className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
@@ -750,6 +761,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handlePrevPage}
               title="Page précédente"
+              aria-label="Page précédente"
               className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ChevronUp className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />
@@ -760,6 +772,7 @@ export function ProjectDetailView({ item, onClose, onOpenProfile, onOpenLogin, o
             <button
               onClick={handleNextPage}
               title="Page suivante"
+              aria-label="Page suivante"
               className="w-9 xs:w-10 sm:w-11 h-full flex items-center justify-center bg-[#EEEEEE] hover:bg-[#E2E2E2] text-[#111111] transition-colors cursor-pointer"
             >
               <ChevronDown className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.25]" />

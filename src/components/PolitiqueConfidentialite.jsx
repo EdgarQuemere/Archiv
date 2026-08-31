@@ -10,6 +10,7 @@ export function PolitiqueConfidentialite() {
       <div className="max-w-3xl mx-auto bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-[14px] p-6 md:p-12 shadow-sm">
         <button
           onClick={handleBack}
+          aria-label="Retour à l'accueil"
           className="mb-8 px-5 h-10 border-[1.5px] border-[#111111] rounded-full text-sm font-medium hover:bg-[#E2E2E2] transition-colors flex items-center gap-2 cursor-pointer"
         >
           &larr; Retour
@@ -39,7 +40,7 @@ export function PolitiqueConfidentialite() {
             <p>
               Nous collectons uniquement les informations nécessaires au fonctionnement de la plateforme :
               <br /><br />
-              • <strong>Compte utilisateur :</strong> Nom, prénom, pseudo public, adresse email, mot de passe chiffré (hashé avec bcrypt), photo de profil, école / établissement d'études, rôle (Étudiant, Diplômé, etc.), liens vers vos réseaux professionnels (Behance, Instagram, site personnel).<br />
+              • <strong>Compte utilisateur :</strong> Nom, prénom, pseudo public, adresse email, mot de passe chiffré, photo de profil, école / établissement d'études, rôle (Étudiant, Diplômé, etc.), liens vers vos réseaux professionnels (Behance, Instagram, site personnel).<br />
               • <strong>Projets publiés :</strong> Titre, description, fichiers PDF, images de couverture, domaine de design, année de soutenance et école associée.<br />
               • <strong>Historique de consentement :</strong> Date et heure de votre acceptation des conditions d'utilisation et de la politique de confidentialité.
             </p>
