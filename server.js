@@ -12,8 +12,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const API_URL = process.env.VITE_API_URL || 'https://api.artchiv.fr/api';
 
-// Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, 'dist'), { index: false }));
+// Serve static files from the React app build directory with caching
+app.use(express.static(path.join(__dirname, 'dist'), { 
+  index: false,
+  maxAge: '1y',
+  immutable: true
+}));
 
 // Function to decode HTML entities (simple version)
 function decodeHTMLEntities(text) {
