@@ -1,6 +1,6 @@
 import { getUserDisplayName } from '../utils/userUtils';
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { X, Info, User, UploadCloud, ExternalLink } from 'lucide-react';
+import { X, Info, User, UploadCloud, ExternalLink, Shield } from 'lucide-react';
 import gsap from 'gsap';
 import api from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
@@ -520,6 +520,16 @@ export function ProfileDrawer({
 
             {/* Action Buttons Row */}
             <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 pt-1">
+              {(profileData?.isAdmin || user?.isAdmin) && (
+                <a
+                  href="/admin"
+                  className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#111111] text-[#EEEEEE] hover:bg-black rounded-full text-base font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs"
+                >
+                  <span>Administration</span>
+                  <Shield className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
+                </a>
+              )}
+
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 className="h-9 xs:h-10 px-4 xs:px-6 border-[1.5px] border-[#111111] bg-[#EEEEEE] hover:bg-[#E2E2E2] rounded-full text-base font-medium text-[#111111] flex items-center gap-2 transition-colors cursor-pointer"

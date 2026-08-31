@@ -239,7 +239,6 @@ export function LoginModal({ isOpen, onClose, onOpenRegister, onSuccess }) {
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => setError("La connexion avec Google a échoué.")}
-                useOneTap
                 theme="filled_black"
                 shape="rectangular"
                 width="320"

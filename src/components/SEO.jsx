@@ -1,17 +1,28 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { getFileUrl } from '../utils/url';
 
 export function SEO({ title, description, image, url }) {
-  const defaultTitle = 'Artchiv\' - La plateforme qui réunit les Books et Mémoires des étudiants en design';
+  const defaultTitle = "Artchiv' - La plateforme qui réunit les Books et Mémoires des étudiants en design";
   const defaultDescription = 'Découvrez les books, mémoires et projets de diplôme des étudiants en écoles de design. Inspirez-vous, partagez vos créations et faites briller votre travail.';
-  const defaultImage = 'https://artchiv.fr/archiv_logo_condesed.webp'; // Ou toute autre image par défaut
+  const defaultImage = 'https://artchiv.fr/archiv_logo_condesed.webp';
   const siteUrl = 'https://artchiv.fr';
+
+  let resolvedImage = defaultImage;
+  if (image) {
+    const fileUrl = getFileUrl(image);
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      resolvedImage = fileUrl;
+    } else {
+      resolvedImage = `${siteUrl}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+    }
+  }
 
   const seo = {
     title: title ? `${title} | Artchiv'` : defaultTitle,
     description: description || defaultDescription,
-    image: image || defaultImage,
-    url: url ? `${siteUrl}${url}` : siteUrl,
+    image: resolvedImage,
+    url: url ? `${siteUrl}${url.startsWith('/') ? '' : '/'}${url}` : siteUrl,
   };
 
   return (

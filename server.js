@@ -51,7 +51,15 @@ app.get(/(.*)/, async (req, res) => {
         
         const dynamicTitle = `${decodeHTMLEntities(project.title)} - ${authorName}`;
         const dynamicDescription = `${type} par ${authorName} (${school}, ${year})`;
-        const dynamicImage = project.coverUrl || 'https://artchiv.fr/archiv_logo_condesed.webp';
+        
+        let dynamicImage = 'https://artchiv.fr/archiv_logo_condesed.webp';
+        if (project.coverUrl) {
+          if (project.coverUrl.startsWith('http://') || project.coverUrl.startsWith('https://')) {
+            dynamicImage = project.coverUrl;
+          } else {
+            dynamicImage = `${API_URL.replace(/\/+$/, '')}${project.coverUrl.startsWith('/') ? '' : '/'}${project.coverUrl.replace(/^\/api\//, '')}`;
+          }
+        }
         
         // Remplacement dynamique des balises
         html = html.replace(/<title>.*?<\/title>/, `<title>${dynamicTitle}</title>`);
