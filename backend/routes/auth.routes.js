@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const authController = require('../controllers/auth.controller');
-const { uploadAvatar } = require('../middlewares/upload.middleware');
+const { uploadAvatar, processAvatar } = require('../middlewares/upload.middleware');
 const rateLimit = require('express-rate-limit');
 
 const loginLimiter = rateLimit({
@@ -23,7 +23,7 @@ const emailLimiter = rateLimit({
   message: { error: 'Trop de demandes liées aux emails depuis cette adresse IP, veuillez réessayer dans 1 heure.' }
 });
 
-router.post('/register', uploadAvatar.single('profilePicture'), [
+router.post('/register', uploadAvatar.single('profilePicture'), processAvatar, [
   body('email').isEmail().withMessage('Veuillez fournir un email valide').normalizeEmail(),
   body('password')
     .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères')
@@ -41,8 +41,8 @@ router.post('/login', loginLimiter, [
 
 router.post('/logout', authController.logout);
 
-router.post('/google', uploadAvatar.single('profilePicture'), [body('token').notEmpty()], authController.googleAuth);
-router.post('/omniscient', uploadAvatar.single('profilePicture'), [body('code').notEmpty()], authController.omniscientAuth);
+router.post('/google', uploadAvatar.single('profilePicture'), processAvatar, [body('token').notEmpty()], authController.googleAuth);
+router.post('/omniscient', uploadAvatar.single('profilePicture'), processAvatar, [body('code').notEmpty()], authController.omniscientAuth);
 
 router.post('/forgot-password', emailLimiter, [
   body('email').isEmail().normalizeEmail().withMessage('Veuillez fournir un email valide')
