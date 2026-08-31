@@ -34,7 +34,8 @@ export function RegisterModal({ isOpen, onClose, onOpenLogin, isOAuthCompletion 
     currentSchool: '',
     behanceLink: '',
     instaLink: '',
-    personalLink: ''
+    personalLink: '',
+    cguAccepted: false
   });
 
   const hasMinLength = formData.password.length >= 8;
@@ -242,6 +243,11 @@ const handleOmniscientLogin = () => {
 
     if (!formData.pseudo || formData.pseudo.trim().length < 3) {
       setError('Le pseudo est obligatoire (3 caractères minimum).');
+      return;
+    }
+
+    if (!formData.cguAccepted) {
+      setError('Vous devez accepter les mentions légales et la politique de confidentialité pour créer un compte.');
       return;
     }
 
@@ -615,6 +621,39 @@ const handleOmniscientLogin = () => {
                       placeholder="https://mon-site.com"
                       className="w-full h-10 sm:h-11 bg-[#EEEEEE] border-[1.5px] border-[#111111] rounded-full px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#111111]/20"
                     />
+                  </div>
+
+                  {/* RGPD & CGU Consent Checkbox */}
+                  <div className="pt-2">
+                    <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        name="cguAccepted"
+                        checked={formData.cguAccepted}
+                        onChange={(e) => setFormData(prev => ({ ...prev, cguAccepted: e.target.checked }))}
+                        className="mt-0.5 w-4 h-4 rounded border-[1.5px] border-[#111111] accent-[#111111] cursor-pointer shrink-0"
+                      />
+                      <span className="text-[11px] sm:text-xs text-slate-700 leading-snug">
+                        J'accepte les{' '}
+                        <a 
+                          href="/mentions-legales" 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="font-bold underline text-[#111111] hover:opacity-80"
+                        >
+                          mentions légales
+                        </a>{' '}
+                        et la{' '}
+                        <a 
+                          href="/politique-confidentialite" 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="font-bold underline text-[#111111] hover:opacity-80"
+                        >
+                          politique de confidentialité
+                        </a>.
+                      </span>
+                    </label>
                   </div>
                 </>
               )}

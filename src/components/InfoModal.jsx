@@ -222,12 +222,20 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
             contact@artchiv.fr
           </a>
 
-          <button
-            onClick={() => onOpenMentions && onOpenMentions()}
-            className="block text-sm italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
-          >
-            mentions légales
-          </button>
+          <div className="flex flex-col gap-1 text-left">
+            <button
+              onClick={() => onOpenMentions && onOpenMentions()}
+              className="block text-sm italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
+            >
+              mentions légales
+            </button>
+            <a
+              href="/politique-confidentialite"
+              className="block text-sm italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
+            >
+              politique de confidentialité
+            </a>
+          </div>
 
           {/* LOGOS PARTENAIRES */}
           <div className="flex items-center gap-4 pt-3">
@@ -292,12 +300,20 @@ export function InfoModal({ isOpen, onClose, user, onOpenProfile, onOpenLogin, o
               contact@artchiv.fr
             </a>
 
-            <button
-              onClick={() => onOpenMentions && onOpenMentions()}
-              className="block text-base italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
-            >
-              mentions légales
-            </button>
+            <div className="flex flex-col gap-1 text-left">
+              <button
+                onClick={() => onOpenMentions && onOpenMentions()}
+                className="block text-base italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
+              >
+                mentions légales
+              </button>
+              <a
+                href="/politique-confidentialite"
+                className="block text-base italic font-medium underline hover:opacity-80 text-[#111111] text-left cursor-pointer"
+              >
+                politique de confidentialité
+              </a>
+            </div>
 
             {/* LOGOS PARTENAIRES */}
             <div className="flex items-center gap-4 pt-3 lg:pt-4">

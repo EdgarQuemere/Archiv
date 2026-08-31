@@ -738,15 +738,20 @@ export function AdminDashboard() {
                               </span>
                             </td>
                             <td className="px-5 py-3.5 text-center">
-                              {u.isBanned ? (
-                                <span className="inline-flex px-2.5 py-0.5 text-[10px] rounded-full bg-red-100 text-red-700 font-bold uppercase tracking-wider border border-red-200">
-                                  Banni
+                              <div className="flex flex-col items-center gap-1">
+                                {u.isBanned ? (
+                                  <span className="inline-flex px-2.5 py-0.5 text-[10px] rounded-full bg-red-100 text-red-700 font-bold uppercase tracking-wider border border-red-200">
+                                    Banni
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex px-2.5 py-0.5 text-[10px] rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider border border-emerald-200">
+                                    Actif
+                                  </span>
+                                )}
+                                <span className="text-[10px] text-slate-500 font-mono" title={u.cguAcceptedAt ? `Consentement RGPD le ${new Date(u.cguAcceptedAt).toLocaleString('fr-FR')}` : 'Consentement RGPD au profil'}>
+                                  RGPD: {u.cguAcceptedAt ? new Date(u.cguAcceptedAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '✓'}
                                 </span>
-                              ) : (
-                                <span className="inline-flex px-2.5 py-0.5 text-[10px] rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider border border-emerald-200">
-                                  Actif
-                                </span>
-                              )}
+                              </div>
                             </td>
                             <td className="px-5 py-3.5 text-right">
                               <div className="flex items-center justify-end gap-1.5">

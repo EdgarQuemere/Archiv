@@ -18,6 +18,7 @@ import { OmniscientCallback } from './components/auth/OmniscientCallback';
 import SEO from './components/SEO';
 import AdminDashboard from './components/admin/AdminDashboard';
 import { MentionsLegales } from './components/MentionsLegales';
+import { PolitiqueConfidentialite } from './components/PolitiqueConfidentialite';
 import { AuthContext } from './context/AuthContext';
 import { getUserDisplayName } from './utils/userUtils';
 import axios from './api/axios';
@@ -453,6 +454,15 @@ export function App() {
 
   if (window.location.pathname === '/mentions-legales') {
     return <MentionsLegales />;
+  }
+
+  if (window.location.pathname === '/politique-confidentialite' || window.location.pathname === '/confidentialite') {
+    return (
+      <>
+        <SEO title="Politique de Confidentialité & RGPD" description="Consultez la politique de traitement des données personnelles d'Artchiv'." />
+        <PolitiqueConfidentialite />
+      </>
+    );
   }
 
   return (
