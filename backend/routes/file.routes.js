@@ -12,6 +12,9 @@ router.get('/*', async (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
+        // ⚡ Cache navigateur & proxy : 1 an pour les fichiers immuables (S3)
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+
         const command = new GetObjectCommand({
             Bucket: bucketName,
             Key: key,
@@ -21,6 +24,14 @@ router.get('/*', async (req, res) => {
 
         if (response.ContentType) {
             res.setHeader('Content-Type', response.ContentType);
+        }
+
+        if (response.ContentLength) {
+            res.setHeader('Content-Length', response.ContentLength);
+        }
+
+        if (response.ETag) {
+            res.setHeader('ETag', response.ETag);
         }
 
         if (req.query.download) {

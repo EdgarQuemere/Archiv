@@ -207,6 +207,7 @@ exports.getProjects = async (req, res) => {
     });
 
     const total = await prisma.project.count({ where });
+    res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=300');
 
     res.json({
       projects,
