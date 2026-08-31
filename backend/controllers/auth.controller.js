@@ -63,7 +63,7 @@ exports.register = async (req, res) => {
       data: {
         email, password: hashedPassword, firstName, lastName, pseudo: pseudo || null, displayPreference, role, currentSchool, bio,
         behanceLink, instaLink, personalLink, profilePicture,
-        emailVerificationToken, emailVerificationExpires
+        emailVerificationToken, emailVerificationExpires, cguAcceptedAt: new Date()
       },
     });
 
@@ -224,7 +224,8 @@ exports.googleAuth = async (req, res) => {
         instaLink,
         personalLink,
         profilePicture: req.file ? formatFileUrl(req.file) : (req.body.profilePicture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`),
-        isEmailVerified: true
+        isEmailVerified: true,
+        cguAcceptedAt: new Date()
       },
     });
 
@@ -336,7 +337,8 @@ exports.omniscientAuth = async (req, res) => {
         personalLink,
         profilePicture: req.file ? formatFileUrl(req.file) : (req.body.profilePicture || profile_picture || `/pdp_${Math.floor(Math.random() * 5) + 1}.webp`),
         isOmniscient: true,
-        isEmailVerified: true
+        isEmailVerified: true,
+        cguAcceptedAt: new Date()
       },
     });
 
