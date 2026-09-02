@@ -79,43 +79,97 @@ export function NetworkGraphCanvas({
   useEffect(() => {
     if (!items || items.length === 0) return;
 
-    const getWords = (text) => {
-      if (!text) return [];
-      const stopWords = new Set(["de", "la", "le", "les", "des", "un", "une", "et", "ou", "en", "dans", "par", "pour", "sur", "au", "aux", "du", "qui", "que", "quoi", "dont", "où", "il", "elle", "ils", "elles", "on", "nous", "vous", "je", "tu", "me", "te", "se", "ce", "cette", "ces", "mon", "ton", "son", "ma", "ta", "sa", "mes", "tes", "ses", "notre", "votre", "leur", "nos", "vos", "leurs", "avec", "sans", "sous", "vers", "chez", "est", "sont", "a", "ont", "pas", "ne", "plus", "moins", "très", "bien", "fait", "comme", "tout", "tous", "toute", "toutes", "comment", "faire", "l", "d", "qu", "n", "s", "m", "t", "c", "j", "d'un", "d me", "l'on"]);
-      return text.toLowerCase()
-        .replace(/['’]/g, " ")
-        .split(/[\s,.;:!?()[\]{}"]+/)
-        .filter(w => w.length > 2 && !stopWords.has(w));
+    const stopWords = new Set([
+      "de", "la", "le", "les", "des", "un", "une", "et", "ou", "en", "dans", "par", "pour", "sur", "au", "aux", "du", "qui", "que", "quoi", "dont", "où", "il", "elle", "ils", "elles", "on", "nous", "vous", "je", "tu", "me", "te", "se", "ce", "cette", "ces", "mon", "ton", "son", "ma", "ta", "sa", "mes", "tes", "ses", "notre", "votre", "leur", "nos", "vos", "leurs", "avec", "sans", "sous", "vers", "chez", "est", "sont", "ete", "etre", "avoir", "ayant", "avais", "avait", "avaient", "auront", "aura", "seront", "sera", "etaient", "etait", "a", "ont", "pas", "ne", "plus", "moins", "tres", "bien", "fait", "comme", "tout", "tous", "toute", "toutes", "comment", "faire", "l", "d", "qu", "n", "s", "m", "t", "c", "j", "d'un", "d me", "l'on", "afin", "ainsi", "alors", "apres", "aussi", "autre", "autres", "avant", "car", "ceux", "celles", "celui", "celle", "chaque", "ci", "depuis", "donc", "dont", "encore", "entre", "faire", "faut", "ici", "leurs", "lors", "mais", "meme", "memes", "parce", "pendant", "peut", "peuvent", "pouvoir", "puis", "quand", "quel", "quelle", "quelles", "quels", "quelque", "quelques", "selon", "si", "soit", "son", "sont", "sous", "sur", "tandis", "tant", "tel", "telle", "telles", "tels", "via", "voir", "vue", "vers"
+    ]);
+
+    // Fonction de normalisation (accents + singulier/pluriel simple)
+    const normalizeWord = (w) => {
+      let clean = w.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // Enlève les accents (é -> e, etc.)
+      
+      // Règle de singularisation simple en français pour les mots de + de 3 lettres
+      if (clean.length > 3) {
+        if (clean.endsWith('aux')) {
+          clean = clean.slice(0, -3) + 'al';
+        } else if (clean.endsWith('s') || clean.endsWith('x')) {
+          clean = clean.slice(0, -1);
+        }
+      }
+      return clean;
     };
 
-    // 1. Calculate links and node degrees first
-    const links = [];
-    const degreeMap = {};
-    items.forEach(n => degreeMap[n.id] = 0);
+    const getWordsMap = (text) => {
+      if (!text) return new Map();
+      const map = new Map(); // normalized -> original
+      const tokens = text.toLowerCase()
+        .replace(/['’]/g, " ")
+        .split(/[\s,.;:!?()[\]{}«»""/\\-]+/);
+
+      for (const token of tokens) {
+        if (token.length <= 2) continue;
+        const norm = normalizeWord(token);
+        if (norm.length > 2 && !stopWords.has(norm) && !stopWords.has(token)) {
+          if (!map.has(norm)) {
+            map.set(norm, token); // conserve une forme lisible pour les badges
+          }
+        }
+      }
+      return map;
+    };
+
+    // 1. Calculate potential pairwise candidate links
+    const candidatePairs = [];
 
     for (let i = 0; i < items.length; i++) {
       for (let j = i + 1; j < items.length; j++) {
         const a = items[i];
         const b = items[j];
 
-        const aWords = getWords(`${a.title || ''} ${a.description || ''}`);
-        const bWords = getWords(`${b.title || ''} ${b.description || ''}`);
-        let shared = [...new Set(aWords.filter(w => bWords.includes(w)))];
+        const aMap = getWordsMap(`${a.title || ''} ${a.description || ''}`);
+        const bMap = getWordsMap(`${b.title || ''} ${b.description || ''}`);
 
-        if (shared.length > 4) {
-          shared = shared.slice(0, 4);
-        }
+        const sharedNorms = [];
+        const sharedDisplay = [];
 
-        if (shared.length > 0) {
-          links.push({
+        aMap.forEach((displayWord, norm) => {
+          if (bMap.has(norm)) {
+            sharedNorms.push(norm);
+            sharedDisplay.push(displayWord);
+          }
+        });
+
+        if (sharedDisplay.length > 0) {
+          const topShared = sharedDisplay.slice(0, 4);
+          candidatePairs.push({
             source: a.id,
             target: b.id,
-            value: shared.length * 2,
-            sharedTags: shared
+            value: topShared.length * 2,
+            sharedTags: topShared,
+            score: topShared.length
           });
-          degreeMap[a.id]++;
-          degreeMap[b.id]++;
         }
+      }
+    }
+
+    // Trier les candidats par pertinence (score le plus élevé d'abord)
+    candidatePairs.sort((a, b) => b.score - a.score);
+
+    // 2. Limiter à MAX 3 liens par carte pour préserver la clarté
+    const MAX_LINKS_PER_CARD = 3;
+    const links = [];
+    const degreeMap = {};
+    items.forEach(n => degreeMap[n.id] = 0);
+
+    for (const pair of candidatePairs) {
+      const sDeg = degreeMap[pair.source] || 0;
+      const tDeg = degreeMap[pair.target] || 0;
+
+      if (sDeg < MAX_LINKS_PER_CARD && tDeg < MAX_LINKS_PER_CARD) {
+        links.push(pair);
+        degreeMap[pair.source]++;
+        degreeMap[pair.target]++;
       }
     }
 
@@ -376,8 +430,22 @@ export function NetworkGraphCanvas({
     }
   };
 
-  const handleCardClick = (item, x, y) => {
+  const handleCardClick = (e, item, x, y) => {
+    if (e) e.stopPropagation();
     if (totalDragDistanceRef.current > 5) return;
+
+    // Détection touch/mobile ou absence de hover précis
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
+
+    if (isTouchDevice) {
+      // 1er tap : on active le noeud pour afficher tous ses liens, mots-clés et connexions
+      if (hoveredNodeId !== item.id) {
+        setHoveredNodeId(item.id);
+        return;
+      }
+    }
+
+    // 2e tap (ou clic souris sur desktop) : centrage & ouverture de la modal du projet
     const centeredX = viewportSize.width / 2 - x * currentCamRef.current.zoom;
     const centeredY = viewportSize.height / 2 - y * currentCamRef.current.zoom;
 
@@ -390,6 +458,12 @@ export function NetworkGraphCanvas({
         if (onCardClick) onCardClick(item);
       }
     });
+  };
+
+  const handleBackgroundClick = (e) => {
+    if (totalDragDistanceRef.current > 5) return;
+    // Si on clique/tapote dans le fond, on désactive le focus sur mobile
+    setHoveredNodeId(null);
   };
 
   // Determine active connections for hover highlighting
@@ -433,6 +507,7 @@ export function NetworkGraphCanvas({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onClick={handleBackgroundClick}
     >
 
       <div
@@ -533,7 +608,7 @@ export function NetworkGraphCanvas({
               key={node.id}
               onMouseEnter={() => setHoveredNodeId(node.id)}
               onMouseLeave={() => setHoveredNodeId(null)}
-              onClick={() => handleCardClick(node, node.x, node.y)}
+              onClick={(e) => handleCardClick(e, node, node.x, node.y)}
               style={{
                 position: 'absolute',
                 left: 0,
