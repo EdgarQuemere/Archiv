@@ -17,8 +17,12 @@ export function NetworkGraphCanvas({
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
   const simulationRef = useRef(null);
 
-  // Active hover node filter state
-  const [hoveredNodeId, setHoveredNodeId] = useState(null);
+  // Active selected/hovered node filter state
+  const [activeNodeId, setActiveNodeId] = useState(null);
+  const activeNodeIdRef = useRef(null);
+  activeNodeIdRef.current = activeNodeId;
+  const isTouchInteractionRef = useRef(false);
+
   const [imageRatios, setImageRatios] = useState({});
 
   // Dragging state & displacement distance tracker
@@ -432,20 +436,12 @@ export function NetworkGraphCanvas({
 
   const handleCardClick = (e, item, x, y) => {
     if (e) e.stopPropagation();
-    if (totalDragDistanceRef.current > 5) return;
+    if (totalDragDistanceRef.current > 6) return;
 
-    // Détection touch/mobile ou absence de hover précis
-    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
+    // Si l'interaction provient du tactile, on laisse handleCardTouch s'en occuper
+    if (isTouchInteractionRef.current) return;
 
-    if (isTouchDevice) {
-      // 1er tap : on active le noeud pour afficher tous ses liens, mots-clés et connexions
-      if (hoveredNodeId !== item.id) {
-        setHoveredNodeId(item.id);
-        return;
-      }
-    }
-
-    // 2e tap (ou clic souris sur desktop) : centrage & ouverture de la modal du projet
+    // Desktop direct click : centrage & ouverture de la modal du projet
     const centeredX = viewportSize.width / 2 - x * currentCamRef.current.zoom;
     const centeredY = viewportSize.height / 2 - y * currentCamRef.current.zoom;
 
@@ -460,36 +456,60 @@ export function NetworkGraphCanvas({
     });
   };
 
-  const handleBackgroundClick = (e) => {
-    if (totalDragDistanceRef.current > 5) return;
-    // Si on clique/tapote dans le fond, on désactive le focus sur mobile
-    setHoveredNodeId(null);
+  const handleCardTouch = (e, item, x, y) => {
+    if (e) e.stopPropagation();
+    isTouchInteractionRef.current = true;
+    if (totalDragDistanceRef.current > 6) return;
+
+    if (activeNodeIdRef.current !== item.id) {
+      // 1er tap : activation et révélation des liens
+      setActiveNodeId(item.id);
+    } else {
+      // 2e tap : centrage & ouverture de la modal du projet
+      const centeredX = viewportSize.width / 2 - x * currentCamRef.current.zoom;
+      const centeredY = viewportSize.height / 2 - y * currentCamRef.current.zoom;
+
+      gsap.to(targetCamRef.current, {
+        x: centeredX,
+        y: centeredY,
+        duration: 0.5,
+        ease: 'power2.out',
+        onComplete: () => {
+          if (onCardClick) onCardClick(item);
+        }
+      });
+    }
   };
 
-  // Determine active connections for hover highlighting
+  const handleBackgroundClick = () => {
+    if (totalDragDistanceRef.current > 6) return;
+    setActiveNodeId(null);
+  };
+
+  // Determine active connections for hover/selection highlighting
   const activeNeighborIds = useMemo(() => {
     const set = new Set();
-    if (hoveredNodeId) {
-      set.add(hoveredNodeId);
+    if (activeNodeId) {
+      set.add(activeNodeId);
       graphData.links.forEach(l => {
         const sId = typeof l.source === 'object' ? l.source.id : l.source;
         const tId = typeof l.target === 'object' ? l.target.id : l.target;
-        if (sId === hoveredNodeId) set.add(tId);
-        if (tId === hoveredNodeId) set.add(sId);
+        if (sId === activeNodeId) set.add(tId);
+        if (tId === activeNodeId) set.add(sId);
       });
     }
     return set;
-  }, [hoveredNodeId, graphData]);
+  }, [activeNodeId, graphData]);
 
   // Active links for badge rendering
   const activeLinks = useMemo(() => {
-    if (!hoveredNodeId) return [];
+    if (!activeNodeId) return [];
     return graphData.links.filter(link => {
       const sId = typeof link.source === 'object' ? link.source.id : link.source;
       const tId = typeof link.target === 'object' ? link.target.id : link.target;
-      return sId === hoveredNodeId || tId === hoveredNodeId;
+      return sId === activeNodeId || tId === activeNodeId;
     });
-  }, [hoveredNodeId, graphData]);
+  }, [activeNodeId, graphData]);
 
   const cardWidth = 170;
   const currentZoomPercent = Math.round((camera.zoom || 1.0) * 100);
@@ -528,10 +548,10 @@ export function NetworkGraphCanvas({
             if (!sNode || !tNode) return null;
 
             const isLinkActive =
-              hoveredNodeId === sId ||
-              hoveredNodeId === tId;
+              activeNodeId === sId ||
+              activeNodeId === tId;
 
-            const hasActiveFilter = Boolean(hoveredNodeId);
+            const hasActiveFilter = Boolean(activeNodeId);
 
             const sharedCount = (link.sharedTags || []).length;
 
@@ -594,9 +614,9 @@ export function NetworkGraphCanvas({
           const posX = node.x - currentCardWidth / 2;
           const posY = node.y - cardHeight / 2;
 
-          const isHovered = hoveredNodeId === node.id;
+          const isHovered = activeNodeId === node.id;
           const isActiveNeighbor = activeNeighborIds.has(node.id);
-          const hasActiveFilter = Boolean(hoveredNodeId);
+          const hasActiveFilter = Boolean(activeNodeId);
 
           let nodeOpacity = 1.0;
           if (hasActiveFilter) {
@@ -606,9 +626,14 @@ export function NetworkGraphCanvas({
           return (
             <div
               key={node.id}
-              onMouseEnter={() => setHoveredNodeId(node.id)}
-              onMouseLeave={() => setHoveredNodeId(null)}
+              onMouseEnter={() => {
+                if (!isTouchInteractionRef.current) setActiveNodeId(node.id);
+              }}
+              onMouseLeave={() => {
+                if (!isTouchInteractionRef.current) setActiveNodeId(null);
+              }}
               onClick={(e) => handleCardClick(e, node, node.x, node.y)}
+              onTouchEnd={(e) => handleCardTouch(e, node, node.x, node.y)}
               style={{
                 position: 'absolute',
                 left: 0,
